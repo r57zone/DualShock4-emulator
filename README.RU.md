@@ -6,6 +6,7 @@
 ## Настройка
 1. Установить [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases).
 2. Распаковать и запустить DualShock4 emulator.
+3. Запустить PS Now или другое приложение.
 
 ## Кнопки
 Кнопка "Назад" на Xbox контроллере эмулирует нажатие тачпада на Sony DualShock4.

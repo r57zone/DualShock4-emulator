@@ -6,6 +6,7 @@ Simple application to emulate the Sony DualShock 4 gamepad using an Xbox control
 ## Setup
 1. Install [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases).
 2. Unpack and launch "DualShock4 emulator".
+3. Launch PS Now or other app.
 
 ## Buttons
 The "Back" button on the Xbox controller emulating pressing the touchpad on a Sony DualShock 4.
