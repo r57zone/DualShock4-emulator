@@ -15,7 +15,7 @@ The "Share" button is assigned to the "F12" key.
 
 
 
-If necessary, you can swap bumpers and triggers, to do this change the "SwapTriggersShoulders" parameter to "1" in the "Config.ini" configuration file.
+If necessary, you can swap bumpers and triggers, to do this change the `SwapTriggersShoulders` parameter to `1` in the "Config.ini" configuration file.
 
 ## Keyboard and mouse
 Сan replace button bindings in the "Config.ini" configuration file. Button codes can be found [here](https://github.com/r57zone/Half-Life-Alyx-novr/blob/master/BINDINGS.md).
@@ -39,7 +39,7 @@ TOUCHPAD | Enter
 OPTIONS | Tab
 SHARE | F12
 
-The sensitivity parameters "SensX" and "SensY" can also be found in the configuration file.
+The sensitivity parameters `SensX` and `SensY` can also be found in the configuration file.
 
 ## Download
 >Version for Windows 7, 8.1, 10.
