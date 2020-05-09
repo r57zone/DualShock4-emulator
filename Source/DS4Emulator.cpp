@@ -111,7 +111,7 @@ int m_HalfHeight = 1080 / 2;
 float mouseSensetiveY;
 float mouseSensetiveX;
 bool firstCP = true;
-int mouseX, mouseY;
+int DeltaMouseX, DeltaMouseY;
 HWND PSNowWindow = 0;
 
 VOID CALLBACK notification(
@@ -143,8 +143,8 @@ void GetMouseState()
 
 	GetCursorPos(&mousePos);
 
-	mouseX = round((mousePos.x - m_HalfWidth) * mouseSensetiveX);
-	mouseY = round((mousePos.y - m_HalfHeight) * mouseSensetiveY);
+	DeltaMouseX = mousePos.x - m_HalfWidth;
+	DeltaMouseY = mousePos.y - m_HalfHeight;
 
 	SetCursorPos(m_HalfWidth, m_HalfHeight);
 }
@@ -161,8 +161,8 @@ int main(int argc, char **argv)
 	CIniReader IniFile("Config.ini");
 	bool SwapTriggersShoulders = IniFile.ReadBoolean("Xbox", "SwapTriggersShoulders", false);
 
-	mouseSensetiveX = IniFile.ReadFloat("Mouse", "SensX", 20);
-	mouseSensetiveY = IniFile.ReadFloat("Mouse", "SensY", 20);
+	mouseSensetiveX = IniFile.ReadFloat("Mouse", "SensX", 15);
+	mouseSensetiveY = IniFile.ReadFloat("Mouse", "SensY", 15);
 
 	KEY_ID_LEFT_TRIGGER = IniFile.ReadInteger("Keys", "LEFT_TRIGGER", VK_RBUTTON);
 	KEY_ID_RIGHT_TRIGGER = IniFile.ReadInteger("Keys", "RIGHT_TRIGGER", VK_LBUTTON);
@@ -323,14 +323,16 @@ int main(int argc, char **argv)
 				report.bThumbRY = 0x80;
 
 				//Are there better options? / Есть вариант лучше?
-				if (mouseX > 0)
-					report.bThumbRX = 128 + std::clamp(mouseX, 0, 127);
-				if (mouseX < 0)
-					report.bThumbRX = std::clamp(mouseX, 0, 127);
-				if (mouseY < 0)
-					report.bThumbRY = 128 + std::clamp(mouseY, -127, 0);
-				if (mouseY > 0)
-					report.bThumbRY = 128 + std::clamp(mouseY, 0, 127);
+				int deltaX = round(DeltaMouseX * mouseSensetiveX);
+				int deltaY = round(DeltaMouseY * mouseSensetiveY);
+				if (DeltaMouseX > 0)
+					report.bThumbRX = 128 + std::clamp(deltaX, 0, 127);
+				if (DeltaMouseX < 0)
+					report.bThumbRX = std::clamp(deltaX, 0, 127);
+				if (DeltaMouseY < 0)
+					report.bThumbRY = std::clamp(deltaY, 0, 127);
+				if (DeltaMouseY > 0)
+					report.bThumbRY = 128 + std::clamp(deltaY, 0, 127);
 
 				report.bThumbLY = 0x80;
 				if ((GetAsyncKeyState('W') & 0x8000) != 0) report.bThumbLY = 0;
