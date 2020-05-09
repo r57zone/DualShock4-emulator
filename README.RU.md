@@ -44,7 +44,7 @@ SHARE | F12
 ## Загрузка
 >Версия для Windows 7, 8.1, 10.
 
-**[Загрузить](https://github.com/r57zone/DualShock4-emulator)**
+**[Загрузить](https://github.com/r57zone/DualShock4-emulator/releases)**
 
 ## Обратная связь
 `r57zone[собака]gmail.com`

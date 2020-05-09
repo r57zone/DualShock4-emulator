@@ -44,7 +44,7 @@ The sensitivity parameters `SensX` and `SensY` can also be found in the configur
 ## Download
 >Version for Windows 7, 8.1, 10.
 
-**[Download](https://github.com/r57zone/DualShock4-emulator)**
+**[Download](https://github.com/r57zone/DualShock4-emulator/releases)**
 
 ## Feedback
 `r57zone[at]gmail.com`
