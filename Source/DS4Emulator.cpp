@@ -1,7 +1,6 @@
 #include <Windows.h>
 #include <ViGEm/Client.h>
 #include <mutex>
-#include <algorithm>
 #include "IniReader\IniReader.h"
 
 //XInput headers
@@ -147,6 +146,16 @@ void GetMouseState()
 	DeltaMouseY = mousePos.y - m_HalfHeight;
 
 	SetCursorPos(m_HalfWidth, m_HalfHeight);
+}
+
+float Clamp(float Value, float Min, float Max)
+{
+	if (Value > Max)
+		Value = Max;
+	else
+		if (Value < Min)
+			Value = Min;
+	return Value;
 }
 
 int main(int argc, char **argv)
@@ -323,16 +332,14 @@ int main(int argc, char **argv)
 				report.bThumbRY = 0x80;
 
 				//Are there better options? / Есть вариант лучше?
-				int deltaX = round(DeltaMouseX * mouseSensetiveX);
-				int deltaY = round(DeltaMouseY * mouseSensetiveY);
 				if (DeltaMouseX > 0)
-					report.bThumbRX = 128 + std::clamp(deltaX, 0, 127);
+					report.bThumbRX = 128 + round( Clamp( DeltaMouseX * mouseSensetiveX, 0, 127) );
 				if (DeltaMouseX < 0)
-					report.bThumbRX = std::clamp(deltaX, 0, 127);
+					report.bThumbRX = 128 + round( Clamp(DeltaMouseX * mouseSensetiveX, -127, 0) );
 				if (DeltaMouseY < 0)
-					report.bThumbRY = std::clamp(deltaY, 0, 127);
+					report.bThumbRY = 128 + round( Clamp(DeltaMouseY * mouseSensetiveY, -127, 0) );
 				if (DeltaMouseY > 0)
-					report.bThumbRY = 128 + std::clamp(deltaY, 0, 127);
+					report.bThumbRY = 128 + round( Clamp(DeltaMouseY * mouseSensetiveY, 0, 127) );
 
 				report.bThumbLY = 0x80;
 				if ((GetAsyncKeyState('W') & 0x8000) != 0) report.bThumbLY = 0;
