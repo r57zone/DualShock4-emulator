@@ -17,6 +17,11 @@ The "Share" button is assigned to the "F12" key.
 
 If necessary, you can swap bumpers and triggers, to do this change the `SwapTriggersShoulders` parameter to `1` in the "Config.ini" configuration file.
 
+## Touchpad
+Game | Action
+------------ | -------------
+Uncharted 3: Drake’s Deception (2011) | The "Share" button (F12) duplicates pressing the left side of the touchpad.
+
 ## Keyboard and mouse
 Сan replace button bindings in the "Config.ini" configuration file. Button codes can be found [here](https://github.com/r57zone/Half-Life-Alyx-novr/blob/master/BINDINGS.md).
 DualShock 4 | Keyboard and mouse
