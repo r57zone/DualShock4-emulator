@@ -169,6 +169,7 @@ int main(int argc, char **argv)
 	//Config
 	CIniReader IniFile("Config.ini");
 	bool SwapTriggersShoulders = IniFile.ReadBoolean("Xbox", "SwapTriggersShoulders", false);
+	bool SwapShareTouchPad = IniFile.ReadBoolean("Xbox", "SwapShareTouchPad", false);
 
 	mouseSensetiveX = IniFile.ReadFloat("Mouse", "SensX", 15);
 	mouseSensetiveY = IniFile.ReadFloat("Mouse", "SensY", 15);
@@ -269,11 +270,19 @@ int main(int argc, char **argv)
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_START)
 					report.wButtons |= DS4_BUTTON_OPTIONS;
 
-				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
-					report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD;
-
-				if ((GetAsyncKeyState(KEY_ID_SHARE) & 0x8000) != 0)
-					report.wButtons |= DS4_BUTTON_SHARE;
+				//Swap share and touchpad
+				if (SwapShareTouchPad == false) {
+					if ((GetAsyncKeyState(KEY_ID_SHARE) & 0x8000) != 0)
+						report.wButtons |= DS4_BUTTON_SHARE;
+					if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
+						report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD;
+				}
+				else {
+					if ((GetAsyncKeyState(KEY_ID_SHARE) & 0x8000) != 0)
+						report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD;
+					if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
+						report.wButtons |= DS4_BUTTON_SHARE;
+				}
 
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_Y)
 					report.wButtons |= DS4_BUTTON_TRIANGLE;
@@ -394,7 +403,7 @@ int main(int argc, char **argv)
 		}
 
 		//Don't over load the CPU with reading
-		Sleep(10);
+		Sleep(2);
 	}
 
 	vigem_target_remove(client, ds4);
