@@ -15,7 +15,7 @@ The "Share" button is assigned to the "F12" key.
 
 
 
-If necessary, you can swap bumpers and triggers, to do this change the `SwapTriggersShoulders` parameter to `1` in the "Config.ini" configuration file.
+If necessary, you can swap bumpers and triggers, as well as the "share" button and pressing the touchpad, to do this change the `SwapTriggersShoulders` or `SwapShareTouchPad` parameter to `1` in the "Config.ini" configuration file.
 
 ## Touchpad
 Game | Action
