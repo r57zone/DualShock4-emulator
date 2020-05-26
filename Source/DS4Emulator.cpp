@@ -327,6 +327,15 @@ int main(int argc, char **argv)
 					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_WEST);
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)
 					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_EAST);
+
+				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)
+					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_NORTHEAST);
+				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)
+					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_SOUTHWEST);
+				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)
+					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_NORTHWEST);
+				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)
+					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_SOUTHEAST);
 			}
 		} else
 		
