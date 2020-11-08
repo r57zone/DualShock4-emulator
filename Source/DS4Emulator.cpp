@@ -168,6 +168,11 @@ int main(int argc, char **argv)
 
 	//Config
 	CIniReader IniFile("Config.ini");
+	bool InvertX = IniFile.ReadBoolean("DS4", "InvertX", false);
+	bool InvertY = IniFile.ReadBoolean("DS4", "InvertY", false);
+	
+	int SleepTimeOut = IniFile.ReadInteger("DS4", "SleepTimeOut", 2);
+
 	bool SwapTriggersShoulders = IniFile.ReadBoolean("Xbox", "SwapTriggersShoulders", false);
 	bool SwapShareTouchPad = IniFile.ReadBoolean("Xbox", "SwapShareTouchPad", false);
 
@@ -243,8 +248,6 @@ int main(int argc, char **argv)
 
 	while (!(GetAsyncKeyState(192) & 0x8000)) //~
 	{
-		ret = vigem_target_ds4_update(client, ds4, report);
-		
 		report.wButtons = 0;
 		DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_NONE);
 		report.bTriggerL = 0;
@@ -260,11 +263,23 @@ int main(int argc, char **argv)
 			if (myStatus == ERROR_SUCCESS) {
 
 				//Convert axis from - https://github.com/sam0x17/XJoy/blob/236b5539cc15ea1c83e1e5f0260937f69a78866d/Include/ViGEmUtil.h
+
 				report.bThumbLX = ((myPState.Gamepad.sThumbLX + ((USHRT_MAX / 2) + 1)) / 257);
 				report.bThumbLY = (-(myPState.Gamepad.sThumbLY + ((USHRT_MAX / 2) - 1)) / 257);
 				report.bThumbLY = (report.bThumbLY == 0) ? 0xFF : report.bThumbLY;
-				report.bThumbRX = ((myPState.Gamepad.sThumbRX + ((USHRT_MAX / 2) + 1)) / 257);
-				report.bThumbRY = (-(myPState.Gamepad.sThumbRY + ((USHRT_MAX / 2) + 1)) / 257);
+				
+				//Inverting X
+				if (InvertX == false)
+					report.bThumbRX = ((myPState.Gamepad.sThumbRX + ((USHRT_MAX / 2) + 1)) / 257);
+				else
+					report.bThumbRX = ((-myPState.Gamepad.sThumbRX + ((USHRT_MAX / 2) + 1)) / 257);
+				
+				//Inverting Y
+				if (InvertY == false)
+					report.bThumbRY = (-(myPState.Gamepad.sThumbRY + ((USHRT_MAX / 2) + 1)) / 257);
+				else
+					report.bThumbRY = (-(-myPState.Gamepad.sThumbRY + ((USHRT_MAX / 2) + 1)) / 257);
+				
 				report.bThumbRY = (report.bThumbRY == 0) ? 0xFF : report.bThumbRY;
 
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_START)
@@ -342,12 +357,16 @@ int main(int argc, char **argv)
 		//Mouse and keyboard mode
 		if (EmulationMode == KBMode) {
 
-			PSNowWindow = FindWindow(NULL, "PlayStation™Now");
-			if (PSNowWindow != 0 && PSNowWindow == GetForegroundWindow() && IsWindowVisible(PSNowWindow)) {
-				
+			//PSNowWindow = FindWindow(NULL, "PlayStation™Now");
+			//if ( (PSNowWindow != 0) && (IsWindowVisible(PSNowWindow)) && (PSNowWindow == GetForegroundWindow()) ) {
 				GetMouseState();
 				report.bThumbRX = 0x80;
 				report.bThumbRY = 0x80;
+
+				if (InvertX)
+					DeltaMouseX = DeltaMouseX * -1;
+				if (InvertY)
+					DeltaMouseY = DeltaMouseY * -1;
 
 				//Are there better options? / Åñòü âàðèàíò ëó÷øå?
 				if (DeltaMouseX > 0)
@@ -408,11 +427,13 @@ int main(int argc, char **argv)
 					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_WEST);
 				if ((GetAsyncKeyState(KEY_ID_DPAD_RIGHT) & 0x8000) != 0)
 					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_EAST);
-			}
+			//}
 		}
 
+		ret = vigem_target_ds4_update(client, ds4, report);
+
 		//Don't over load the CPU with reading
-		Sleep(2);
+		Sleep(SleepTimeOut);
 	}
 
 	vigem_target_remove(client, ds4);
