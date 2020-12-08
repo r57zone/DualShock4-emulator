@@ -334,6 +334,12 @@ int main(int argc, char **argv)
 						report.bTriggerR = 255;
 				}
 
+				//Strange specific of DualShock
+				if (report.bTriggerL > 0) 
+					report.wButtons |= DS4_BUTTON_TRIGGER_LEFT; 
+				if (report.bTriggerR > 0)
+					report.wButtons |= DS4_BUTTON_TRIGGER_RIGHT;
+
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)
 					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_NORTH);
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)
@@ -386,10 +392,14 @@ int main(int argc, char **argv)
 				if ((GetAsyncKeyState('D') & 0x8000) != 0) report.bThumbLX = 255;
 
 				
-				if ((GetAsyncKeyState(KEY_ID_LEFT_TRIGGER) & 0x8000) != 0)
+				if ((GetAsyncKeyState(KEY_ID_LEFT_TRIGGER) & 0x8000) != 0) {
 					report.bTriggerL = 255;
-				if ((GetAsyncKeyState(KEY_ID_RIGHT_TRIGGER) & 0x8000) != 0)
+					report.wButtons |= DS4_BUTTON_TRIGGER_LEFT; // DualShock 4 specific
+				}
+				if ((GetAsyncKeyState(KEY_ID_RIGHT_TRIGGER) & 0x8000) != 0) {
 					report.bTriggerR = 255;
+					report.wButtons |= DS4_BUTTON_TRIGGER_RIGHT; // DualShock 4 specific
+				}
 
 				if ((GetAsyncKeyState(KEY_ID_OPTIONS) & 0x8000) != 0)
 					report.wButtons |= DS4_BUTTON_OPTIONS;
