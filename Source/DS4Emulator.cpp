@@ -175,6 +175,10 @@ int main(int argc, char **argv)
 
 	bool SwapTriggersShoulders = IniFile.ReadBoolean("Xbox", "SwapTriggersShoulders", false);
 	bool SwapShareTouchPad = IniFile.ReadBoolean("Xbox", "SwapShareTouchPad", false);
+	bool EmulateAnalogTriggers = IniFile.ReadBoolean("Mouse", "EmulateAnalogTriggers", false);
+	float LeftTriggerValue = 0;
+	float RightTriggerValue = 0;
+	float StepTriggerValue = IniFile.ReadFloat("Mouse", "AnalogTriggerStep", 15);
 
 	mouseSensetiveX = IniFile.ReadFloat("Mouse", "SensX", 15);
 	mouseSensetiveY = IniFile.ReadFloat("Mouse", "SensY", 15);
@@ -391,15 +395,46 @@ int main(int argc, char **argv)
 				if ((GetAsyncKeyState('A') & 0x8000) != 0) report.bThumbLX = 0;
 				if ((GetAsyncKeyState('D') & 0x8000) != 0) report.bThumbLX = 255;
 
-				
-				if ((GetAsyncKeyState(KEY_ID_LEFT_TRIGGER) & 0x8000) != 0) {
-					report.bTriggerL = 255;
-					report.wButtons |= DS4_BUTTON_TRIGGER_LEFT; // DualShock 4 specific
+
+				if (EmulateAnalogTriggers == false){
+					if ((GetAsyncKeyState(KEY_ID_LEFT_TRIGGER) & 0x8000) != 0)
+						report.bTriggerL = 255;
+					if ((GetAsyncKeyState(KEY_ID_RIGHT_TRIGGER) & 0x8000) != 0)
+						report.bTriggerR = 255;
 				}
-				if ((GetAsyncKeyState(KEY_ID_RIGHT_TRIGGER) & 0x8000) != 0) {
-					report.bTriggerR = 255;
-					report.wButtons |= DS4_BUTTON_TRIGGER_RIGHT; // DualShock 4 specific
+				else { //With emulate analog triggers
+
+					if ((GetAsyncKeyState(KEY_ID_LEFT_TRIGGER) & 0x8000) != 0) {
+						if (LeftTriggerValue < 255)
+							LeftTriggerValue += StepTriggerValue;
+					}
+					else {
+						//LeftTriggerValue = 0;
+						if (LeftTriggerValue > 0)
+							LeftTriggerValue -= StepTriggerValue;
+					}
+					
+					report.bTriggerL = Clamp(round(LeftTriggerValue), 0, 255);
+
+					if ((GetAsyncKeyState(KEY_ID_RIGHT_TRIGGER) & 0x8000) != 0) {
+						if (RightTriggerValue < 255)
+							RightTriggerValue += StepTriggerValue;
+					}
+					else {
+						//RightTriggerValue = 0;
+						if (RightTriggerValue > 0)
+							RightTriggerValue -= StepTriggerValue;
+					}
+
+					report.bTriggerR = Clamp(round(RightTriggerValue), 0, 255);
+
 				}
+
+				//Strange specific of DualShock
+				if (report.bTriggerL > 0)
+					report.wButtons |= DS4_BUTTON_TRIGGER_LEFT;
+				if (report.bTriggerR > 0)
+					report.wButtons |= DS4_BUTTON_TRIGGER_RIGHT;
 
 				if ((GetAsyncKeyState(KEY_ID_OPTIONS) & 0x8000) != 0)
 					report.wButtons |= DS4_BUTTON_OPTIONS;
