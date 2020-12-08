@@ -45,7 +45,7 @@ TOUCHPAD | Enter
 OPTIONS | Tab
 SHARE | F12
 
-The sensitivity parameters `SensX`,` SensY` for the mouse can also be found in the configuration file "Config.ini", in the section "Mouse". If there is no stick movement, you can also try increasing the "SleepTimeOut" parameter to 5, 7, 10.
+The sensitivity parameters `SensX`, `SensY` for the mouse can also be found in the configuration file "Config.ini", in the section "Mouse". If there is no stick movement, you can also try increasing the "SleepTimeOut" parameter to 5, 7, 10.
 
 
 
