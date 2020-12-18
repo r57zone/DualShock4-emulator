@@ -52,7 +52,7 @@ SHARE | F12
 Также можно включить эмуляцию аналоговых триггеров (L2, R2), изменить параметр `EmulateAnalogTriggers` на `1` и шаг увеличения `AnalogTriggerStep` (от 0.1 до 255).
 
 ## Загрузка
->Версия для Windows 7, 8.1, 10.
+>Версия для Windows 10.
 
 **[Загрузить](https://github.com/r57zone/DualShock4-emulator/releases)**
 

@@ -52,7 +52,7 @@ The sensitivity parameters `SensX`, `SensY` for the mouse can also be found in t
 You can also enable emulation of analog triggers (L2, R2), change the `EmulateAnalogTriggers` parameter to `1`, and increase step `AnalogTriggerStep` (from 0.1 to 255).
 
 ## Download
->Version for Windows 7, 8.1, 10.
+>Version for Windows 10.
 
 **[Download](https://github.com/r57zone/DualShock4-emulator/releases)**
 
