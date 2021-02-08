@@ -24,6 +24,9 @@ Game | Action
 ------------ | -------------
 Uncharted 3: Drake’s Deception (2011) | The "Share" button (F12) duplicates pressing the left side of the touchpad.
 
+## Gyroscope
+Gyro emulation is not supported.
+
 ## Keyboard and mouse
 By default, the mouse and keyboard only work in "PlayStation Now". You can enable the work in all windows (change the `ActivateInAnyWindow` parameter to `1`, in the "Config.ini" configuration file) or change the name of the window (the `ActivateOnlyInWindow` parameter) in which the actions are captured. This is necessary so that the cursor is centered only in one window and no buttons are pressed when the window is minimized.
 
@@ -51,7 +54,7 @@ SHARE | F12
 
 
 
-The sensitivity parameters `SensX`, `SensY` for the mouse can also be found in the configuration file "Config.ini", in the section "Mouse". If there is no stick movement, you can also try increasing the "SleepTimeOut" parameter to 2, 4, 8, 10.
+The sensitivity parameters `SensX`, `SensY` for the mouse can also be found in the configuration file "Config.ini", in the section "Mouse". If there is no stick movement, you can try increasing the "SleepTimeOut" parameter to 2, 4, 8, 10.
 
 
 
