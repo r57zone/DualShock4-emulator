@@ -81,7 +81,7 @@ typedef DWORD(__stdcall *_XInputSetState)(_In_ DWORD dwUserIndex, _In_ XINPUT_VI
 _XInputGetState MyXInputGetState;
 _XInputSetState MyXInputSetState;
 _XINPUT_STATE myPState;
-HMODULE hDll;
+HMODULE hDll = NULL;
 DWORD XboxUserIndex = 0;
 
 static std::mutex m;
@@ -162,26 +162,28 @@ int main(int argc, char **argv)
 {
 	SetConsoleTitle("DS4Emulator");
 	
-	#define XboxMode 0
-	#define KBMode 1
-	unsigned char EmulationMode = XboxMode;
+	#define XboxMode 1
+	#define KBMode 0
+	int EmulationMode = KBMode;
 
 	//Config
 	CIniReader IniFile("Config.ini");
 	bool InvertX = IniFile.ReadBoolean("DS4", "InvertX", false);
 	bool InvertY = IniFile.ReadBoolean("DS4", "InvertY", false);
-	
-	int SleepTimeOut = IniFile.ReadInteger("DS4", "SleepTimeOut", 2);
 
+	int SleepTimeOutXbox = IniFile.ReadInteger("Xbox", "SleepTimeOut", 1);
 	bool SwapTriggersShoulders = IniFile.ReadBoolean("Xbox", "SwapTriggersShoulders", false);
 	bool SwapShareTouchPad = IniFile.ReadBoolean("Xbox", "SwapShareTouchPad", false);
-	bool EmulateAnalogTriggers = IniFile.ReadBoolean("Mouse", "EmulateAnalogTriggers", false);
+
+	int SleepTimeOutKB = IniFile.ReadInteger("KeyboardMouse", "SleepTimeOut", 2);
+	std::string WindowTitle = IniFile.ReadString("KeyboardMouse", "ActivateOnlyInWindow", "PlayStation™Now");
+	bool ActivateInAnyWindow = IniFile.ReadBoolean("KeyboardMouse", "ActivateInAnyWindow", false);
+	bool EmulateAnalogTriggers = IniFile.ReadBoolean("KeyboardMouse", "EmulateAnalogTriggers", false);
 	float LeftTriggerValue = 0;
 	float RightTriggerValue = 0;
-	float StepTriggerValue = IniFile.ReadFloat("Mouse", "AnalogTriggerStep", 15);
-
-	mouseSensetiveX = IniFile.ReadFloat("Mouse", "SensX", 15);
-	mouseSensetiveY = IniFile.ReadFloat("Mouse", "SensY", 15);
+	float StepTriggerValue = IniFile.ReadFloat("KeyboardMouse", "AnalogTriggerStep", 15);
+	mouseSensetiveX = IniFile.ReadFloat("KeyboardMouse", "SensX", 15);
+	mouseSensetiveY = IniFile.ReadFloat("KeyboardMouse", "SensY", 15);
 
 	KEY_ID_LEFT_TRIGGER = IniFile.ReadInteger("Keys", "LEFT_TRIGGER", VK_RBUTTON);
 	KEY_ID_RIGHT_TRIGGER = IniFile.ReadInteger("Keys", "RIGHT_TRIGGER", VK_LBUTTON);
@@ -211,33 +213,23 @@ int main(int argc, char **argv)
 
 	printf("Press \"~\" key to exit\r\n");
 
-	//Forced keyboard and mouse mode
-	if (argv[1] != NULL && strcmp(argv[1], "-mk") == 0)
-		EmulationMode = KBMode;
-
 	//Load library and scan Xbox gamepads only in Xbox mode (default)
-	if (EmulationMode == XboxMode) {
-		//printf("Xbox mode\r\n");
-		//TCHAR XInputPath[MAX_PATH] = { 0 };
-		//GetSystemWindowsDirectory(XInputPath, sizeof(XInputPath));
-		//_tcscat_s(XInputPath, sizeof(XInputPath), _T("\\System32\\xinput1_3.dll")); //Separate paths for different architectures are not required. Windows does it by itself.
-		hDll = LoadLibrary("xinput1_3.dll"); //x360ce support
-		if (hDll != NULL) {
-			MyXInputGetState = (_XInputGetState)GetProcAddress(hDll, "XInputGetState");
-			MyXInputSetState = (_XInputSetState)GetProcAddress(hDll, "XInputSetState");
-			if (MyXInputGetState == NULL || MyXInputSetState == NULL) 
-				hDll = NULL;
-		}
+	hDll = LoadLibrary("xinput1_3.dll"); //x360ce support
+	if (hDll != NULL) {
+		MyXInputGetState = (_XInputGetState)GetProcAddress(hDll, "XInputGetState");
+		MyXInputSetState = (_XInputSetState)GetProcAddress(hDll, "XInputSetState");
+		if (MyXInputGetState == NULL || MyXInputSetState == NULL) 
+			hDll = NULL;
+	}
 
-		for (DWORD i = 0; i < XUSER_MAX_COUNT; ++i)
+	if (hDll != NULL)
+		for (int i = 0; i < XUSER_MAX_COUNT; ++i)
 			if (MyXInputGetState(XboxUserIndex, &myPState) == ERROR_SUCCESS)
 			{
 				XboxUserIndex = i;
+				EmulationMode = XboxMode;
 				break;
-			} else
-				if (i == 3) //if don't have gamepad 
-					EmulationMode = KBMode;
-	}
+			}
 	
 	if (EmulationMode == KBMode) {
 		m_HalfWidth = GetSystemMetrics(SM_CXSCREEN) / 2;
@@ -252,22 +244,17 @@ int main(int argc, char **argv)
 
 	while (!(GetAsyncKeyState(192) & 0x8000)) //~
 	{
-		report.wButtons = 0;
-		DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_NONE);
-		report.bTriggerL = 0;
-		report.bTriggerR = 0;
-		report.bSpecial = 0;
+		DS4_REPORT_INIT(&report);
 
 		//Xbox mode
 		if (EmulationMode == XboxMode) {
 			DWORD myStatus = ERROR_DEVICE_NOT_CONNECTED;
 			if (hDll != NULL)
 				myStatus = MyXInputGetState(XboxUserIndex, &myPState);
-
+			
 			if (myStatus == ERROR_SUCCESS) {
 
 				//Convert axis from - https://github.com/sam0x17/XJoy/blob/236b5539cc15ea1c83e1e5f0260937f69a78866d/Include/ViGEmUtil.h
-
 				report.bThumbLX = ((myPState.Gamepad.sThumbLX + ((USHRT_MAX / 2) + 1)) / 257);
 				report.bThumbLY = (-(myPState.Gamepad.sThumbLY + ((USHRT_MAX / 2) - 1)) / 257);
 				report.bThumbLY = (report.bThumbLY == 0) ? 0xFF : report.bThumbLY;
@@ -362,16 +349,15 @@ int main(int argc, char **argv)
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)
 					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_SOUTHEAST);
 			}
-		} else
-		
+		}
 		//Mouse and keyboard mode
-		if (EmulationMode == KBMode) {
+		else if (EmulationMode == KBMode) {
+			
+			PSNowWindow = FindWindow(NULL, WindowTitle.c_str());
+			bool PSNowFound = (PSNowWindow != 0) && (IsWindowVisible(PSNowWindow)) && (PSNowWindow == GetForegroundWindow());
 
-			//PSNowWindow = FindWindow(NULL, "PlayStation™Now");
-			//if ( (PSNowWindow != 0) && (IsWindowVisible(PSNowWindow)) && (PSNowWindow == GetForegroundWindow()) ) {
+			if (ActivateInAnyWindow || PSNowFound) {
 				GetMouseState();
-				report.bThumbRX = 0x80;
-				report.bThumbRY = 0x80;
 
 				if (InvertX)
 					DeltaMouseX = DeltaMouseX * -1;
@@ -387,16 +373,14 @@ int main(int argc, char **argv)
 					report.bThumbRY = 128 + round( Clamp(DeltaMouseY * mouseSensetiveY, -127, 0) );
 				if (DeltaMouseY > 0)
 					report.bThumbRY = 128 + round( Clamp(DeltaMouseY * mouseSensetiveY, 0, 127) );
-
-				report.bThumbLY = 0x80;
+			
 				if ((GetAsyncKeyState('W') & 0x8000) != 0) report.bThumbLY = 0;
 				if ((GetAsyncKeyState('S') & 0x8000) != 0) report.bThumbLY = 255;
-				report.bThumbLX = 0x80;
 				if ((GetAsyncKeyState('A') & 0x8000) != 0) report.bThumbLX = 0;
 				if ((GetAsyncKeyState('D') & 0x8000) != 0) report.bThumbLX = 255;
 
+				if (EmulateAnalogTriggers == false) {
 
-				if (EmulateAnalogTriggers == false){
 					if ((GetAsyncKeyState(KEY_ID_LEFT_TRIGGER) & 0x8000) != 0)
 						report.bTriggerL = 255;
 					if ((GetAsyncKeyState(KEY_ID_RIGHT_TRIGGER) & 0x8000) != 0)
@@ -427,14 +411,12 @@ int main(int argc, char **argv)
 					}
 
 					report.bTriggerR = Clamp(round(RightTriggerValue), 0, 255);
-
 				}
 
-				//Strange specific of DualShock
-				if (report.bTriggerL > 0)
-					report.wButtons |= DS4_BUTTON_TRIGGER_LEFT;
-				if (report.bTriggerR > 0)
-					report.wButtons |= DS4_BUTTON_TRIGGER_RIGHT;
+				if (report.bTriggerL > 0) //Strange specific of DualShock
+					report.wButtons |= DS4_BUTTON_TRIGGER_LEFT; 
+				if (report.bTriggerR > 0) //Strange specific of DualShock
+					report.wButtons |= DS4_BUTTON_TRIGGER_RIGHT; 
 
 				if ((GetAsyncKeyState(KEY_ID_OPTIONS) & 0x8000) != 0)
 					report.wButtons |= DS4_BUTTON_OPTIONS;
@@ -472,16 +454,21 @@ int main(int argc, char **argv)
 					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_WEST);
 				if ((GetAsyncKeyState(KEY_ID_DPAD_RIGHT) & 0x8000) != 0)
 					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_EAST);
-			//}
+			}
 		}
 
 		ret = vigem_target_ds4_update(client, ds4, report);
 
-		//Don't over load the CPU with reading
-		Sleep(SleepTimeOut);
+		//Don't overload the CPU with reading
+		if (EmulationMode == XboxMode)
+			Sleep(SleepTimeOutXbox);
+		else
+			Sleep(SleepTimeOutKB);
 	}
 
 	vigem_target_remove(client, ds4);
 	vigem_target_free(ds4);
     vigem_free(client);
+	FreeLibrary(hDll);
+	hDll = nullptr;
 }
