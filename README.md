@@ -24,6 +24,8 @@ Game | Action
 ------------ | -------------
 Uncharted 3: Drake’s Deception (2011) | The "Share" button (F12) duplicates pressing the left side of the touchpad.
 
+Touchpad swipes are not yet supported, you will not be able to play games like: Until Dawn. 
+
 ## Gyroscope
 Gyro emulation is not supported.
 
@@ -32,23 +34,23 @@ By default, the mouse and keyboard only work in "PlayStation Now". You can enabl
 
 DualShock 4 | Keyboard and mouse
 ------------ | -------------
-LEFT TRIGGER | Right mouse button
-RIGHT TRIGGER | Left mouse button
-LEFT SHOULDER | Control
-RIGHT SHOULDER | Alt
+L1 | Control
+R1 | Alt
+L2 | Right mouse button
+R2 | Left mouse button
+SHARE | F12
+TOUCHPAD (pressing) | Enter
+OPTIONS | Tab
 DPAD UP | 1
 DPAD LEFT | 2
 DPAD RIGHT | 3
 DPAD DOWN | 4
-LEFT THUMB | Shift
-RIGHT THUMB | Middle mouse button
 TRIANGLE | Q
 SQUARE | E
 CIRCLE | R
 CROSS | Space
-TOUCHPAD | Enter
-OPTIONS | Tab
-SHARE | F12
+L3 (pressing the stick) | Shift
+R3 (pressing the stick) | Middle mouse button
 
 Сan replace button bindings in the "Config.ini" configuration file. Button codes can be found [here](https://github.com/r57zone/Half-Life-Alyx-novr/blob/master/BINDINGS.md). B
 
