@@ -107,6 +107,7 @@ VOID CALLBACK notification(
 	XINPUT_VIBRATION myVibration;
 	myVibration.wLeftMotorSpeed = LargeMotor * 257;
 	myVibration.wRightMotorSpeed = SmallMotor * 257;
+
 	MyXInputSetState(XboxUserIndex, &myVibration);
 
     m.unlock();
@@ -185,16 +186,28 @@ int main(int argc, char **argv)
 	int KEY_ID_TOUCHPAD = IniFile.ReadInteger("Keys", "TOUCHPAD", VK_RETURN);
 	int KEY_ID_OPTIONS = IniFile.ReadInteger("Keys", "OPTIONS", VK_TAB);
 	int KEY_ID_SHARE = IniFile.ReadInteger("Keys", "SHARE", VK_F12);
+	
+	int KEY_ID_TOUCHPAD_SWIPE_UP = IniFile.ReadInteger("Keys", "TOUCHPAD_SWIPE_UP", '7');
+	int KEY_ID_TOUCHPAD_SWIPE_DOWN = IniFile.ReadInteger("Keys", "TOUCHPAD_SWIPE_DOWN", '8');
+	int KEY_ID_TOUCHPAD_SWIPE_LEFT = IniFile.ReadInteger("Keys", "TOUCHPAD_SWIPE_LEFT", '9');
+	int KEY_ID_TOUCHPAD_SWIPE_RIGHT = IniFile.ReadInteger("Keys", "TOUCHPAD_SWIPE_RIGHT", '0');
+
+	int KEY_ID_TOUCHPAD_UP = IniFile.ReadInteger("Keys", "TOUCHPAD_UP", 'U');
+	int KEY_ID_TOUCHPAD_DOWN = IniFile.ReadInteger("Keys", "TOUCHPAD_DOWN", 'N');
+	int KEY_ID_TOUCHPAD_LEFT = IniFile.ReadInteger("Keys", "TOUCHPAD_LEFT", 'H');
+	int KEY_ID_TOUCHPAD_RIGHT = IniFile.ReadInteger("Keys", "TOUCHPAD_RIGHT", 'K');
+	int KEY_ID_TOUCHPAD_CENTER = IniFile.ReadInteger("Keys", "TOUCHPAD_CENTER", 'J');
 
     const auto client = vigem_alloc();
     auto ret = vigem_connect(client);
 	const auto ds4 = vigem_target_ds4_alloc();
 	ret = vigem_target_add(client, ds4);
 	ret = vigem_target_ds4_register_notification(client, ds4, &notification, nullptr);
-	DS4_REPORT report;
-	DS4_REPORT_INIT(&report);
+	DS4_REPORT_EX report;
+	bool TouchpadSwipeUp = false, TouchpadSwipeDown = false;
+	bool TouchpadSwipeLeft = false, TouchpadSwipeRight = false;
 
-	printf("Press \"~\" key to exit\r\n");
+	printf("Press exit key to exit, by default it is \"~\"\r\n");
 
 	// Load library and scan Xbox gamepads
 	hDll = LoadLibrary("xinput1_3.dll"); // x360ce support
@@ -227,7 +240,17 @@ int main(int argc, char **argv)
 
 	while (!(GetAsyncKeyState(KEY_ID_EXIT) & 0x8000)) // "~" by default
 	{
-		DS4_REPORT_INIT(&report);
+		DS4_REPORT_INIT_EX(&report);
+
+		uint16_t TouchX = 0;
+		uint16_t TouchY = 0;
+
+		report.bTouchPacketsN = 0;
+		report.sCurrentTouch = { 0 };
+		report.sPreviousTouch[0] = { 0 };
+		report.sPreviousTouch[1] = { 0 };
+		report.sCurrentTouch.bIsUpTrackingNum1 = 0x80;
+		report.sCurrentTouch.bIsUpTrackingNum2 = 0x80;
 
 		// Xbox mode
 		if (EmulationMode == XboxMode) {
@@ -255,6 +278,14 @@ int main(int argc, char **argv)
 					report.bThumbRY = (-(-myPState.Gamepad.sThumbRY + ((USHRT_MAX / 2) + 1)) / 257);
 				
 				report.bThumbRY = (report.bThumbRY == 0) ? 0xFF : report.bThumbRY;
+
+				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_START) {
+					myPState.Gamepad.wButtons &= XINPUT_GAMEPAD_BACK; myPState.Gamepad.wButtons &= XINPUT_GAMEPAD_START;
+					if (SwapShareTouchPad)
+						report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD;
+					else
+						report.wButtons |= DS4_BUTTON_SHARE;
+				}
 
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_START)
 					report.wButtons |= DS4_BUTTON_OPTIONS;
@@ -314,22 +345,37 @@ int main(int argc, char **argv)
 					report.wButtons |= DS4_BUTTON_TRIGGER_RIGHT;
 
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)
-					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_NORTH);
+					DS4_SET_DPAD_EX(&report, DS4_BUTTON_DPAD_NORTH);
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)
-					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_SOUTH);
+					DS4_SET_DPAD_EX(&report, DS4_BUTTON_DPAD_SOUTH);
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)
-					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_WEST);
+					DS4_SET_DPAD_EX(&report, DS4_BUTTON_DPAD_WEST);
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)
-					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_EAST);
+					DS4_SET_DPAD_EX(&report, DS4_BUTTON_DPAD_EAST);
 
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)
-					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_NORTHEAST);
+					DS4_SET_DPAD_EX(&report, DS4_BUTTON_DPAD_NORTHEAST);
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)
-					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_SOUTHWEST);
+					DS4_SET_DPAD_EX(&report, DS4_BUTTON_DPAD_SOUTHWEST);
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)
-					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_NORTHWEST);
+					DS4_SET_DPAD_EX(&report, DS4_BUTTON_DPAD_NORTHWEST);
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)
-					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_SOUTHEAST);
+					DS4_SET_DPAD_EX(&report, DS4_BUTTON_DPAD_SOUTHEAST);
+
+				// Touchpad swipes
+				if (report.bSpecial & DS4_SPECIAL_BUTTON_TOUCHPAD) {
+					TouchX = 960; TouchY = 471;
+					if (report.bThumbRX > 127)
+						TouchX = 320 + (report.bThumbRX - 127) * 10;
+					if (report.bThumbRX < 127)
+						TouchX = 1600 - (-report.bThumbRX + 127) * 10;
+					if (report.bThumbRY > 129)
+						TouchY = round(100 + (report.bThumbRY - 129) * 5.8);
+					if (report.bThumbRY < 129)
+						TouchY = round(743 - (-report.bThumbRY + 129) * 5.8);
+					report.bThumbRX = 127;
+					report.bThumbRY = 129;
+				}
 			}
 		}
 		// Mouse and keyboard mode
@@ -394,7 +440,6 @@ int main(int argc, char **argv)
 
 					report.bTriggerR = Clamp(round(RightTriggerValue), 0, 255);
 				}
-
 				
 				if (report.bTriggerL > 0) // Specific of DualShock 
 					report.wButtons |= DS4_BUTTON_TRIGGER_LEFT; 
@@ -430,19 +475,78 @@ int main(int argc, char **argv)
 					report.wButtons |= DS4_BUTTON_SHOULDER_RIGHT;
 
 				if ((GetAsyncKeyState(KEY_ID_DPAD_UP) & 0x8000) != 0)
-					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_NORTH);
+					DS4_SET_DPAD_EX(&report, DS4_BUTTON_DPAD_NORTH);
 				if ((GetAsyncKeyState(KEY_ID_DPAD_DOWN) & 0x8000) != 0)
-					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_SOUTH);
+					DS4_SET_DPAD_EX(&report, DS4_BUTTON_DPAD_SOUTH);
 				if ((GetAsyncKeyState(KEY_ID_DPAD_LEFT) & 0x8000) != 0)
-					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_WEST);
+					DS4_SET_DPAD_EX(&report, DS4_BUTTON_DPAD_WEST);
 				if ((GetAsyncKeyState(KEY_ID_DPAD_RIGHT) & 0x8000) != 0)
-					DS4_SET_DPAD(&report, DS4_BUTTON_DPAD_EAST);
+					DS4_SET_DPAD_EX(&report, DS4_BUTTON_DPAD_EAST);
+			
+				// Touchpad, left
+				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_LEFT) & 0x8000) != 0) {
+					TouchX = 320; TouchY = 471; }
+
+				// Center
+				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_CENTER) & 0x8000) != 0) {
+					TouchX = 960; TouchY = 471; }
+
+				// Right
+				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_RIGHT) & 0x8000) != 0) {
+					TouchX = 1600; TouchY = 471; }
+
+				// Center up
+				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_UP) & 0x8000) != 0) {
+					if (TouchX == 0) TouchX = 960; TouchY = 157; }
+
+				// Center down
+				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_DOWN) & 0x8000) != 0) {
+					if (TouchX == 0) TouchX = 960; TouchY = 785; }
+
+				// Touchpad swipes, last
+				if (TouchpadSwipeUp) { TouchpadSwipeUp = false; TouchX = 960; TouchY = 100; }
+				if (TouchpadSwipeDown) { TouchpadSwipeDown = false; TouchX = 960; TouchY = 843; }
+				if (TouchpadSwipeLeft) { TouchpadSwipeLeft = false; TouchX = 320; TouchY = 471; }
+				if (TouchpadSwipeRight) { TouchpadSwipeRight = false; TouchX = 1600; TouchY = 471; }
+
+				// Swipe up
+				if (TouchpadSwipeUp == false && (GetAsyncKeyState(KEY_ID_TOUCHPAD_SWIPE_UP) & 0x8000) != 0) {
+					TouchX = 960; TouchY = 843;
+					TouchpadSwipeUp = true;
+				}
+
+				// Swipe down
+				if (TouchpadSwipeDown == false && (GetAsyncKeyState(KEY_ID_TOUCHPAD_SWIPE_DOWN) & 0x8000) != 0) {
+					TouchX = 960; TouchY = 100;
+					TouchpadSwipeDown = true;
+				}
+
+				// Swipe left
+				if (TouchpadSwipeLeft == false && (GetAsyncKeyState(KEY_ID_TOUCHPAD_SWIPE_LEFT) & 0x8000) != 0) {
+					TouchX = 1600; TouchY = 471;
+					TouchpadSwipeLeft = true;}
+				
+				// Swipe right	
+				if (TouchpadSwipeRight == false && (GetAsyncKeyState(KEY_ID_TOUCHPAD_SWIPE_RIGHT) & 0x8000) != 0) {
+					TouchX = 320; TouchY = 471;
+					TouchpadSwipeRight = true;
+				}
 			}
 		}
 
-		ret = vigem_target_ds4_update(client, ds4, report);
+		// Probably the wrong way, but it works, temporary workaround / Вероятно неверный путь, но он работает, подойдет как временное решение
+		if (TouchX != 0 || TouchY != 0) { 
+			report.bTouchPacketsN = 1;
+			report.sCurrentTouch.bIsUpTrackingNum1 = 1; // TouchIndex++ ???
 
-		//Don't overload the CPU with reading
+			report.sCurrentTouch.bTouchData1[0] = TouchX & 0xFF;
+			report.sCurrentTouch.bTouchData1[1] = ((TouchX >> 8) & 0x0F) | ((TouchY & 0x0F) << 4);
+			report.sCurrentTouch.bTouchData1[2] = (TouchY >> 4) & 0xFF;
+		}
+
+		ret = vigem_target_ds4_update_ex(client, ds4, report);
+
+		// Don't overload the CPU with reading
 		if (EmulationMode == XboxMode)
 			Sleep(SleepTimeOutXbox);
 		else

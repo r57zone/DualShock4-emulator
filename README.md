@@ -13,7 +13,7 @@ Simple application to emulate the Sony DualShock 4 gamepad using an Xbox control
 ## Xbox controller
 The "Back" button on the Xbox controller emulating pressing the touchpad on a Sony DualShock 4.
 
-The "Share" button is assigned to the "F12" key.
+The "Share" button is tied to the simultaneous pressing of the "Back" and "Start" buttons or to the "F12" key. 
 
 
 
@@ -24,7 +24,11 @@ Game | Action
 ------------ | -------------
 Uncharted 3: Drake’s Deception (2011) | The "Share" button (F12) duplicates pressing the left side of the touchpad.
 
-Touchpad swipes are not yet supported, you will not be able to play games like: Until Dawn. 
+On the Xbox gamepad, you need to press the "Back" button (touchpad) and move the stick to the sides for swipes.
+
+
+
+You can use swipes for the keyboard, the button codes are described below. 
 
 ## Gyroscope
 Gyro emulation is not supported.
@@ -51,6 +55,8 @@ CIRCLE | R
 CROSS | Space
 L3 (pressing the stick) | Shift
 R3 (pressing the stick) | Middle mouse button
+Touchpad swipe up, down, left, right | 7, 8, 9, 0
+Touchpad up, center, left, right, down  | U, J, H, K, N
 
 Сan replace button bindings in the "Config.ini" configuration file. Button codes can be found [here](https://github.com/r57zone/Half-Life-Alyx-novr/blob/master/BINDINGS.md). B
 
