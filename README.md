@@ -58,7 +58,7 @@ R3 (pressing the stick) | Middle mouse button
 Touchpad swipe up, down, left, right | 7, 8, 9, 0
 Touchpad up, center, left, right, down  | U, J, H, K, N
 
-Сan replace button bindings in the "Config.ini" configuration file. Button codes can be found [here](https://github.com/r57zone/Half-Life-Alyx-novr/blob/master/BINDINGS.md). B
+Сan replace button bindings in the "Config.ini" configuration file. Button codes can be found [here](https://github.com/r57zone/Half-Life-Alyx-novr/blob/master/BINDINGS.md).
 
 
 
