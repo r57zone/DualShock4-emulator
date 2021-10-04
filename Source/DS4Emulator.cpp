@@ -140,6 +140,24 @@ float Clamp(float Value, float Min, float Max)
 	return Value;
 }
 
+SHORT DeadZoneXboxAxis(SHORT StickAxis, float Percent)
+{
+	float DeadZoneValue = Percent * 327.67;
+	if (StickAxis > 0)
+	{
+		StickAxis -= round(DeadZoneValue);
+		if (StickAxis < 0)
+			StickAxis = 0;
+	}
+	else if (StickAxis < 0) {
+		StickAxis += round(DeadZoneValue);
+		if (StickAxis > 0)
+			StickAxis = 0;
+	}
+
+	return round(StickAxis + StickAxis * Percent * 0.01);
+}
+
 int main(int argc, char **argv)
 {
 	SetConsoleTitle("DS4Emulator");
@@ -159,6 +177,11 @@ int main(int argc, char **argv)
 	bool SwapTriggersShoulders = IniFile.ReadBoolean("Xbox", "SwapTriggersShoulders", false);
 	bool SwapShareTouchPad = IniFile.ReadBoolean("Xbox", "SwapShareTouchPad", false);
 
+	float DeadZoneLeftStickX = IniFile.ReadFloat("Xbox", "DeadZoneLeftStickX", 0);
+	float DeadZoneLeftStickY = IniFile.ReadFloat("Xbox", "DeadZoneLeftStickY", 0);
+	float DeadZoneRightStickX = IniFile.ReadFloat("Xbox", "DeadZoneRightStickX", 0);
+	float DeadZoneRightStickY = IniFile.ReadFloat("Xbox", "DeadZoneRightStickY", 0);
+
 	int SleepTimeOutKB = IniFile.ReadInteger("KeyboardMouse", "SleepTimeOut", 2);
 	std::string WindowTitle = IniFile.ReadString("KeyboardMouse", "ActivateOnlyInWindow", "PlayStation™Now");
 	bool ActivateInAnyWindow = IniFile.ReadBoolean("KeyboardMouse", "ActivateInAnyWindow", false);
@@ -169,6 +192,10 @@ int main(int argc, char **argv)
 	mouseSensetiveX = IniFile.ReadFloat("KeyboardMouse", "SensX", 15);
 	mouseSensetiveY = IniFile.ReadFloat("KeyboardMouse", "SensY", 15);
 
+	int KEY_ID_LEFT_STICK_UP = IniFile.ReadInteger("Keys", "LS_UP", 'W');
+	int KEY_ID_LEFT_STICK_LEFT = IniFile.ReadInteger("Keys", "LS_LEFT", 'A');
+	int KEY_ID_LEFT_STICK_RIGHT = IniFile.ReadInteger("Keys", "LS_RIGHT", 'D');
+	int KEY_ID_LEFT_STICK_DOWN = IniFile.ReadInteger("Keys", "LS_DOWN", 'S');
 	int KEY_ID_LEFT_TRIGGER = IniFile.ReadInteger("Keys", "L2", VK_RBUTTON);
 	int KEY_ID_RIGHT_TRIGGER = IniFile.ReadInteger("Keys", "R2", VK_LBUTTON);
 	int KEY_ID_LEFT_SHOULDER = IniFile.ReadInteger("Keys", "L1", VK_CONTROL);
@@ -207,7 +234,7 @@ int main(int argc, char **argv)
 	bool TouchpadSwipeUp = false, TouchpadSwipeDown = false;
 	bool TouchpadSwipeLeft = false, TouchpadSwipeRight = false;
 
-	printf("Press exit key to exit, by default it is \"~\"\r\n");
+	printf("\r\n Press exit key to exit, by default it is \"~\" (can be changed in config file).\r\n");
 
 	// Load library and scan Xbox gamepads
 	hDll = LoadLibrary("xinput1_3.dll"); // x360ce support
@@ -233,10 +260,23 @@ int main(int argc, char **argv)
 	}
 
 	// Title
-	if (EmulationMode == XboxMode)
+	if (EmulationMode == XboxMode) {
 		SetConsoleTitle("DS4Emulator: Xbox controller mode");
-	else
+		printf(" Xbox controller mode.\r\n");
+
+	}
+	else {
 		SetConsoleTitle("DS4Emulator: keyboard and mouse mode");
+		printf(" Keyboard and mouse mode.\r\n");
+	}
+
+	DS4_TOUCH BuffPreviousTouch[2] = { 0, 0 };
+	BuffPreviousTouch[0].bIsUpTrackingNum1 = 0x80;
+	BuffPreviousTouch[1].bIsUpTrackingNum1 = 0x80;
+	unsigned char TouchIndex = 0;
+	bool AllowIncTouchIndex;
+	bool DeadZoneMode = false;
+
 
 	while (!(GetAsyncKeyState(KEY_ID_EXIT) & 0x8000)) // "~" by default
 	{
@@ -259,6 +299,29 @@ int main(int argc, char **argv)
 				myStatus = MyXInputGetState(XboxUserIndex, &myPState);
 			
 			if (myStatus == ERROR_SUCCESS) {
+
+				// Dead zones
+				if ((GetAsyncKeyState(VK_F10) & 0x8000) != 0 && ((GetAsyncKeyState(VK_MENU) & 0x8000) != 0))
+				{
+					DeadZoneMode = !DeadZoneMode;
+					if (DeadZoneMode == false) {
+						system("cls");
+						printf("\r\n Press exit key to exit, by default it is \"~\" (can be changed in config file).\r\n");
+						printf(" Xbox controller mode.\r\n");
+					}
+				}
+
+				if (DeadZoneMode) {
+					printf(" Left Stick X=%6.2f, ", abs(myPState.Gamepad.sThumbLX / (32767 / 100.0f)));
+					printf("Y=%6.2f\t", abs(myPState.Gamepad.sThumbLY / (32767 / 100.0f)));
+					printf("Right Stick X=%6.2f ", abs(myPState.Gamepad.sThumbRX / (32767 / 100.0f)));
+					printf("Y=%6.2f\n", abs(myPState.Gamepad.sThumbRY / (32767 / 100.0f)));
+				}
+
+				myPState.Gamepad.sThumbLX = DeadZoneXboxAxis(myPState.Gamepad.sThumbLX, DeadZoneLeftStickX);
+				myPState.Gamepad.sThumbLY = DeadZoneXboxAxis(myPState.Gamepad.sThumbLY, DeadZoneLeftStickY);
+				myPState.Gamepad.sThumbRX = DeadZoneXboxAxis(myPState.Gamepad.sThumbRX, DeadZoneRightStickX);
+				myPState.Gamepad.sThumbRY = DeadZoneXboxAxis(myPState.Gamepad.sThumbRY, DeadZoneRightStickY);
 
 				// Convert axis from - https://github.com/sam0x17/XJoy/blob/236b5539cc15ea1c83e1e5f0260937f69a78866d/Include/ViGEmUtil.h
 				report.bThumbLX = ((myPState.Gamepad.sThumbLX + ((USHRT_MAX / 2) + 1)) / 257);
@@ -394,7 +457,7 @@ int main(int argc, char **argv)
 
 				// Are there better options? / Есть вариант лучше?
 				if (DeltaMouseX > 0)
-					report.bThumbRX = 128 + round( Clamp( DeltaMouseX * mouseSensetiveX, 0, 127) );
+					report.bThumbRX = 128 + round( Clamp(DeltaMouseX * mouseSensetiveX, 0, 127) );
 				if (DeltaMouseX < 0)
 					report.bThumbRX = 128 + round( Clamp(DeltaMouseX * mouseSensetiveX, -127, 0) );
 				if (DeltaMouseY < 0)
@@ -402,10 +465,10 @@ int main(int argc, char **argv)
 				if (DeltaMouseY > 0)
 					report.bThumbRY = 128 + round( Clamp(DeltaMouseY * mouseSensetiveY, 0, 127) );
 			
-				if ((GetAsyncKeyState('W') & 0x8000) != 0) report.bThumbLY = 0;
-				if ((GetAsyncKeyState('S') & 0x8000) != 0) report.bThumbLY = 255;
-				if ((GetAsyncKeyState('A') & 0x8000) != 0) report.bThumbLX = 0;
-				if ((GetAsyncKeyState('D') & 0x8000) != 0) report.bThumbLX = 255;
+				if ((GetAsyncKeyState(KEY_ID_LEFT_STICK_UP) & 0x8000) != 0) report.bThumbLY = 0;
+				if ((GetAsyncKeyState(KEY_ID_LEFT_STICK_DOWN) & 0x8000) != 0) report.bThumbLY = 255;
+				if ((GetAsyncKeyState(KEY_ID_LEFT_STICK_LEFT) & 0x8000) != 0) report.bThumbLX = 0;
+				if ((GetAsyncKeyState(KEY_ID_LEFT_STICK_RIGHT) & 0x8000) != 0) report.bThumbLX = 255;
 
 				if (EmulateAnalogTriggers == false) {
 
@@ -421,7 +484,6 @@ int main(int argc, char **argv)
 							LeftTriggerValue += StepTriggerValue;
 					}
 					else {
-						// LeftTriggerValue = 0;
 						if (LeftTriggerValue > 0)
 							LeftTriggerValue -= StepTriggerValue;
 					}
@@ -433,7 +495,6 @@ int main(int argc, char **argv)
 							RightTriggerValue += StepTriggerValue;
 					}
 					else {
-						// RightTriggerValue = 0;
 						if (RightTriggerValue > 0)
 							RightTriggerValue -= StepTriggerValue;
 					}
@@ -509,40 +570,59 @@ int main(int argc, char **argv)
 				if (TouchpadSwipeLeft) { TouchpadSwipeLeft = false; TouchX = 320; TouchY = 471; }
 				if (TouchpadSwipeRight) { TouchpadSwipeRight = false; TouchX = 1600; TouchY = 471; }
 
-				// Swipe up
-				if (TouchpadSwipeUp == false && (GetAsyncKeyState(KEY_ID_TOUCHPAD_SWIPE_UP) & 0x8000) != 0) {
-					TouchX = 960; TouchY = 843;
-					TouchpadSwipeUp = true;
-				}
-
-				// Swipe down
-				if (TouchpadSwipeDown == false && (GetAsyncKeyState(KEY_ID_TOUCHPAD_SWIPE_DOWN) & 0x8000) != 0) {
-					TouchX = 960; TouchY = 100;
-					TouchpadSwipeDown = true;
-				}
-
-				// Swipe left
-				if (TouchpadSwipeLeft == false && (GetAsyncKeyState(KEY_ID_TOUCHPAD_SWIPE_LEFT) & 0x8000) != 0) {
-					TouchX = 1600; TouchY = 471;
-					TouchpadSwipeLeft = true;}
-				
-				// Swipe right	
-				if (TouchpadSwipeRight == false && (GetAsyncKeyState(KEY_ID_TOUCHPAD_SWIPE_RIGHT) & 0x8000) != 0) {
-					TouchX = 320; TouchY = 471;
-					TouchpadSwipeRight = true;
-				}
+				// Swipes
+				if (TouchpadSwipeUp == false && (GetAsyncKeyState(KEY_ID_TOUCHPAD_SWIPE_UP) & 0x8000) != 0) { TouchX = 960; TouchY = 843; TouchpadSwipeUp = true; }
+				if (TouchpadSwipeDown == false && (GetAsyncKeyState(KEY_ID_TOUCHPAD_SWIPE_DOWN) & 0x8000) != 0) { TouchX = 960; TouchY = 100; TouchpadSwipeDown = true; }
+				if (TouchpadSwipeLeft == false && (GetAsyncKeyState(KEY_ID_TOUCHPAD_SWIPE_LEFT) & 0x8000) != 0) { TouchX = 1600; TouchY = 471; TouchpadSwipeLeft = true; }
+				if (TouchpadSwipeRight == false && (GetAsyncKeyState(KEY_ID_TOUCHPAD_SWIPE_RIGHT) & 0x8000) != 0) { TouchX = 320; TouchY = 471; TouchpadSwipeRight = true; }
 			}
 		}
 
+		if (BuffPreviousTouch[1].bIsUpTrackingNum1 == 0) {
+			//printf("2: prev 2 touched\r\n");
+			report.sPreviousTouch[1] = BuffPreviousTouch[1];
+			BuffPreviousTouch[1] = { 0 };
+			BuffPreviousTouch[1].bIsUpTrackingNum1 = 0x80;
+		}
+
+		if (BuffPreviousTouch[0].bIsUpTrackingNum1 == 0) {
+			//printf("1: prev 1 touched\r\n");
+			report.sPreviousTouch[0] = BuffPreviousTouch[0];
+			BuffPreviousTouch[1] = BuffPreviousTouch[0];
+			BuffPreviousTouch[0] = { 0 };
+			BuffPreviousTouch[0].bIsUpTrackingNum1 = 0x80;
+		}
+
 		// Probably the wrong way, but it works, temporary workaround / Вероятно неверный путь, но он работает, подойдет как временное решение
+		report.sCurrentTouch.bIsUpTrackingNum1 = 0x80;
 		if (TouchX != 0 || TouchY != 0) { 
 			report.bTouchPacketsN = 1;
-			report.sCurrentTouch.bIsUpTrackingNum1 = 1; // TouchIndex++ ???
+			
+			if (AllowIncTouchIndex) {
+				if (TouchIndex < 255) // Is this the right way? / Верный ли это путь?
+					TouchIndex++;
+				else
+					TouchIndex = 0;
+
+				AllowIncTouchIndex = false;
+			}
+			report.sCurrentTouch.bIsUpTrackingNum1 = 0;
+
+			//printf(" %d: touched\r\n", TouchIndex);
 
 			report.sCurrentTouch.bTouchData1[0] = TouchX & 0xFF;
 			report.sCurrentTouch.bTouchData1[1] = ((TouchX >> 8) & 0x0F) | ((TouchY & 0x0F) << 4);
 			report.sCurrentTouch.bTouchData1[2] = (TouchY >> 4) & 0xFF;
+
+			BuffPreviousTouch[0] = report.sCurrentTouch;
 		}
+
+		if (TouchX == 0 && TouchY == 0)
+			AllowIncTouchIndex = true;
+
+		report.sCurrentTouch.bPacketCounter = TouchIndex;
+
+		// if ((GetAsyncKeyState(VK_NUMPAD0) & 0x8000) != 0) system("cls");
 
 		ret = vigem_target_ds4_update_ex(client, ds4, report);
 

@@ -19,6 +19,10 @@ The "Share" button is tied to the simultaneous pressing of the "Back" and "Start
 
 If necessary, you can swap bumpers and triggers, as well as the "share" button and pressing the touchpad, to do this change the `SwapTriggersShoulders` or `SwapShareTouchPad` parameter to `1` in the "Config.ini" configuration file.
 
+
+
+Changing the dead zone of sticks for drifting sticks is supported. Press "ALT" + "F10" to get the values, paste them into the "Config.ini" configuration file, into the `Deadzone` parameters and restart the program.
+
 ## Touchpad
 Game | Action
 ------------ | -------------
