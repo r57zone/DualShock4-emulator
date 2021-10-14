@@ -3,6 +3,9 @@
 #include <mutex>
 #include "IniReader\IniReader.h"
 
+//#include <winsock2.h>
+#pragma comment (lib, "WSock32.Lib")
+
 // XInput headers
 #define XINPUT_GAMEPAD_DPAD_UP          0x0001
 #define XINPUT_GAMEPAD_DPAD_DOWN        0x0002
@@ -94,6 +97,43 @@ bool firstCP = true;
 int DeltaMouseX, DeltaMouseY;
 HWND PSNowWindow = 0;
 
+//WinSock
+SOCKET socketS;
+int bytes_read;
+struct sockaddr_in from;
+int fromlen;
+bool SocketActivated = false;
+std::thread *pSocketThread = NULL;
+unsigned char freePieIMU[50];
+float AccelX = 0, AccelY = 0, AccelZ = 0, GyroX = 0, GyroY = 0, GyroZ = 0;
+
+float bytesToFloat(unsigned char b3, unsigned char b2, unsigned char b1, unsigned char b0)
+{
+	unsigned char byte_array[] = { b3, b2, b1, b0 };
+	float result;
+	std::copy(reinterpret_cast<const char*>(&byte_array[0]),
+		reinterpret_cast<const char*>(&byte_array[4]),
+		reinterpret_cast<char*>(&result));
+	return result;
+}
+
+void MotionReceiver()
+{
+	while (SocketActivated) {
+		memset(&freePieIMU, 0, sizeof(freePieIMU));
+		bytes_read = recvfrom(socketS, (char*)(&freePieIMU), sizeof(freePieIMU), 0, (sockaddr*)&from, &fromlen);
+		if (bytes_read > 0) {
+			AccelX = bytesToFloat(freePieIMU[2], freePieIMU[3], freePieIMU[4], freePieIMU[5]);
+			AccelY = bytesToFloat(freePieIMU[6], freePieIMU[7], freePieIMU[8], freePieIMU[9]);
+			AccelZ = bytesToFloat(freePieIMU[10], freePieIMU[11], freePieIMU[12], freePieIMU[13]);
+
+			GyroX = bytesToFloat(freePieIMU[14], freePieIMU[15], freePieIMU[16], freePieIMU[17]);
+			GyroY = bytesToFloat(freePieIMU[18], freePieIMU[19], freePieIMU[20], freePieIMU[21]);
+			GyroZ = bytesToFloat(freePieIMU[22], freePieIMU[23], freePieIMU[24], freePieIMU[25]);
+		}
+	}
+}
+
 VOID CALLBACK notification(
 	PVIGEM_CLIENT Client,
 	PVIGEM_TARGET Target,
@@ -160,18 +200,63 @@ SHORT DeadZoneXboxAxis(SHORT StickAxis, float Percent)
 
 int main(int argc, char **argv)
 {
-	SetConsoleTitle("DS4Emulator");
-	
+	SetConsoleTitle("DS4Emulator 1.7");
+
+	CIniReader IniFile("Config.ini"); // Config
+
+	if (IniFile.ReadBoolean("Motion", "Activate", true)) {
+		WSADATA wsaData;
+		int iResult;
+		iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+		if (iResult == 0) {
+			struct sockaddr_in local;
+			fromlen = sizeof(from);
+			local.sin_family = AF_INET;
+			local.sin_port = htons(IniFile.ReadInteger("Motion", "Port", 5555));
+			local.sin_addr.s_addr = INADDR_ANY;
+
+			socketS = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
+			u_long nonblocking_enabled = true;
+			ioctlsocket(socketS, FIONBIO, &nonblocking_enabled);
+
+			if (socketS != INVALID_SOCKET) {
+				iResult = bind(socketS, (sockaddr*)&local, sizeof(local));
+				if (iResult != SOCKET_ERROR) {
+					SocketActivated = true;
+					pSocketThread = new std::thread(MotionReceiver);
+				} else {
+					WSACleanup();
+					SocketActivated = false;
+				}
+			} else {
+				WSACleanup();
+				SocketActivated = false;
+			}
+		}
+		else
+		{
+			WSACleanup();
+			SocketActivated = false;
+		}
+	}
+
+	#define OCR_NORMAL 32512
+	HCURSOR CurCursor = CopyCursor(LoadCursor(0, IDC_ARROW));
+	HCURSOR CursorEmpty = LoadCursorFromFile("EmptyCursor.cur");
+	bool CursorHidden = false;
+	if (IniFile.ReadBoolean("KeyboardMouse", "HideCursorAfterStart", false)) { SetSystemCursor(CursorEmpty, OCR_NORMAL);  CursorHidden = true; }
+
 	#define XboxMode 1
 	#define KBMode 0
 	int EmulationMode = KBMode;
 
-	// Config
-	CIniReader IniFile("Config.ini");
-	int KEY_ID_EXIT = IniFile.ReadInteger("Main", "ExitBtn", 192); // "~" by default
+	// Config parameters
+	int KEY_ID_EXIT = IniFile.ReadInteger("Main", "ExitBtn", 192); // "~" by default for RU, US and not for UK
+	int KEY_ID_STOP_CENTERING = IniFile.ReadInteger("KeyboardMouse", "StopÑenteringKey", 'C');
 
-	bool InvertX = IniFile.ReadBoolean("DS4", "InvertX", false);
-	bool InvertY = IniFile.ReadBoolean("DS4", "InvertY", false);
+	bool InvertX = IniFile.ReadBoolean("Main", "InvertX", false);
+	bool InvertY = IniFile.ReadBoolean("Main", "InvertY", false);
 
 	int SleepTimeOutXbox = IniFile.ReadInteger("Xbox", "SleepTimeOut", 1);
 	bool SwapTriggersShoulders = IniFile.ReadBoolean("Xbox", "SwapTriggersShoulders", false);
@@ -192,10 +277,10 @@ int main(int argc, char **argv)
 	mouseSensetiveX = IniFile.ReadFloat("KeyboardMouse", "SensX", 15);
 	mouseSensetiveY = IniFile.ReadFloat("KeyboardMouse", "SensY", 15);
 
-	int KEY_ID_LEFT_STICK_UP = IniFile.ReadInteger("Keys", "LS_UP", 'W');
-	int KEY_ID_LEFT_STICK_LEFT = IniFile.ReadInteger("Keys", "LS_LEFT", 'A');
-	int KEY_ID_LEFT_STICK_RIGHT = IniFile.ReadInteger("Keys", "LS_RIGHT", 'D');
-	int KEY_ID_LEFT_STICK_DOWN = IniFile.ReadInteger("Keys", "LS_DOWN", 'S');
+	int KEY_ID_LEFT_STICK_UP = IniFile.ReadInteger("Keys", "LS_Up", 'W');
+	int KEY_ID_LEFT_STICK_LEFT = IniFile.ReadInteger("Keys", "LS_Left", 'A');
+	int KEY_ID_LEFT_STICK_RIGHT = IniFile.ReadInteger("Keys", "LS_Right", 'D');
+	int KEY_ID_LEFT_STICK_DOWN = IniFile.ReadInteger("Keys", "LS_Down", 'S');
 	int KEY_ID_LEFT_TRIGGER = IniFile.ReadInteger("Keys", "L2", VK_RBUTTON);
 	int KEY_ID_RIGHT_TRIGGER = IniFile.ReadInteger("Keys", "R2", VK_LBUTTON);
 	int KEY_ID_LEFT_SHOULDER = IniFile.ReadInteger("Keys", "L1", VK_CONTROL);
@@ -213,6 +298,7 @@ int main(int argc, char **argv)
 	int KEY_ID_TOUCHPAD = IniFile.ReadInteger("Keys", "TOUCHPAD", VK_RETURN);
 	int KEY_ID_OPTIONS = IniFile.ReadInteger("Keys", "OPTIONS", VK_TAB);
 	int KEY_ID_SHARE = IniFile.ReadInteger("Keys", "SHARE", VK_F12);
+	int KEY_ID_SHAKING = IniFile.ReadInteger("Keys", "SHAKING", 'T');
 	
 	int KEY_ID_TOUCHPAD_SWIPE_UP = IniFile.ReadInteger("Keys", "TOUCHPAD_SWIPE_UP", '7');
 	int KEY_ID_TOUCHPAD_SWIPE_DOWN = IniFile.ReadInteger("Keys", "TOUCHPAD_SWIPE_DOWN", '8');
@@ -233,8 +319,7 @@ int main(int argc, char **argv)
 	DS4_REPORT_EX report;
 	bool TouchpadSwipeUp = false, TouchpadSwipeDown = false;
 	bool TouchpadSwipeLeft = false, TouchpadSwipeRight = false;
-
-	printf("\r\n Press exit key to exit, by default it is \"~\" (can be changed in config file).\r\n");
+	bool MotionShaking = false, MotionShakingSwap = false;
 
 	// Load library and scan Xbox gamepads
 	hDll = LoadLibrary("xinput1_3.dll"); // x360ce support
@@ -259,16 +344,13 @@ int main(int argc, char **argv)
 		m_HalfHeight = GetSystemMetrics(SM_CYSCREEN) / 2;
 	}
 
-	// Title
-	if (EmulationMode == XboxMode) {
-		SetConsoleTitle("DS4Emulator: Xbox controller mode");
-		printf(" Xbox controller mode.\r\n");
-
-	}
-	else {
-		SetConsoleTitle("DS4Emulator: keyboard and mouse mode");
-		printf(" Keyboard and mouse mode.\r\n");
-	}
+	// Write current mode
+	if (EmulationMode == XboxMode)
+		printf("\n Emulation with Xbox controller.\n");
+	else 
+		printf("\r\n Emulation with keyboard and mouse.\n");
+	printf(" Hold down \"C\" to for cursor movement.\n");
+	printf(" Press \"ALT\" + \"Escape\" or \"exit key\" to exit.\n");
 
 	DS4_TOUCH BuffPreviousTouch[2] = { 0, 0 };
 	BuffPreviousTouch[0].bIsUpTrackingNum1 = 0x80;
@@ -277,8 +359,7 @@ int main(int argc, char **argv)
 	bool AllowIncTouchIndex;
 	bool DeadZoneMode = false;
 
-
-	while (!(GetAsyncKeyState(KEY_ID_EXIT) & 0x8000)) // "~" by default
+	while (!((GetAsyncKeyState(KEY_ID_EXIT) & 0x8000) || ((GetAsyncKeyState(VK_LMENU) & 0x8000) && (GetAsyncKeyState(VK_ESCAPE) & 0x8000)) )) // "~" by default
 	{
 		DS4_REPORT_INIT_EX(&report);
 
@@ -306,8 +387,8 @@ int main(int argc, char **argv)
 					DeadZoneMode = !DeadZoneMode;
 					if (DeadZoneMode == false) {
 						system("cls");
-						printf("\r\n Press exit key to exit, by default it is \"~\" (can be changed in config file).\r\n");
-						printf(" Xbox controller mode.\r\n");
+						printf("\n Emulation with Xbox controller.\n");
+						printf(" Press \"ALT\" + \"Escape\" or \"exit key\" to exit.\n");
 					}
 				}
 
@@ -352,6 +433,12 @@ int main(int argc, char **argv)
 
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_START)
 					report.wButtons |= DS4_BUTTON_OPTIONS;
+
+				// Motion shaking
+				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
+					myPState.Gamepad.wButtons &= XINPUT_GAMEPAD_BACK; myPState.Gamepad.wButtons &= XINPUT_GAMEPAD_RIGHT_SHOULDER;
+					MotionShaking = true;
+				} else MotionShaking = false;
 
 				// Swap share and touchpad
 				if (SwapShareTouchPad == false) {
@@ -448,7 +535,7 @@ int main(int argc, char **argv)
 			bool PSNowFound = (PSNowWindow != 0) && (IsWindowVisible(PSNowWindow)) && (PSNowWindow == GetForegroundWindow());
 
 			if (ActivateInAnyWindow || PSNowFound) {
-				GetMouseState();
+				if ((GetAsyncKeyState(KEY_ID_STOP_CENTERING) & 0x8000) == 0) GetMouseState();
 
 				if (InvertX)
 					DeltaMouseX = DeltaMouseX * -1;
@@ -549,20 +636,16 @@ int main(int argc, char **argv)
 					TouchX = 320; TouchY = 471; }
 
 				// Center
-				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_CENTER) & 0x8000) != 0) {
-					TouchX = 960; TouchY = 471; }
+				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_CENTER) & 0x8000) != 0) { TouchX = 960; TouchY = 471; }
 
 				// Right
-				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_RIGHT) & 0x8000) != 0) {
-					TouchX = 1600; TouchY = 471; }
+				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_RIGHT) & 0x8000) != 0) { TouchX = 1600; TouchY = 471; }
 
 				// Center up
-				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_UP) & 0x8000) != 0) {
-					if (TouchX == 0) TouchX = 960; TouchY = 157; }
+				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_UP) & 0x8000) != 0) { if (TouchX == 0) TouchX = 960; TouchY = 157; }
 
 				// Center down
-				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_DOWN) & 0x8000) != 0) {
-					if (TouchX == 0) TouchX = 960; TouchY = 785; }
+				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_DOWN) & 0x8000) != 0) { if (TouchX == 0) TouchX = 960; TouchY = 785; }
 
 				// Touchpad swipes, last
 				if (TouchpadSwipeUp) { TouchpadSwipeUp = false; TouchX = 960; TouchY = 100; }
@@ -575,6 +658,9 @@ int main(int argc, char **argv)
 				if (TouchpadSwipeDown == false && (GetAsyncKeyState(KEY_ID_TOUCHPAD_SWIPE_DOWN) & 0x8000) != 0) { TouchX = 960; TouchY = 100; TouchpadSwipeDown = true; }
 				if (TouchpadSwipeLeft == false && (GetAsyncKeyState(KEY_ID_TOUCHPAD_SWIPE_LEFT) & 0x8000) != 0) { TouchX = 1600; TouchY = 471; TouchpadSwipeLeft = true; }
 				if (TouchpadSwipeRight == false && (GetAsyncKeyState(KEY_ID_TOUCHPAD_SWIPE_RIGHT) & 0x8000) != 0) { TouchX = 320; TouchY = 471; TouchpadSwipeRight = true; }
+
+				// Motion shaking
+				MotionShaking = (GetAsyncKeyState(KEY_ID_SHAKING) & 0x8000) != 0;
 			}
 		}
 
@@ -609,7 +695,6 @@ int main(int argc, char **argv)
 			report.sCurrentTouch.bIsUpTrackingNum1 = 0;
 
 			//printf(" %d: touched\r\n", TouchIndex);
-
 			report.sCurrentTouch.bTouchData1[0] = TouchX & 0xFF;
 			report.sCurrentTouch.bTouchData1[1] = ((TouchX >> 8) & 0x0F) | ((TouchY & 0x0F) << 4);
 			report.sCurrentTouch.bTouchData1[2] = (TouchY >> 4) & 0xFF;
@@ -622,6 +707,28 @@ int main(int argc, char **argv)
 
 		report.sCurrentTouch.bPacketCounter = TouchIndex;
 
+		report.wAccelX = round(Clamp(AccelX * 1638.35, -32767, 32767)) * 1; // freepie accel max 19.61, min -20, short -32,768 to 32,767
+		report.wAccelY = round(Clamp(AccelY * 1638.35, -32767, 32767)) * -1;
+		report.wAccelZ = round(Clamp(AccelZ * 1638.35, -32767, 32767)) * 1;
+
+		report.wGyroX = round(Clamp(GyroX * 2376.7, -32767, 32767)) * 1; // freepie max gyro 10, min -10.09
+		report.wGyroY = round(Clamp(GyroY * 2376.7, -32767, 32767)) * -1; //
+		report.wGyroZ = round(Clamp(GyroZ * 2376.7, -32767, 32767)) * 1;
+
+		//if ((GetAsyncKeyState(VK_NUMPAD1) & 0x8000) != 0) printf("%d\t%d\t%d\t%d\t%d\t%d\t\n", report.wAccelX, report.wAccelY, report.wAccelZ, report.wGyroX, report.wGyroY, report.wGyroZ);
+
+		// Motion shaking
+		if (MotionShaking) {
+			MotionShakingSwap = !MotionShakingSwap;
+			if (MotionShakingSwap) {
+				report.wAccelX = -6530;		report.wAccelY = 6950;		report.wAccelZ = -710;
+				report.wGyroX = 2300;		report.wGyroY = 5000;		report.wGyroZ = 10;
+			} else {
+				report.wAccelX = 6830;		report.wAccelY = 7910;		report.wAccelZ = 1360;
+				report.wGyroX = 2700;		report.wGyroY = -5000;		report.wGyroZ = 140;
+			}
+		}
+
 		// if ((GetAsyncKeyState(VK_NUMPAD0) & 0x8000) != 0) system("cls");
 
 		ret = vigem_target_ds4_update_ex(client, ds4, report);
@@ -633,9 +740,22 @@ int main(int argc, char **argv)
 			Sleep(SleepTimeOutKB);
 	}
 
+	if (CursorHidden) SetSystemCursor(CurCursor, OCR_NORMAL);
+
 	vigem_target_remove(client, ds4);
 	vigem_target_free(ds4);
     vigem_free(client);
 	FreeLibrary(hDll);
 	hDll = nullptr;
+
+	if (SocketActivated) {
+		SocketActivated = false;
+		if (pSocketThread) {
+			pSocketThread->join();
+			delete pSocketThread;
+			pSocketThread = nullptr;
+		}
+		closesocket(socketS);
+		WSACleanup();
+	}
 }
