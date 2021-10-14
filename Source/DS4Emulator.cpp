@@ -277,10 +277,10 @@ int main(int argc, char **argv)
 	mouseSensetiveX = IniFile.ReadFloat("KeyboardMouse", "SensX", 15);
 	mouseSensetiveY = IniFile.ReadFloat("KeyboardMouse", "SensY", 15);
 
-	int KEY_ID_LEFT_STICK_UP = IniFile.ReadInteger("Keys", "LS_Up", 'W');
-	int KEY_ID_LEFT_STICK_LEFT = IniFile.ReadInteger("Keys", "LS_Left", 'A');
-	int KEY_ID_LEFT_STICK_RIGHT = IniFile.ReadInteger("Keys", "LS_Right", 'D');
-	int KEY_ID_LEFT_STICK_DOWN = IniFile.ReadInteger("Keys", "LS_Down", 'S');
+	int KEY_ID_LEFT_STICK_UP = IniFile.ReadInteger("Keys", "LS_UP", 'W');
+	int KEY_ID_LEFT_STICK_LEFT = IniFile.ReadInteger("Keys", "LS_LEFT", 'A');
+	int KEY_ID_LEFT_STICK_RIGHT = IniFile.ReadInteger("Keys", "LS_RIGHT", 'D');
+	int KEY_ID_LEFT_STICK_DOWN = IniFile.ReadInteger("Keys", "LS_DOWN", 'S');
 	int KEY_ID_LEFT_TRIGGER = IniFile.ReadInteger("Keys", "L2", VK_RBUTTON);
 	int KEY_ID_RIGHT_TRIGGER = IniFile.ReadInteger("Keys", "R2", VK_LBUTTON);
 	int KEY_ID_LEFT_SHOULDER = IniFile.ReadInteger("Keys", "L1", VK_CONTROL);
