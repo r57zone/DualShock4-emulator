@@ -96,6 +96,7 @@ float mouseSensetiveX;
 bool firstCP = true;
 int DeltaMouseX, DeltaMouseY;
 HWND PSNowWindow = 0;
+HWND PSRemotePlayWindow = 0;
 
 //WinSock
 SOCKET socketS;
@@ -185,17 +186,17 @@ SHORT DeadZoneXboxAxis(SHORT StickAxis, float Percent)
 	float DeadZoneValue = Percent * 327.67;
 	if (StickAxis > 0)
 	{
-		StickAxis -= round(DeadZoneValue);
+		StickAxis -= trunc(DeadZoneValue);
 		if (StickAxis < 0)
 			StickAxis = 0;
 	}
 	else if (StickAxis < 0) {
-		StickAxis += round(DeadZoneValue);
+		StickAxis += trunc(DeadZoneValue);
 		if (StickAxis > 0)
 			StickAxis = 0;
 	}
 
-	return round(StickAxis + StickAxis * Percent * 0.01);
+	return trunc(StickAxis + StickAxis * Percent * 0.01);
 }
 
 int main(int argc, char **argv)
@@ -240,6 +241,7 @@ int main(int argc, char **argv)
 			SocketActivated = false;
 		}
 	}
+	float MotionSens = IniFile.ReadFloat("Motion", "Sens", 100) * 0.01;
 
 	#define OCR_NORMAL 32512
 	HCURSOR CurCursor = CopyCursor(LoadCursor(0, IDC_ARROW));
@@ -269,6 +271,7 @@ int main(int argc, char **argv)
 
 	int SleepTimeOutKB = IniFile.ReadInteger("KeyboardMouse", "SleepTimeOut", 2);
 	std::string WindowTitle = IniFile.ReadString("KeyboardMouse", "ActivateOnlyInWindow", "PlayStation™Now");
+	std::string WindowTitle2 = IniFile.ReadString("KeyboardMouse", "ActivateOnlyInWindow2", "PS4 Remote Play");
 	bool ActivateInAnyWindow = IniFile.ReadBoolean("KeyboardMouse", "ActivateInAnyWindow", false);
 	bool EmulateAnalogTriggers = IniFile.ReadBoolean("KeyboardMouse", "EmulateAnalogTriggers", false);
 	float LeftTriggerValue = 0;
@@ -520,9 +523,9 @@ int main(int argc, char **argv)
 					if (report.bThumbRX < 127)
 						TouchX = 1600 - (-report.bThumbRX + 127) * 10;
 					if (report.bThumbRY > 129)
-						TouchY = round(100 + (report.bThumbRY - 129) * 5.8);
+						TouchY = trunc(100 + (report.bThumbRY - 129) * 5.8);
 					if (report.bThumbRY < 129)
-						TouchY = round(743 - (-report.bThumbRY + 129) * 5.8);
+						TouchY = trunc(743 - (-report.bThumbRY + 129) * 5.8);
 					report.bThumbRX = 127;
 					report.bThumbRY = 129;
 				}
@@ -534,7 +537,10 @@ int main(int argc, char **argv)
 			PSNowWindow = FindWindow(NULL, WindowTitle.c_str());
 			bool PSNowFound = (PSNowWindow != 0) && (IsWindowVisible(PSNowWindow)) && (PSNowWindow == GetForegroundWindow());
 
-			if (ActivateInAnyWindow || PSNowFound) {
+			PSRemotePlayWindow = FindWindow(NULL, WindowTitle2.c_str());
+			bool PSRemotePlay = (PSRemotePlayWindow != 0) && (IsWindowVisible(PSRemotePlayWindow)) && (PSRemotePlayWindow == GetForegroundWindow());
+
+			if (ActivateInAnyWindow || PSNowFound || PSRemotePlayWindow) {
 				if ((GetAsyncKeyState(KEY_ID_STOP_CENTERING) & 0x8000) == 0) GetMouseState();
 
 				if (InvertX)
@@ -544,13 +550,13 @@ int main(int argc, char **argv)
 
 				// Are there better options? / Åñòü âàðèàíò ëó÷øå?
 				if (DeltaMouseX > 0)
-					report.bThumbRX = 128 + round( Clamp(DeltaMouseX * mouseSensetiveX, 0, 127) );
+					report.bThumbRX = 128 + trunc( Clamp(DeltaMouseX * mouseSensetiveX, 0, 127) );
 				if (DeltaMouseX < 0)
-					report.bThumbRX = 128 + round( Clamp(DeltaMouseX * mouseSensetiveX, -127, 0) );
+					report.bThumbRX = 128 + trunc( Clamp(DeltaMouseX * mouseSensetiveX, -127, 0) );
 				if (DeltaMouseY < 0)
-					report.bThumbRY = 128 + round( Clamp(DeltaMouseY * mouseSensetiveY, -127, 0) );
+					report.bThumbRY = 128 + trunc( Clamp(DeltaMouseY * mouseSensetiveY, -127, 0) );
 				if (DeltaMouseY > 0)
-					report.bThumbRY = 128 + round( Clamp(DeltaMouseY * mouseSensetiveY, 0, 127) );
+					report.bThumbRY = 128 + trunc( Clamp(DeltaMouseY * mouseSensetiveY, 0, 127) );
 			
 				if ((GetAsyncKeyState(KEY_ID_LEFT_STICK_UP) & 0x8000) != 0) report.bThumbLY = 0;
 				if ((GetAsyncKeyState(KEY_ID_LEFT_STICK_DOWN) & 0x8000) != 0) report.bThumbLY = 255;
@@ -575,7 +581,7 @@ int main(int argc, char **argv)
 							LeftTriggerValue -= StepTriggerValue;
 					}
 					
-					report.bTriggerL = Clamp(round(LeftTriggerValue), 0, 255);
+					report.bTriggerL = trunc( Clamp(LeftTriggerValue, 0, 255) );
 
 					if ((GetAsyncKeyState(KEY_ID_RIGHT_TRIGGER) & 0x8000) != 0) {
 						if (RightTriggerValue < 255)
@@ -586,7 +592,7 @@ int main(int argc, char **argv)
 							RightTriggerValue -= StepTriggerValue;
 					}
 
-					report.bTriggerR = Clamp(round(RightTriggerValue), 0, 255);
+					report.bTriggerR = trunc( Clamp(RightTriggerValue, 0, 255) );
 				}
 				
 				if (report.bTriggerL > 0) // Specific of DualShock 
@@ -632,18 +638,13 @@ int main(int argc, char **argv)
 					DS4_SET_DPAD_EX(&report, DS4_BUTTON_DPAD_EAST);
 			
 				// Touchpad, left
-				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_LEFT) & 0x8000) != 0) {
-					TouchX = 320; TouchY = 471; }
-
+				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_LEFT) & 0x8000) != 0) {TouchX = 320; TouchY = 471; }
 				// Center
 				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_CENTER) & 0x8000) != 0) { TouchX = 960; TouchY = 471; }
-
 				// Right
 				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_RIGHT) & 0x8000) != 0) { TouchX = 1600; TouchY = 471; }
-
 				// Center up
 				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_UP) & 0x8000) != 0) { if (TouchX == 0) TouchX = 960; TouchY = 157; }
-
 				// Center down
 				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_DOWN) & 0x8000) != 0) { if (TouchX == 0) TouchX = 960; TouchY = 785; }
 
@@ -707,13 +708,13 @@ int main(int argc, char **argv)
 
 		report.sCurrentTouch.bPacketCounter = TouchIndex;
 
-		report.wAccelX = round(Clamp(AccelX * 1638.35, -32767, 32767)) * 1; // freepie accel max 19.61, min -20, short -32,768 to 32,767
-		report.wAccelY = round(Clamp(AccelY * 1638.35, -32767, 32767)) * -1;
-		report.wAccelZ = round(Clamp(AccelZ * 1638.35, -32767, 32767)) * 1;
+		report.wAccelX = trunc( Clamp(AccelX * 1638.35, -32767, 32767) ) * 1 * MotionSens; // freepie accel max 19.61, min -20, short -32,768 to 32,767
+		report.wAccelY = trunc( Clamp(AccelY * 1638.35, -32767, 32767) ) * -1 * MotionSens;
+		report.wAccelZ = trunc( Clamp(AccelZ * 1638.35, -32767, 32767) ) * 1 * MotionSens;
 
-		report.wGyroX = round(Clamp(GyroX * 2376.7, -32767, 32767)) * 1; // freepie max gyro 10, min -10.09
-		report.wGyroY = round(Clamp(GyroY * 2376.7, -32767, 32767)) * -1; //
-		report.wGyroZ = round(Clamp(GyroZ * 2376.7, -32767, 32767)) * 1;
+		report.wGyroX = trunc( Clamp(GyroX * 2376.7, -32767, 32767) ) * 1 * MotionSens; // freepie max gyro 10, min -10.09
+		report.wGyroY = trunc( Clamp(GyroY * 2376.7, -32767, 32767) ) * -1 * MotionSens;
+		report.wGyroZ = trunc( Clamp(GyroZ * 2376.7, -32767, 32767) ) * 1 * MotionSens;
 
 		//if ((GetAsyncKeyState(VK_NUMPAD1) & 0x8000) != 0) printf("%d\t%d\t%d\t%d\t%d\t%d\t\n", report.wAccelX, report.wAccelY, report.wAccelZ, report.wGyroX, report.wGyroY, report.wGyroZ);
 
@@ -744,7 +745,7 @@ int main(int argc, char **argv)
 
 	vigem_target_remove(client, ds4);
 	vigem_target_free(ds4);
-    vigem_free(client);
+	vigem_free(client);
 	FreeLibrary(hDll);
 	hDll = nullptr;
 

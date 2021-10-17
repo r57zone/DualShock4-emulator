@@ -8,7 +8,7 @@ Simple application to emulate the Sony DualShock 4 gamepad using an Xbox control
 2. Install Microsoft Visual C++ Redistributable 2017 or newer.
 3. Unpack and launch "DualShock4 emulator".
 4. Launch "PlayStation Now" or other app.
-5. If necessary, you can invert the axes, change the `InvertX` and `InvertY` parameters to `1` in the "Config.ini" configuration file, in the "DS4" section.
+5. If necessary, you can invert the axis, change the `InvertX` and `InvertY` parameters to `1` in the "Config.ini" configuration file.
 
 ## Xbox controller
 The "Back" button on the Xbox controller emulating pressing the touchpad on a Sony DualShock 4.
@@ -29,7 +29,7 @@ Changing the dead zone of sticks for drifting sticks is supported. Press "ALT" +
 Game | Action
 ------------ | -------------
 Uncharted 3: Drake’s Deception (2011) | The "Share" button (F12) duplicates pressing the left side of the touchpad.
-The Last Of Us Part II (2020) | Options-> Accessibility-> "Strumming Settings" instead of vertical and horizontal, put buttons.
+The Last Of Us Part II (2020) | Options -> Accessibility -> "Strumming Settings" instead of vertical and horizontal, put buttons.
 
 On the Xbox gamepad, you need to press the "Back" button (touchpad) and move the stick to the sides for swipes.
 
@@ -40,13 +40,14 @@ You can use swipes for the keyboard, the button codes are described below.
 ## Gyroscope
 1. Check Windows Firewall to see if incoming connections are allowed on your network type (private) and allow if disabled.
 2. Install FreePieIMU on your Android phone, enter the IP address of your computer, select "Send raw data", if not selected, select the data rate "Fastest" or "Fast".
+3. Reduce the sensitivity if necessary (the `Sens` parameter, in the `Motion` section, where `100` is 100% sensitivity) in configuration file.
 
 
 
 If you just need to shake (gyro) the gamepad in the game, then there is no need to install Android applications, just press the "shake" button of the gamepad.
 
 ## Keyboard and mouse
-By default, the mouse and keyboard only work in "PlayStation Now". You can enable the work in all windows (change the `ActivateInAnyWindow` parameter to `1`, in the "Config.ini" configuration file) or change the name of the window (the `ActivateOnlyInWindow` parameter) in which the actions are captured. This is necessary so that the cursor is centered only in one window and no buttons are pressed when the window is minimized. To disable cursor centering, hold down the `C` button (can change it in the config - `StopСenteringKey`). To hide the cursor after startup, change `HideCursorAfterStart` to `1`, to restore the cursor, close the program by pressing "ALT" + "ESCAPE" or "~".
+By default, the mouse and keyboard only work in the windows "PlayStation™Now" and "PS4 Remote Play" (change the `ActivateOnlyInWindow2` parameter to your regional application title). To work only in any other applications or emulators, change the parameters `ActivateOnlyInWindow` and `ActivateOnlyInWindow2` to the headers of these applications You can enable the work in all windows (change the `ActivateInAnyWindow` parameter to `1`, in the "Config.ini" configuration file) or change the name of the window (the `ActivateOnlyInWindow` parameter) in which the actions are captured. This is necessary so that the cursor is centered only in one window and no buttons are pressed when the window is minimized. To disable cursor centering, hold down the `C` button (can change it in the config - `StopСenteringKey`). To hide the cursor after startup, change `HideCursorAfterStart` to `1`, to restore the cursor, close the program by pressing "ALT" + "ESCAPE" or "~".
 
 DualShock 4 | Keyboard and mouse
 ------------ | -------------
