@@ -157,17 +157,10 @@ VOID CALLBACK notification(
 void GetMouseState()
 {
 	POINT mousePos;
-
-	if (firstCP) {
-		SetCursorPos(m_HalfWidth, m_HalfHeight);
-		firstCP = false;
-	}
-
+	if (firstCP) { SetCursorPos(m_HalfWidth, m_HalfHeight); firstCP = false; }
 	GetCursorPos(&mousePos);
-
 	DeltaMouseX = mousePos.x - m_HalfWidth;
 	DeltaMouseY = mousePos.y - m_HalfHeight;
-
 	SetCursorPos(m_HalfWidth, m_HalfHeight);
 }
 
@@ -189,8 +182,7 @@ SHORT DeadZoneXboxAxis(SHORT StickAxis, float Percent)
 		StickAxis -= trunc(DeadZoneValue);
 		if (StickAxis < 0)
 			StickAxis = 0;
-	}
-	else if (StickAxis < 0) {
+	} else if (StickAxis < 0) {
 		StickAxis += trunc(DeadZoneValue);
 		if (StickAxis > 0)
 			StickAxis = 0;
@@ -272,6 +264,9 @@ int main(int argc, char **argv)
 	int SleepTimeOutKB = IniFile.ReadInteger("KeyboardMouse", "SleepTimeOut", 2);
 	std::string WindowTitle = IniFile.ReadString("KeyboardMouse", "ActivateOnlyInWindow", "PlayStation™Now");
 	std::string WindowTitle2 = IniFile.ReadString("KeyboardMouse", "ActivateOnlyInWindow2", "PS4 Remote Play");
+	int FullScreenTopOffset = IniFile.ReadInteger("KeyboardMouse", "FullScreenTopOffset", -50);
+	bool HideTaskBar = IniFile.ReadBoolean("KeyboardMouse", "HideTaskBarInFullScreen", true);
+	bool FullScreenMode = false;
 	bool ActivateInAnyWindow = IniFile.ReadBoolean("KeyboardMouse", "ActivateInAnyWindow", false);
 	bool EmulateAnalogTriggers = IniFile.ReadBoolean("KeyboardMouse", "EmulateAnalogTriggers", false);
 	float LeftTriggerValue = 0;
@@ -324,6 +319,8 @@ int main(int argc, char **argv)
 	bool TouchpadSwipeLeft = false, TouchpadSwipeRight = false;
 	bool MotionShaking = false, MotionShakingSwap = false;
 
+	int SkipPollCount = 0;
+
 	// Load library and scan Xbox gamepads
 	hDll = LoadLibrary("xinput1_3.dll"); // x360ce support
 	if (hDll != NULL) {
@@ -354,6 +351,8 @@ int main(int argc, char **argv)
 		printf("\r\n Emulation with keyboard and mouse.\n");
 	printf(" Hold down \"C\" to for cursor movement.\n");
 	printf(" Press \"ALT\" + \"Escape\" or \"exit key\" to exit.\n");
+	if (EmulationMode == KBMode)
+		printf(" Press \"ALT\" + \"F10\" to switch to full-screen mode or return to normal.\n");
 
 	DS4_TOUCH BuffPreviousTouch[2] = { 0, 0 };
 	BuffPreviousTouch[0].bIsUpTrackingNum1 = 0x80;
@@ -385,7 +384,7 @@ int main(int argc, char **argv)
 			if (myStatus == ERROR_SUCCESS) {
 
 				// Dead zones
-				if ((GetAsyncKeyState(VK_F10) & 0x8000) != 0 && ((GetAsyncKeyState(VK_MENU) & 0x8000) != 0))
+				if ((GetAsyncKeyState(VK_F9) & 0x8000) != 0 && ((GetAsyncKeyState(VK_MENU) & 0x8000) != 0) && SkipPollCount == 0)
 				{
 					DeadZoneMode = !DeadZoneMode;
 					if (DeadZoneMode == false) {
@@ -393,6 +392,7 @@ int main(int argc, char **argv)
 						printf("\n Emulation with Xbox controller.\n");
 						printf(" Press \"ALT\" + \"Escape\" or \"exit key\" to exit.\n");
 					}
+					SkipPollCount = 10;
 				}
 
 				if (DeadZoneMode) {
@@ -449,8 +449,7 @@ int main(int argc, char **argv)
 						report.wButtons |= DS4_BUTTON_SHARE;
 					if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
 						report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD;
-				}
-				else {
+				} else {
 					if ((GetAsyncKeyState(KEY_ID_SHARE) & 0x8000) != 0)
 						report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD;
 					if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
@@ -538,9 +537,24 @@ int main(int argc, char **argv)
 			bool PSNowFound = (PSNowWindow != 0) && (IsWindowVisible(PSNowWindow)) && (PSNowWindow == GetForegroundWindow());
 
 			PSRemotePlayWindow = FindWindow(NULL, WindowTitle2.c_str());
-			bool PSRemotePlay = (PSRemotePlayWindow != 0) && (IsWindowVisible(PSRemotePlayWindow)) && (PSRemotePlayWindow == GetForegroundWindow());
+			bool PSRemotePlayFound = (PSRemotePlayWindow != 0) && (IsWindowVisible(PSRemotePlayWindow)) && (PSRemotePlayWindow == GetForegroundWindow());
 
-			if (ActivateInAnyWindow || PSNowFound || PSRemotePlayWindow) {
+			if ((GetAsyncKeyState(VK_LMENU) & 0x8000) && (GetAsyncKeyState(VK_F10) & 0x8000) && SkipPollCount == 0) {
+				if (PSNowWindow != 0)
+					if (FullScreenMode) {
+						if (HideTaskBar) ShowWindow(FindWindow("Shell_TrayWnd", NULL), SW_SHOW);
+						SetWindowPos(PSNowWindow, HWND_TOP, m_HalfWidth - 640, m_HalfHeight - 360, 1280, 720, SWP_FRAMECHANGED);
+					} else {
+						SetForegroundWindow(PSNowWindow);
+						SetActiveWindow(PSNowWindow);
+						if (HideTaskBar) ShowWindow(FindWindow("Shell_TrayWnd", NULL), SW_HIDE);
+						SetWindowPos(PSNowWindow, HWND_TOP, 0, FullScreenTopOffset, m_HalfWidth * 2, m_HalfHeight * 2 + (-FullScreenTopOffset), SWP_FRAMECHANGED);
+					}
+				FullScreenMode = !FullScreenMode;
+				SkipPollCount = 10;
+			}
+
+			if (ActivateInAnyWindow || PSNowFound || PSRemotePlayFound) {
 				if ((GetAsyncKeyState(KEY_ID_STOP_CENTERING) & 0x8000) == 0) GetMouseState();
 
 				if (InvertX)
@@ -739,6 +753,8 @@ int main(int argc, char **argv)
 			Sleep(SleepTimeOutXbox);
 		else
 			Sleep(SleepTimeOutKB);
+
+		if (SkipPollCount > 0) SkipPollCount--;
 	}
 
 	if (CursorHidden) SetSystemCursor(CurCursor, OCR_NORMAL);

@@ -23,7 +23,7 @@ If necessary, you can swap bumpers and triggers, as well as the "share" button a
 
 
 
-Changing the dead zone of sticks for drifting sticks is supported. Press "ALT" + "F10" to get the values, paste them into the "Config.ini" configuration file, into the `DeadZone` parameters and restart the program.
+Changing the dead zone of sticks for drifting sticks is supported. Press "ALT" + "F9" to get the values, paste them into the "Config.ini" configuration file, into the `DeadZone` parameters and restart the program.
 
 ## Touchpad
 Game | Action
@@ -52,6 +52,8 @@ By default, the mouse and keyboard only work in the windows "PlayStation™Now" 
 To disable cursor centering, hold down the "C" button (can change it in the config - `StopСenteringKey`).
 
 To hide the cursor after startup, change `HideCursorAfterStart` to `1`, to restore the cursor, close the program by pressing "ALT" + "ESCAPE" or "~".
+
+For full-screen Playstation Now use the keys "ALT" + "F10", the upper black bar, as well as the taskbar will be hidden. To return to the normal window, press these keys again. You can disable hiding the taskbar in the configuration file by changing the `HideTaskBarInFullScreen` parameter to `0`. If the Playstation Now window changes once, you can change the default top offset, the `FullScreenTopOffset` parameter. 
 
 DualShock 4 | Keyboard and mouse
 ------------ | -------------
