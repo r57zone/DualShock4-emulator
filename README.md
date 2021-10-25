@@ -13,9 +13,11 @@ Simple application to emulate the Sony DualShock 4 gamepad using an Xbox control
 ## Xbox controller
 The "Back" button on the Xbox controller emulating pressing the touchpad on a Sony DualShock 4.
 
-The "Share" button is tied to the simultaneous pressing of the "Back" and "Start" buttons or to the "F12" key.
+The "Share" button is binded to the simultaneous pressing of the "Back" and "Start" buttons or to the "F12" key.
 
-You can shake (gyro) the controller by pressing "Back" and "RB" (Right bumper). 
+The "PS" button is binded to the simultaneous pressing of the "Back" and "LB" buttons (left bumper) or to the "F2" key.
+
+You can shake (gyro) the controller by pressing "Back" and "RB" (right bumper). 
 
 
 
@@ -31,7 +33,7 @@ Game | Action
 Uncharted 3: Drake’s Deception (2011) | The "Share" button (F12) duplicates pressing the left side of the touchpad.
 The Last Of Us Part II (2020) | Options -> Accessibility -> "Strumming Settings" instead of vertical and horizontal, put buttons.
 
-On the Xbox gamepad, you need to press the "Back" button (touchpad) and move the stick to the sides for swipes.
+On the Xbox gamepad, you need to press the "Back" button (touchpad) and move the stick to the sides for swipes. By default, pressing the touchpad during swipes is disabled, it can be enabled in the configuration file by changing the `TouchPadPressedWhenSwiping` parameter to `1`.
 
 
 
@@ -77,6 +79,7 @@ R3 (pressing the stick) | Middle mouse button
 Touchpad swipe up, down, left, right | 7, 8, 9, 0
 Touchpad up, center, left, right, down  | U, J, H, K, N
 Shake the gamepad | T
+PS | F2
 
 Сan replace button bindings in the "Config.ini" configuration file. Button codes can be found [here](https://github.com/r57zone/Half-Life-Alyx-novr/blob/master/BINDINGS.md).
 

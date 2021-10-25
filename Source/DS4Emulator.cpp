@@ -98,7 +98,7 @@ int DeltaMouseX, DeltaMouseY;
 HWND PSNowWindow = 0;
 HWND PSRemotePlayWindow = 0;
 
-//WinSock
+// WinSock
 SOCKET socketS;
 int bytes_read;
 struct sockaddr_in from;
@@ -193,7 +193,7 @@ SHORT DeadZoneXboxAxis(SHORT StickAxis, float Percent)
 
 int main(int argc, char **argv)
 {
-	SetConsoleTitle("DS4Emulator 1.7");
+	SetConsoleTitle("DS4Emulator 1.7.3");
 
 	CIniReader IniFile("Config.ini"); // Config
 
@@ -218,11 +218,13 @@ int main(int argc, char **argv)
 				if (iResult != SOCKET_ERROR) {
 					SocketActivated = true;
 					pSocketThread = new std::thread(MotionReceiver);
-				} else {
+				}
+				else {
 					WSACleanup();
 					SocketActivated = false;
 				}
-			} else {
+			}
+			else {
 				WSACleanup();
 				SocketActivated = false;
 			}
@@ -255,6 +257,7 @@ int main(int argc, char **argv)
 	int SleepTimeOutXbox = IniFile.ReadInteger("Xbox", "SleepTimeOut", 1);
 	bool SwapTriggersShoulders = IniFile.ReadBoolean("Xbox", "SwapTriggersShoulders", false);
 	bool SwapShareTouchPad = IniFile.ReadBoolean("Xbox", "SwapShareTouchPad", false);
+	bool TouchPadPressedWhenSwiping = IniFile.ReadBoolean("Xbox", "TouchPadPressedWhenSwiping", true);
 
 	float DeadZoneLeftStickX = IniFile.ReadFloat("Xbox", "DeadZoneLeftStickX", 0);
 	float DeadZoneLeftStickY = IniFile.ReadFloat("Xbox", "DeadZoneLeftStickY", 0);
@@ -293,11 +296,13 @@ int main(int argc, char **argv)
 	int KEY_ID_SQUARE = IniFile.ReadInteger("Keys", "SQUARE", 'E');
 	int KEY_ID_CIRCLE = IniFile.ReadInteger("Keys", "CIRCLE", 'R');
 	int KEY_ID_CROSS = IniFile.ReadInteger("Keys", "CROSS", VK_SPACE);
+	int KEY_ID_SHARE = IniFile.ReadInteger("Keys", "SHARE", VK_F12);
 	int KEY_ID_TOUCHPAD = IniFile.ReadInteger("Keys", "TOUCHPAD", VK_RETURN);
 	int KEY_ID_OPTIONS = IniFile.ReadInteger("Keys", "OPTIONS", VK_TAB);
-	int KEY_ID_SHARE = IniFile.ReadInteger("Keys", "SHARE", VK_F12);
+	int KEY_ID_PS = IniFile.ReadInteger("Keys", "PS", VK_F2);
+
 	int KEY_ID_SHAKING = IniFile.ReadInteger("Keys", "SHAKING", 'T');
-	
+
 	int KEY_ID_TOUCHPAD_SWIPE_UP = IniFile.ReadInteger("Keys", "TOUCHPAD_SWIPE_UP", '7');
 	int KEY_ID_TOUCHPAD_SWIPE_DOWN = IniFile.ReadInteger("Keys", "TOUCHPAD_SWIPE_DOWN", '8');
 	int KEY_ID_TOUCHPAD_SWIPE_LEFT = IniFile.ReadInteger("Keys", "TOUCHPAD_SWIPE_LEFT", '9');
@@ -309,8 +314,8 @@ int main(int argc, char **argv)
 	int KEY_ID_TOUCHPAD_RIGHT = IniFile.ReadInteger("Keys", "TOUCHPAD_RIGHT", 'K');
 	int KEY_ID_TOUCHPAD_CENTER = IniFile.ReadInteger("Keys", "TOUCHPAD_CENTER", 'J');
 
-    const auto client = vigem_alloc();
-    auto ret = vigem_connect(client);
+	const auto client = vigem_alloc();
+	auto ret = vigem_connect(client);
 	const auto ds4 = vigem_target_ds4_alloc();
 	ret = vigem_target_add(client, ds4);
 	ret = vigem_target_ds4_register_notification(client, ds4, &notification, nullptr);
@@ -326,7 +331,7 @@ int main(int argc, char **argv)
 	if (hDll != NULL) {
 		MyXInputGetState = (_XInputGetState)GetProcAddress(hDll, "XInputGetState");
 		MyXInputSetState = (_XInputSetState)GetProcAddress(hDll, "XInputSetState");
-		if (MyXInputGetState == NULL || MyXInputSetState == NULL) 
+		if (MyXInputGetState == NULL || MyXInputSetState == NULL)
 			hDll = NULL;
 	}
 
@@ -338,7 +343,7 @@ int main(int argc, char **argv)
 				EmulationMode = XboxMode;
 				break;
 			}
-	
+
 	if (EmulationMode == KBMode) {
 		m_HalfWidth = GetSystemMetrics(SM_CXSCREEN) / 2;
 		m_HalfHeight = GetSystemMetrics(SM_CYSCREEN) / 2;
@@ -347,12 +352,13 @@ int main(int argc, char **argv)
 	// Write current mode
 	if (EmulationMode == XboxMode)
 		printf("\n Emulation with Xbox controller.\n");
-	else 
+	else {
 		printf("\r\n Emulation with keyboard and mouse.\n");
-	printf(" Hold down \"C\" to for cursor movement.\n");
-	printf(" Press \"ALT\" + \"Escape\" or \"exit key\" to exit.\n");
+		printf(" Hold down \"C\" to for cursor movement.\n");
+	}
 	if (EmulationMode == KBMode)
 		printf(" Press \"ALT\" + \"F10\" to switch to full-screen mode or return to normal.\n");
+	printf(" Press \"ALT\" + \"Escape\" or \"exit key\" to exit.\n");
 
 	DS4_TOUCH BuffPreviousTouch[2] = { 0, 0 };
 	BuffPreviousTouch[0].bIsUpTrackingNum1 = 0x80;
@@ -427,7 +433,7 @@ int main(int argc, char **argv)
 				report.bThumbRY = (report.bThumbRY == 0) ? 0xFF : report.bThumbRY;
 
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_START) {
-					myPState.Gamepad.wButtons &= XINPUT_GAMEPAD_BACK; myPState.Gamepad.wButtons &= XINPUT_GAMEPAD_START;
+					myPState.Gamepad.wButtons &= ~XINPUT_GAMEPAD_BACK; myPState.Gamepad.wButtons &= ~XINPUT_GAMEPAD_START;
 					if (SwapShareTouchPad)
 						report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD;
 					else
@@ -437,9 +443,15 @@ int main(int argc, char **argv)
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_START)
 					report.wButtons |= DS4_BUTTON_OPTIONS;
 
+				// PS button
+				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
+					myPState.Gamepad.wButtons &= ~XINPUT_GAMEPAD_BACK; myPState.Gamepad.wButtons &= ~XINPUT_GAMEPAD_LEFT_SHOULDER;
+					report.bSpecial |= DS4_SPECIAL_BUTTON_PS;
+				}
+
 				// Motion shaking
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
-					myPState.Gamepad.wButtons &= XINPUT_GAMEPAD_BACK; myPState.Gamepad.wButtons &= XINPUT_GAMEPAD_RIGHT_SHOULDER;
+					myPState.Gamepad.wButtons &= ~XINPUT_GAMEPAD_BACK; myPState.Gamepad.wButtons &= ~XINPUT_GAMEPAD_RIGHT_SHOULDER;
 					MotionShaking = true;
 				} else MotionShaking = false;
 
@@ -516,6 +528,8 @@ int main(int argc, char **argv)
 
 				// Touchpad swipes
 				if (report.bSpecial & DS4_SPECIAL_BUTTON_TOUCHPAD) {
+					if (!TouchPadPressedWhenSwiping && (report.bThumbRX != 127 || report.bThumbRY != 129) )
+						report.bSpecial &= ~DS4_SPECIAL_BUTTON_TOUCHPAD;
 					TouchX = 960; TouchY = 471;
 					if (report.bThumbRX > 127)
 						TouchX = 320 + (report.bThumbRX - 127) * 10;
@@ -612,16 +626,14 @@ int main(int argc, char **argv)
 				if (report.bTriggerL > 0) // Specific of DualShock 
 					report.wButtons |= DS4_BUTTON_TRIGGER_LEFT; 
 				if (report.bTriggerR > 0) // Specific of DualShock
-					report.wButtons |= DS4_BUTTON_TRIGGER_RIGHT; 
-
-				if ((GetAsyncKeyState(KEY_ID_OPTIONS) & 0x8000) != 0)
-					report.wButtons |= DS4_BUTTON_OPTIONS;
-
-				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD) & 0x8000) != 0)
-					report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD;
+					report.wButtons |= DS4_BUTTON_TRIGGER_RIGHT;
 
 				if ((GetAsyncKeyState(KEY_ID_SHARE) & 0x8000) != 0)
 					report.wButtons |= DS4_BUTTON_SHARE;
+				if ((GetAsyncKeyState(KEY_ID_TOUCHPAD) & 0x8000) != 0)
+					report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD;
+				if ((GetAsyncKeyState(KEY_ID_OPTIONS) & 0x8000) != 0)
+					report.wButtons |= DS4_BUTTON_OPTIONS;
 
 				if ((GetAsyncKeyState(KEY_ID_TRIANGLE) & 0x8000) != 0)
 					report.wButtons |= DS4_BUTTON_TRIANGLE;
@@ -725,12 +737,9 @@ int main(int argc, char **argv)
 		report.wAccelX = trunc( Clamp(AccelX * 1638.35, -32767, 32767) ) * 1 * MotionSens; // freepie accel max 19.61, min -20, short -32,768 to 32,767
 		report.wAccelY = trunc( Clamp(AccelY * 1638.35, -32767, 32767) ) * -1 * MotionSens;
 		report.wAccelZ = trunc( Clamp(AccelZ * 1638.35, -32767, 32767) ) * 1 * MotionSens;
-
 		report.wGyroX = trunc( Clamp(GyroX * 2376.7, -32767, 32767) ) * 1 * MotionSens; // freepie max gyro 10, min -10.09
 		report.wGyroY = trunc( Clamp(GyroY * 2376.7, -32767, 32767) ) * -1 * MotionSens;
-		report.wGyroZ = trunc( Clamp(GyroZ * 2376.7, -32767, 32767) ) * 1 * MotionSens;
-
-		//if ((GetAsyncKeyState(VK_NUMPAD1) & 0x8000) != 0) printf("%d\t%d\t%d\t%d\t%d\t%d\t\n", report.wAccelX, report.wAccelY, report.wAccelZ, report.wGyroX, report.wGyroY, report.wGyroZ);
+		report.wGyroZ = trunc( Clamp(GyroZ * 2376.7, -32767, 32767) ) * 1 * MotionSens; //if ((GetAsyncKeyState(VK_NUMPAD1) & 0x8000) != 0) printf("%d\t%d\t%d\t%d\t%d\t%d\t\n", report.wAccelX, report.wAccelY, report.wAccelZ, report.wGyroX, report.wGyroY, report.wGyroZ);
 
 		// Motion shaking
 		if (MotionShaking) {
@@ -743,6 +752,10 @@ int main(int argc, char **argv)
 				report.wGyroX = 2700;		report.wGyroY = -5000;		report.wGyroZ = 140;
 			}
 		}
+
+		// Multi mode keys
+		if ((GetAsyncKeyState(KEY_ID_PS) & 0x8000) != 0)
+			report.bSpecial |= DS4_SPECIAL_BUTTON_PS;
 
 		// if ((GetAsyncKeyState(VK_NUMPAD0) & 0x8000) != 0) system("cls");
 
