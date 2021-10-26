@@ -107,6 +107,7 @@ bool SocketActivated = false;
 std::thread *pSocketThread = NULL;
 unsigned char freePieIMU[50];
 float AccelX = 0, AccelY = 0, AccelZ = 0, GyroX = 0, GyroY = 0, GyroZ = 0;
+int curTimeStamp;
 
 float bytesToFloat(unsigned char b3, unsigned char b2, unsigned char b1, unsigned char b0)
 {
@@ -118,6 +119,7 @@ float bytesToFloat(unsigned char b3, unsigned char b2, unsigned char b1, unsigne
 	return result;
 }
 
+int SleepTimeOutMotion = 1;
 void MotionReceiver()
 {
 	while (SocketActivated) {
@@ -131,7 +133,8 @@ void MotionReceiver()
 			GyroX = bytesToFloat(freePieIMU[14], freePieIMU[15], freePieIMU[16], freePieIMU[17]);
 			GyroY = bytesToFloat(freePieIMU[18], freePieIMU[19], freePieIMU[20], freePieIMU[21]);
 			GyroZ = bytesToFloat(freePieIMU[22], freePieIMU[23], freePieIMU[24], freePieIMU[25]);
-		}
+		} else
+			Sleep(SleepTimeOutMotion); // Don't overload the CPU with reading
 	}
 }
 
@@ -193,7 +196,7 @@ SHORT DeadZoneXboxAxis(SHORT StickAxis, float Percent)
 
 int main(int argc, char **argv)
 {
-	SetConsoleTitle("DS4Emulator 1.7.3");
+	SetConsoleTitle("DS4Emulator 1.7.4");
 
 	CIniReader IniFile("Config.ini"); // Config
 
@@ -218,24 +221,21 @@ int main(int argc, char **argv)
 				if (iResult != SOCKET_ERROR) {
 					SocketActivated = true;
 					pSocketThread = new std::thread(MotionReceiver);
-				}
-				else {
+				} else {
 					WSACleanup();
 					SocketActivated = false;
 				}
-			}
-			else {
+			} else {
 				WSACleanup();
 				SocketActivated = false;
 			}
-		}
-		else
-		{
+		} else {
 			WSACleanup();
 			SocketActivated = false;
 		}
 	}
 	float MotionSens = IniFile.ReadFloat("Motion", "Sens", 100) * 0.01;
+	SleepTimeOutMotion = IniFile.ReadInteger("Motion", "SleepTimeOut", 1);
 
 	#define OCR_NORMAL 32512
 	HCURSOR CurCursor = CopyCursor(LoadCursor(0, IDC_ARROW));
@@ -313,6 +313,7 @@ int main(int argc, char **argv)
 	int KEY_ID_TOUCHPAD_LEFT = IniFile.ReadInteger("Keys", "TOUCHPAD_LEFT", 'H');
 	int KEY_ID_TOUCHPAD_RIGHT = IniFile.ReadInteger("Keys", "TOUCHPAD_RIGHT", 'K');
 	int KEY_ID_TOUCHPAD_CENTER = IniFile.ReadInteger("Keys", "TOUCHPAD_CENTER", 'J');
+	int KEY_ID_TOUCHPAD_SECOND_RIGHT = IniFile.ReadInteger("Keys", "TOUCHPAD_SECOND_RIGHT", 'J');
 
 	const auto client = vigem_alloc();
 	auto ret = vigem_connect(client);
@@ -691,6 +692,13 @@ int main(int argc, char **argv)
 			}
 		}
 
+		if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_SECOND_RIGHT) & 0x8000) != 0) { // Bad temporary solution for Infamous: Second Son https://youtu.be/i7w4G1CIdog?t=667
+			report.sCurrentTouch.bIsUpTrackingNum2 = 0;
+			report.sCurrentTouch.bTouchData2[0] = 1600 & 0xFF;
+			report.sCurrentTouch.bTouchData2[1] = ((1600 >> 8) & 0x0F) | ((471 & 0x0F) << 4);
+			report.sCurrentTouch.bTouchData2[2] = (471 >> 4) & 0xFF;
+		}
+
 		if (BuffPreviousTouch[1].bIsUpTrackingNum1 == 0) {
 			//printf("2: prev 2 touched\r\n");
 			report.sPreviousTouch[1] = BuffPreviousTouch[1];
@@ -707,7 +715,6 @@ int main(int argc, char **argv)
 		}
 
 		// Probably the wrong way, but it works, temporary workaround / Вероятно неверный путь, но он работает, подойдет как временное решение
-		report.sCurrentTouch.bIsUpTrackingNum1 = 0x80;
 		if (TouchX != 0 || TouchY != 0) { 
 			report.bTouchPacketsN = 1;
 			
@@ -739,7 +746,7 @@ int main(int argc, char **argv)
 		report.wAccelZ = trunc( Clamp(AccelZ * 1638.35, -32767, 32767) ) * 1 * MotionSens;
 		report.wGyroX = trunc( Clamp(GyroX * 2376.7, -32767, 32767) ) * 1 * MotionSens; // freepie max gyro 10, min -10.09
 		report.wGyroY = trunc( Clamp(GyroY * 2376.7, -32767, 32767) ) * -1 * MotionSens;
-		report.wGyroZ = trunc( Clamp(GyroZ * 2376.7, -32767, 32767) ) * 1 * MotionSens; //if ((GetAsyncKeyState(VK_NUMPAD1) & 0x8000) != 0) printf("%d\t%d\t%d\t%d\t%d\t%d\t\n", report.wAccelX, report.wAccelY, report.wAccelZ, report.wGyroX, report.wGyroY, report.wGyroZ);
+		report.wGyroZ = trunc( Clamp(GyroZ * 2376.7, -32767, 32767) ) * 1 * MotionSens; // if ((GetAsyncKeyState(VK_NUMPAD1) & 0x8000) != 0) printf("%d\t%d\t%d\t%d\t%d\t%d\t\n", report.wAccelX, report.wAccelY, report.wAccelZ, report.wGyroX, report.wGyroY, report.wGyroZ);
 
 		// Motion shaking
 		if (MotionShaking) {
@@ -756,8 +763,18 @@ int main(int argc, char **argv)
 		// Multi mode keys
 		if ((GetAsyncKeyState(KEY_ID_PS) & 0x8000) != 0)
 			report.bSpecial |= DS4_SPECIAL_BUTTON_PS;
+		if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_SECOND_RIGHT) & 0x8000) != 0) { // Bad temporary solution for Infamous: Second Son https://youtu.be/i7w4G1CIdog?t=667
+			report.bTouchPacketsN = 2;
+			report.sCurrentTouch.bIsUpTrackingNum2 = 0;
+			report.sCurrentTouch.bTouchData2[0] = 1600 & 0xFF;
+			report.sCurrentTouch.bTouchData2[1] = ((1600 >> 8) & 0x0F) | ((471 & 0x0F) << 4);
+			report.sCurrentTouch.bTouchData2[2] = (471 >> 4) & 0xFF;
+		}
 
 		// if ((GetAsyncKeyState(VK_NUMPAD0) & 0x8000) != 0) system("cls");
+		
+		curTimeStamp++; if (curTimeStamp > 65535) curTimeStamp = 0; // ?
+		report.wTimestamp = curTimeStamp;
 
 		ret = vigem_target_ds4_update_ex(client, ds4, report);
 

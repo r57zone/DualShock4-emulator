@@ -41,9 +41,8 @@ You can use swipes for the keyboard, the button codes are described below.
 
 ## Gyroscope
 1. Check Windows Firewall to see if incoming connections are allowed on your network type (private) and allow if disabled.
-2. Change the parameter `Activate` to `1`, in the section `Motion`, in the configuration file. 
-3. Install FreePieIMU on your Android phone, enter the IP address of your computer, select "Send raw data", if not selected, select the data rate "Fastest" or "Fast".
-4. Reduce the sensitivity if necessary (the `Sens` parameter, in the `Motion` section, where `100` is 100% sensitivity) in configuration file.
+2. Install FreePieIMU on your Android phone, enter the IP address of your computer, select "Send raw data", if not selected, select the data rate "Fastest" or "Fast".
+3. Reduce the sensitivity if necessary (the `Sens` parameter, in the `Motion` section, where `100` is 100% sensitivity) in configuration file.
 
 
 
@@ -79,6 +78,7 @@ L3 (pressing the stick) | Shift
 R3 (pressing the stick) | Middle mouse button
 Touchpad swipe up, down, left, right | 7, 8, 9, 0
 Touchpad up, center, left, right, down  | U, J, H, K, N
+Touchpad second touch on the right  | I
 Shake the gamepad | T
 PS | F2
 
