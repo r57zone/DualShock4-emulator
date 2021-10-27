@@ -41,7 +41,7 @@ You can use swipes for the keyboard, the button codes are described below.
 
 ## Gyroscope
 1. Check Windows Firewall to see if incoming connections are allowed on your network type (private) and allow if disabled.
-2. Install FreePieIMU on your Android phone, enter the IP address of your computer, select "Send raw data", if not selected, select the data rate "Fastest" or "Fast".
+2. Install FreePieIMU on your Android phone by taking the latest version in the [OpenTrack archive](https://github.com/opentrack/opentrack) or in the [releases](https://github.com/r57zone/DualShock4-emulator/releases), enter the IP address of your computer, select "Send raw data", if not selected, select the data rate "Fastest" or "Fast".
 3. Reduce the sensitivity if necessary (the `Sens` parameter, in the `Motion` section, where `100` is 100% sensitivity) in configuration file.
 
 
