@@ -6,7 +6,7 @@ Simple application to emulate the Sony DualShock 4 gamepad using an Xbox control
 ## Setup
 1. Install [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases).
 2. Install Microsoft Visual C++ Redistributable 2017 or newer.
-3. Unpack and launch "DualShock4 emulator".
+3. Unpack and launch "DualShock4 emulator" (**Attention!** It is important to run DS4 emulator before starting PS Now, if you are using an Xbox controller, so that PSNow gives priority to the DualShock controller).
 4. Launch "PlayStation Now" or other app.
 5. If necessary, you can invert the axis, change the `InvertX` and `InvertY` parameters to `1` in the "Config.ini" configuration file.
 

@@ -6,7 +6,7 @@
 ## Настройка
 1. Установить [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases).
 2. Установите Microsoft Visual C++ Redistributable 2017 или новее.
-3. Распаковать и запустить DualShock4 emulator.
+3. Распаковать и запустить DualShock4 emulator (**Внимание!** Важно запускать DS4 emulator до запуска PSNow, если вы используете Xbox контроллер, чтобы PSNow отдала приоритет DualShock контроллеру).
 4. Запустить "PlayStation Now" или другое приложение.
 5. При необходимости можно инвертировать оси, измените параметры `InvertX` и `InvertY` на `1`, в конфигурационном файле "Config.ini".
 
