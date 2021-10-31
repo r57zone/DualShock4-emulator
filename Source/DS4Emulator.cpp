@@ -1,6 +1,9 @@
 #include <Windows.h>
+#include <iostream>
 #include <ViGEm/Client.h>
 #include <mutex>
+#include <vector>
+#include "JslWrapper.h"
 #include "IniReader\IniReader.h"
 
 //#include <winsock2.h>
@@ -29,6 +32,8 @@
 
 #define ERROR_DEVICE_NOT_CONNECTED		1167
 #define ERROR_SUCCESS					0
+
+#define M_PI           3.14159265358979323846  /* pi */
 
 // XInput structures
 typedef struct _XINPUT_GAMEPAD
@@ -107,6 +112,9 @@ bool SocketActivated = false;
 std::thread *pSocketThread = NULL;
 unsigned char freePieIMU[50];
 float AccelX = 0, AccelY = 0, AccelZ = 0, GyroX = 0, GyroY = 0, GyroZ = 0;
+
+//JoyShockLibrary
+std::unique_ptr<JslWrapper> jsl;
 
 float bytesToFloat(unsigned char b3, unsigned char b2, unsigned char b1, unsigned char b0)
 {
@@ -191,8 +199,56 @@ SHORT DeadZoneXboxAxis(SHORT StickAxis, float Percent)
 	return trunc(StickAxis + StickAxis * Percent * 0.01);
 }
 
+void connectController(int *mainConHandle, int* joyConHandle)
+{
+	jsl.reset(JslWrapper::getNew());
+	int numConnected = jsl->ConnectDevices();
+	int conHandle = 0;
+	std::vector<int> deviceHandles(numConnected, 0);
+
+	if (numConnected > 0)
+	{
+		numConnected = jsl->GetConnectedDeviceHandles(&deviceHandles[0], numConnected);
+
+		if (numConnected < deviceHandles.size())
+		{
+			deviceHandles.resize(numConnected);
+		}
+
+		for (auto handle : deviceHandles) // Don't use foreach!
+		{
+			auto type = jsl->GetControllerType(handle);
+
+			if (type == JS_TYPE_JOYCON_LEFT || type == JS_TYPE_JOYCON_RIGHT)
+			{
+				*joyConHandle = handle;
+			}
+			else
+			{
+				*mainConHandle = handle;
+			}
+		}
+	}
+
+	if (numConnected == 1)
+	{
+		std::cout << "1 device connected" << std::endl;
+	}
+	else if (numConnected == 0)
+	{
+		std::cerr << numConnected << " devices connected" << std::endl;
+	}
+	else
+	{
+		std::cout << numConnected << " devices connected" << std::endl;
+	}
+}
+
 int main(int argc, char **argv)
 {
+	int joyConHandle = 0;
+	int mainConHandle = 0;
+
 	SetConsoleTitle("DS4Emulator 1.7");
 
 	CIniReader IniFile("Config.ini"); // Config
@@ -226,6 +282,10 @@ int main(int argc, char **argv)
 				WSACleanup();
 				SocketActivated = false;
 			}
+			//TEST
+			connectController(&mainConHandle, &joyConHandle);
+			std::cout << "Main contoller number is " << mainConHandle << std::endl;
+			std::cout << "JoyCon number is " << joyConHandle << std::endl;
 		}
 		else
 		{
@@ -247,7 +307,7 @@ int main(int argc, char **argv)
 
 	// Config parameters
 	int KEY_ID_EXIT = IniFile.ReadInteger("Main", "ExitBtn", 192); // "~" by default for RU, US and not for UK
-	int KEY_ID_STOP_CENTERING = IniFile.ReadInteger("KeyboardMouse", "StopÑenteringKey", 'C');
+	int KEY_ID_STOP_CENTERING = IniFile.ReadInteger("KeyboardMouse", "StopÐ¡enteringKey", 'C');
 
 	bool InvertX = IniFile.ReadBoolean("Main", "InvertX", false);
 	bool InvertY = IniFile.ReadBoolean("Main", "InvertY", false);
@@ -262,7 +322,7 @@ int main(int argc, char **argv)
 	float DeadZoneRightStickY = IniFile.ReadFloat("Xbox", "DeadZoneRightStickY", 0);
 
 	int SleepTimeOutKB = IniFile.ReadInteger("KeyboardMouse", "SleepTimeOut", 2);
-	std::string WindowTitle = IniFile.ReadString("KeyboardMouse", "ActivateOnlyInWindow", "PlayStation™Now");
+	std::string WindowTitle = IniFile.ReadString("KeyboardMouse", "ActivateOnlyInWindow", "PlayStationâ„¢Now");
 	std::string WindowTitle2 = IniFile.ReadString("KeyboardMouse", "ActivateOnlyInWindow2", "PS4 Remote Play");
 	int FullScreenTopOffset = IniFile.ReadInteger("KeyboardMouse", "FullScreenTopOffset", -50);
 	bool HideTaskBar = IniFile.ReadBoolean("KeyboardMouse", "HideTaskBarInFullScreen", true);
@@ -426,35 +486,42 @@ int main(int argc, char **argv)
 				
 				report.bThumbRY = (report.bThumbRY == 0) ? 0xFF : report.bThumbRY;
 
-				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_START) {
-					myPState.Gamepad.wButtons &= XINPUT_GAMEPAD_BACK; myPState.Gamepad.wButtons &= XINPUT_GAMEPAD_START;
-					if (SwapShareTouchPad)
-						report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD;
-					else
-						report.wButtons |= DS4_BUTTON_SHARE;
-				}
+				//if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_START) {
+				//	myPState.Gamepad.wButtons &= XINPUT_GAMEPAD_BACK; myPState.Gamepad.wButtons &= XINPUT_GAMEPAD_START;
+				//	if (SwapShareTouchPad)
+				//		report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD;
+				//	else
+				//		report.wButtons |= DS4_BUTTON_SHARE;
+				//}
 
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_START)
 					report.wButtons |= DS4_BUTTON_OPTIONS;
 
 				// Motion shaking
-				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
-					myPState.Gamepad.wButtons &= XINPUT_GAMEPAD_BACK; myPState.Gamepad.wButtons &= XINPUT_GAMEPAD_RIGHT_SHOULDER;
-					MotionShaking = true;
-				} else MotionShaking = false;
+				//if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
+				//	myPState.Gamepad.wButtons &= XINPUT_GAMEPAD_BACK; myPState.Gamepad.wButtons &= XINPUT_GAMEPAD_RIGHT_SHOULDER;
+				//	MotionShaking = true;
+				//} else MotionShaking = false;
 
 				// Swap share and touchpad
-				if (SwapShareTouchPad == false) {
-					if ((GetAsyncKeyState(KEY_ID_SHARE) & 0x8000) != 0)
-						report.wButtons |= DS4_BUTTON_SHARE;
-					if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
-						report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD;
-				} else {
-					if ((GetAsyncKeyState(KEY_ID_SHARE) & 0x8000) != 0)
-						report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD;
-					if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
-						report.wButtons |= DS4_BUTTON_SHARE;
-				}
+				//if (SwapShareTouchPad == false) {
+				//	if ((GetAsyncKeyState(KEY_ID_SHARE) & 0x8000) != 0)
+				//		report.wButtons |= DS4_BUTTON_SHARE;
+				//	if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
+				//		report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD;
+				//} else {
+				//	if ((GetAsyncKeyState(KEY_ID_SHARE) & 0x8000) != 0)
+				//		report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD;
+				//	if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
+				//		report.wButtons |= DS4_BUTTON_SHARE;
+				//}
+
+				//TEST
+				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
+					report.wButtons |= DS4_BUTTON_SHARE;
+
+				if (jsl->GetButtons(mainConHandle) & (1 << JSOFFSET_HOME))
+					report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD;
 
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_Y)
 					report.wButtons |= DS4_BUTTON_TRIANGLE;
@@ -562,7 +629,7 @@ int main(int argc, char **argv)
 				if (InvertY)
 					DeltaMouseY = DeltaMouseY * -1;
 
-				// Are there better options? / Åñòü âàðèàíò ëó÷øå?
+				// Are there better options? / Ð•ÑÑ‚ÑŒ Ð²Ð°Ñ€Ð¸Ð°Ð½Ñ‚ Ð»ÑƒÑ‡ÑˆÐµ?
 				if (DeltaMouseX > 0)
 					report.bThumbRX = 128 + trunc( Clamp(DeltaMouseX * mouseSensetiveX, 0, 127) );
 				if (DeltaMouseX < 0)
@@ -694,13 +761,13 @@ int main(int argc, char **argv)
 			BuffPreviousTouch[0].bIsUpTrackingNum1 = 0x80;
 		}
 
-		// Probably the wrong way, but it works, temporary workaround / Âåðîÿòíî íåâåðíûé ïóòü, íî îí ðàáîòàåò, ïîäîéäåò êàê âðåìåííîå ðåøåíèå
+		// Probably the wrong way, but it works, temporary workaround / Ð’ÐµÑ€Ð¾ÑÑ‚Ð½Ð¾ Ð½ÐµÐ²ÐµÑ€Ð½Ñ‹Ð¹ Ð¿ÑƒÑ‚ÑŒ, Ð½Ð¾ Ð¾Ð½ Ñ€Ð°Ð±Ð¾Ñ‚Ð°ÐµÑ‚, Ð¿Ð¾Ð´Ð¾Ð¹Ð´ÐµÑ‚ ÐºÐ°Ðº Ð²Ñ€ÐµÐ¼ÐµÐ½Ð½Ð¾Ðµ Ñ€ÐµÑˆÐµÐ½Ð¸Ðµ
 		report.sCurrentTouch.bIsUpTrackingNum1 = 0x80;
 		if (TouchX != 0 || TouchY != 0) { 
 			report.bTouchPacketsN = 1;
 			
 			if (AllowIncTouchIndex) {
-				if (TouchIndex < 255) // Is this the right way? / Âåðíûé ëè ýòî ïóòü?
+				if (TouchIndex < 255) // Is this the right way? / Ð’ÐµÑ€Ð½Ñ‹Ð¹ Ð»Ð¸ ÑÑ‚Ð¾ Ð¿ÑƒÑ‚ÑŒ?
 					TouchIndex++;
 				else
 					TouchIndex = 0;
@@ -722,13 +789,36 @@ int main(int argc, char **argv)
 
 		report.sCurrentTouch.bPacketCounter = TouchIndex;
 
-		report.wAccelX = trunc( Clamp(AccelX * 1638.35, -32767, 32767) ) * 1 * MotionSens; // freepie accel max 19.61, min -20, short -32,768 to 32,767
-		report.wAccelY = trunc( Clamp(AccelY * 1638.35, -32767, 32767) ) * -1 * MotionSens;
-		report.wAccelZ = trunc( Clamp(AccelZ * 1638.35, -32767, 32767) ) * 1 * MotionSens;
+		//TEST
+		IMU_STATE imu = jsl->GetIMUState(joyConHandle);
 
-		report.wGyroX = trunc( Clamp(GyroX * 2376.7, -32767, 32767) ) * 1 * MotionSens; // freepie max gyro 10, min -10.09
-		report.wGyroY = trunc( Clamp(GyroY * 2376.7, -32767, 32767) ) * -1 * MotionSens;
-		report.wGyroZ = trunc( Clamp(GyroZ * 2376.7, -32767, 32767) ) * 1 * MotionSens;
+		constexpr float toMs = 9.8f / 1.f;
+		AccelX = imu.accelX * toMs;
+		AccelY = imu.accelY * toMs;
+		AccelZ = imu.accelZ * toMs;
+
+		constexpr float toRadPerSec = M_PI / 180.f;
+		GyroX = imu.gyroX * toRadPerSec;
+		GyroY = imu.gyroY * toRadPerSec;
+		GyroZ = imu.gyroZ * toRadPerSec;
+
+		//Vertical JoyCon mode
+		//report.wAccelX = trunc( Clamp(AccelX * 1638.35, -32767, 32767) ) * 1 * MotionSens; // freepie accel max 19.61, min -20, short -32,768 to 32,767
+		//report.wAccelY = trunc( Clamp(AccelY * 1638.35, -32767, 32767) ) * 1 * MotionSens;
+		//report.wAccelZ = trunc( Clamp(AccelZ * 1638.35, -32767, 32767) ) * 1 * MotionSens;
+
+		//report.wGyroX = trunc( Clamp(GyroX * 2376.7, -32767, 32767) ) * 1 * MotionSens; // freepie max gyro 10, min -10.09
+		//report.wGyroY = trunc( Clamp(GyroY * 2376.7, -32767, 32767) ) * 1 * MotionSens;
+		//report.wGyroZ = trunc( Clamp(GyroZ * 2376.7, -32767, 32767) ) * 1 * MotionSens;
+
+		//Horizontal JoyCon mode
+		report.wAccelX = trunc(Clamp(AccelZ * 1638.35, -32767, 32767)) * 1 * MotionSens; // freepie accel max 19.61, min -20, short -32,768 to 32,767
+		report.wAccelY = trunc(Clamp(AccelY * 1638.35, -32767, 32767)) * 1 * MotionSens;
+		report.wAccelZ = trunc(Clamp(AccelX * 1638.35, -32767, 32767)) * -1 * MotionSens;
+
+		report.wGyroX = trunc(Clamp(GyroZ * 2376.7, -32767, 32767)) * 1 * MotionSens; // freepie max gyro 10, min -10.09
+		report.wGyroY = trunc(Clamp(GyroY * 2376.7, -32767, 32767)) * 1 * MotionSens;
+		report.wGyroZ = trunc(Clamp(GyroX * 2376.7, -32767, 32767)) * -1 * MotionSens;
 
 		//if ((GetAsyncKeyState(VK_NUMPAD1) & 0x8000) != 0) printf("%d\t%d\t%d\t%d\t%d\t%d\t\n", report.wAccelX, report.wAccelY, report.wAccelZ, report.wGyroX, report.wGyroY, report.wGyroZ);
 
@@ -743,6 +833,13 @@ int main(int argc, char **argv)
 				report.wGyroX = 2700;		report.wGyroY = -5000;		report.wGyroZ = 140;
 			}
 		}
+
+		//report.wAccelX = imu.accelX;
+		//report.wAccelY = imu.accelY;
+		//report.wAccelZ = imu.accelZ;
+		//report.wGyroX = imu.gyroX;
+		//report.wGyroY = imu.gyroY;
+		//report.wGyroZ = imu.gyroZ;
 
 		// if ((GetAsyncKeyState(VK_NUMPAD0) & 0x8000) != 0) system("cls");
 
@@ -764,6 +861,8 @@ int main(int argc, char **argv)
 	vigem_free(client);
 	FreeLibrary(hDll);
 	hDll = nullptr;
+
+	jsl->DisconnectAndDisposeAll();
 
 	if (SocketActivated) {
 		SocketActivated = false;
