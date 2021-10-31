@@ -23,33 +23,33 @@
     <ProjectGuid>{2F4ED0AB-0B51-4506-91AA-1984C5D44B85}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>DS4Emulator</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>DS4Emulator</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -82,6 +82,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -142,7 +143,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>setupapi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;setupapi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -164,11 +165,12 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>setupapi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;setupapi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DS4Emulator.cpp" />
+    <ClCompile Include="SDL2Wrapper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\ViGEmClient.vcxproj">
@@ -179,7 +181,95 @@
     <Image Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="JslWrapper.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="SDL\begin_code.h" />
+    <ClInclude Include="SDL\close_code.h" />
+    <ClInclude Include="SDL\SDL.h" />
+    <ClInclude Include="SDL\SDL_assert.h" />
+    <ClInclude Include="SDL\SDL_atomic.h" />
+    <ClInclude Include="SDL\SDL_audio.h" />
+    <ClInclude Include="SDL\SDL_bits.h" />
+    <ClInclude Include="SDL\SDL_blendmode.h" />
+    <ClInclude Include="SDL\SDL_clipboard.h" />
+    <ClInclude Include="SDL\SDL_config.h" />
+    <ClInclude Include="SDL\SDL_config_android.h" />
+    <ClInclude Include="SDL\SDL_config_iphoneos.h" />
+    <ClInclude Include="SDL\SDL_config_macosx.h" />
+    <ClInclude Include="SDL\SDL_config_minimal.h" />
+    <ClInclude Include="SDL\SDL_config_os2.h" />
+    <ClInclude Include="SDL\SDL_config_pandora.h" />
+    <ClInclude Include="SDL\SDL_config_psp.h" />
+    <ClInclude Include="SDL\SDL_config_windows.h" />
+    <ClInclude Include="SDL\SDL_config_winrt.h" />
+    <ClInclude Include="SDL\SDL_config_wiz.h" />
+    <ClInclude Include="SDL\SDL_copying.h" />
+    <ClInclude Include="SDL\SDL_cpuinfo.h" />
+    <ClInclude Include="SDL\SDL_egl.h" />
+    <ClInclude Include="SDL\SDL_endian.h" />
+    <ClInclude Include="SDL\SDL_error.h" />
+    <ClInclude Include="SDL\SDL_events.h" />
+    <ClInclude Include="SDL\SDL_filesystem.h" />
+    <ClInclude Include="SDL\SDL_gamecontroller.h" />
+    <ClInclude Include="SDL\SDL_gesture.h" />
+    <ClInclude Include="SDL\SDL_haptic.h" />
+    <ClInclude Include="SDL\SDL_hints.h" />
+    <ClInclude Include="SDL\SDL_joystick.h" />
+    <ClInclude Include="SDL\SDL_keyboard.h" />
+    <ClInclude Include="SDL\SDL_keycode.h" />
+    <ClInclude Include="SDL\SDL_loadso.h" />
+    <ClInclude Include="SDL\SDL_locale.h" />
+    <ClInclude Include="SDL\SDL_log.h" />
+    <ClInclude Include="SDL\SDL_main.h" />
+    <ClInclude Include="SDL\SDL_messagebox.h" />
+    <ClInclude Include="SDL\SDL_metal.h" />
+    <ClInclude Include="SDL\SDL_misc.h" />
+    <ClInclude Include="SDL\SDL_mouse.h" />
+    <ClInclude Include="SDL\SDL_mutex.h" />
+    <ClInclude Include="SDL\SDL_name.h" />
+    <ClInclude Include="SDL\SDL_opengl.h" />
+    <ClInclude Include="SDL\SDL_opengles.h" />
+    <ClInclude Include="SDL\SDL_opengles2.h" />
+    <ClInclude Include="SDL\SDL_opengles2_gl2.h" />
+    <ClInclude Include="SDL\SDL_opengles2_gl2ext.h" />
+    <ClInclude Include="SDL\SDL_opengles2_gl2platform.h" />
+    <ClInclude Include="SDL\SDL_opengles2_khrplatform.h" />
+    <ClInclude Include="SDL\SDL_opengl_glext.h" />
+    <ClInclude Include="SDL\SDL_pixels.h" />
+    <ClInclude Include="SDL\SDL_platform.h" />
+    <ClInclude Include="SDL\SDL_power.h" />
+    <ClInclude Include="SDL\SDL_quit.h" />
+    <ClInclude Include="SDL\SDL_rect.h" />
+    <ClInclude Include="SDL\SDL_render.h" />
+    <ClInclude Include="SDL\SDL_revision.h" />
+    <ClInclude Include="SDL\SDL_rwops.h" />
+    <ClInclude Include="SDL\SDL_scancode.h" />
+    <ClInclude Include="SDL\SDL_sensor.h" />
+    <ClInclude Include="SDL\SDL_shape.h" />
+    <ClInclude Include="SDL\SDL_stdinc.h" />
+    <ClInclude Include="SDL\SDL_surface.h" />
+    <ClInclude Include="SDL\SDL_system.h" />
+    <ClInclude Include="SDL\SDL_syswm.h" />
+    <ClInclude Include="SDL\SDL_test.h" />
+    <ClInclude Include="SDL\SDL_test_assert.h" />
+    <ClInclude Include="SDL\SDL_test_common.h" />
+    <ClInclude Include="SDL\SDL_test_compare.h" />
+    <ClInclude Include="SDL\SDL_test_crc32.h" />
+    <ClInclude Include="SDL\SDL_test_font.h" />
+    <ClInclude Include="SDL\SDL_test_fuzzer.h" />
+    <ClInclude Include="SDL\SDL_test_harness.h" />
+    <ClInclude Include="SDL\SDL_test_images.h" />
+    <ClInclude Include="SDL\SDL_test_log.h" />
+    <ClInclude Include="SDL\SDL_test_md5.h" />
+    <ClInclude Include="SDL\SDL_test_memory.h" />
+    <ClInclude Include="SDL\SDL_test_random.h" />
+    <ClInclude Include="SDL\SDL_thread.h" />
+    <ClInclude Include="SDL\SDL_timer.h" />
+    <ClInclude Include="SDL\SDL_touch.h" />
+    <ClInclude Include="SDL\SDL_types.h" />
+    <ClInclude Include="SDL\SDL_version.h" />
+    <ClInclude Include="SDL\SDL_video.h" />
+    <ClInclude Include="SDL\SDL_vulkan.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />
