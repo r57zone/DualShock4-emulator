@@ -3,6 +3,10 @@
 # DualShock4 emulator
 Simple application to emulate the Sony DualShock 4 gamepad using an Xbox controller or keyboard and mouse. This method is necessary for the fully work of the service [Sony Playstation Now](https://www.playstation.com/en-us/explore/playstation-now/) or [Playstation Remote Play](https://www.playstation.com/remote-play/). Works based on the driver [ViGEm](https://github.com/ViGEm).
 
+## Below is an image to show how to attach a JoyCon to a GPD Win3 to use Gyro/Accel.
+Surely you can attach in many different ways, but remember to change the Gyro/Accel rotation in the code.
+![Image text](image/GPDWin3_with_JoyCon.jpg)
+
 ## Setup
 1. Install [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases).
 2. Install Microsoft Visual C++ Redistributable 2017 or newer.
