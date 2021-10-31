@@ -248,6 +248,7 @@ int main(int argc, char **argv)
 {
 	int joyConHandle = 0;
 	int mainConHandle = 0;
+	IMU_STATE imu;
 
 	SetConsoleTitle("DS4Emulator 1.7");
 
@@ -520,8 +521,11 @@ int main(int argc, char **argv)
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
 					report.wButtons |= DS4_BUTTON_SHARE;
 
-				if (jsl->GetButtons(mainConHandle) & (1 << JSOFFSET_HOME))
-					report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD;
+				if (mainConHandle != 0)
+				{
+					if (jsl->GetButtons(mainConHandle) & (1 << JSOFFSET_HOME))
+						report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD;
+				}
 
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_Y)
 					report.wButtons |= DS4_BUTTON_TRIANGLE;
@@ -790,17 +794,19 @@ int main(int argc, char **argv)
 		report.sCurrentTouch.bPacketCounter = TouchIndex;
 
 		//TEST
-		IMU_STATE imu = jsl->GetIMUState(joyConHandle);
+		if (joyConHandle != 0)
+		{
+			imu = jsl->GetIMUState(joyConHandle);
+			constexpr float toMs = 9.8f / 1.f;
+			AccelX = imu.accelX * toMs;
+			AccelY = imu.accelY * toMs;
+			AccelZ = imu.accelZ * toMs;
 
-		constexpr float toMs = 9.8f / 1.f;
-		AccelX = imu.accelX * toMs;
-		AccelY = imu.accelY * toMs;
-		AccelZ = imu.accelZ * toMs;
-
-		constexpr float toRadPerSec = M_PI / 180.f;
-		GyroX = imu.gyroX * toRadPerSec;
-		GyroY = imu.gyroY * toRadPerSec;
-		GyroZ = imu.gyroZ * toRadPerSec;
+			constexpr float toRadPerSec = M_PI / 180.f;
+			GyroX = imu.gyroX * toRadPerSec;
+			GyroY = imu.gyroY * toRadPerSec;
+			GyroZ = imu.gyroZ * toRadPerSec;
+		}
 
 		//Vertical JoyCon mode
 		//report.wAccelX = trunc( Clamp(AccelX * 1638.35, -32767, 32767) ) * 1 * MotionSens; // freepie accel max 19.61, min -20, short -32,768 to 32,767
