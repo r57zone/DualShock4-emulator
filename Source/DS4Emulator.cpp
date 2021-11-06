@@ -809,22 +809,22 @@ int main(int argc, char **argv)
 		}
 
 		//Vertical JoyCon mode
-		//report.wAccelX = trunc( Clamp(AccelX * 1638.35, -32767, 32767) ) * 1 * MotionSens; // freepie accel max 19.61, min -20, short -32,768 to 32,767
-		//report.wAccelY = trunc( Clamp(AccelY * 1638.35, -32767, 32767) ) * 1 * MotionSens;
-		//report.wAccelZ = trunc( Clamp(AccelZ * 1638.35, -32767, 32767) ) * 1 * MotionSens;
+		report.wAccelX = trunc( Clamp(AccelX * 1638.35 * 1.0479 / 2, -32767, 32767) ) * 1 * MotionSens; // freepie accel max 19.61, min -20, short -32,768 to 32,767
+		report.wAccelY = trunc( Clamp(AccelY * 1638.35 * 1.0479 / 2, -32767, 32767) ) * 1 * MotionSens;
+		report.wAccelZ = trunc( Clamp(AccelZ * 1638.35 * 1.0479 / 2, -32767, 32767) ) * 1 * MotionSens;
 
-		//report.wGyroX = trunc( Clamp(GyroX * 2376.7, -32767, 32767) ) * 1 * MotionSens; // freepie max gyro 10, min -10.09
-		//report.wGyroY = trunc( Clamp(GyroY * 2376.7, -32767, 32767) ) * 1 * MotionSens;
-		//report.wGyroZ = trunc( Clamp(GyroZ * 2376.7, -32767, 32767) ) * 1 * MotionSens;
+		report.wGyroX = trunc( Clamp(GyroX * 2376.7 * 0.8 / 2, -32767, 32767) ) * 1 * MotionSens; // freepie max gyro 10, min -10.09
+		report.wGyroY = trunc( Clamp(GyroY * 2376.7 * 0.8 / 2, -32767, 32767) ) * 1 * MotionSens;
+		report.wGyroZ = trunc( Clamp(GyroZ * 2376.7 * 0.8 / 2, -32767, 32767) ) * 1 * MotionSens;
 
 		//Horizontal JoyCon mode
-		report.wAccelX = trunc(Clamp(AccelZ * 1638.35, -32767, 32767)) * 1 * MotionSens; // freepie accel max 19.61, min -20, short -32,768 to 32,767
-		report.wAccelY = trunc(Clamp(AccelY * 1638.35, -32767, 32767)) * 1 * MotionSens;
-		report.wAccelZ = trunc(Clamp(AccelX * 1638.35, -32767, 32767)) * -1 * MotionSens;
+		//report.wAccelX = trunc(Clamp(AccelZ * 1638.35, -32767, 32767)) * 1 * MotionSens; // freepie accel max 19.61, min -20, short -32,768 to 32,767
+		//report.wAccelY = trunc(Clamp(AccelY * 1638.35, -32767, 32767)) * 1 * MotionSens;
+		//report.wAccelZ = trunc(Clamp(AccelX * 1638.35, -32767, 32767)) * -1 * MotionSens;
 
-		report.wGyroX = trunc(Clamp(GyroZ * 2376.7, -32767, 32767)) * 1 * MotionSens; // freepie max gyro 10, min -10.09
-		report.wGyroY = trunc(Clamp(GyroY * 2376.7, -32767, 32767)) * 1 * MotionSens;
-		report.wGyroZ = trunc(Clamp(GyroX * 2376.7, -32767, 32767)) * -1 * MotionSens;
+		//report.wGyroX = trunc(Clamp(GyroZ * 2376.7, -32767, 32767)) * 1 * MotionSens; // freepie max gyro 10, min -10.09
+		//report.wGyroY = trunc(Clamp(GyroY * 2376.7, -32767, 32767)) * 1 * MotionSens;
+		//report.wGyroZ = trunc(Clamp(GyroX * 2376.7, -32767, 32767)) * -1 * MotionSens;
 
 		//if ((GetAsyncKeyState(VK_NUMPAD1) & 0x8000) != 0) printf("%d\t%d\t%d\t%d\t%d\t%d\t\n", report.wAccelX, report.wAccelY, report.wAccelZ, report.wGyroX, report.wGyroY, report.wGyroZ);
 
