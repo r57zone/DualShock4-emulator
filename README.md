@@ -5,7 +5,8 @@ Simple application to emulate the Sony DualShock 4 gamepad using an Xbox control
 
 ## Below is an image to show how to attach a JoyCon to a GPD Win3 to use Gyro/Accel.
 Surely you can attach in many different ways, but remember to change the Gyro/Accel rotation in the code.
-![Image text](image/GPDWin3_with_JoyCon.jpg)
+Below is an exmaple with JoyCon in a vertical direction, with the Ring Fit Adventure leg strap.
+![Image text](image/GPDWin3_with_JoyCon_vertical.jpg)
 
 ## Setup
 1. Install [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases).
