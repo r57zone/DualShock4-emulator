@@ -8,6 +8,8 @@ Surely you can attach in many different ways, but remember to change the Gyro/Ac
 Below is an exmaple with JoyCon in a vertical direction, with the Ring Fit Adventure leg strap.
 ![Image text](image/GPDWin3_with_JoyCon_vertical.jpg)
 
+[![](https://res.cloudinary.com/marcomontalbano/image/upload/v1636254052/video_to_markdown/images/youtube--Ec7asCy_7CU-c05b58ac6eb4c4700831b2b3070cd403.jpg)](https://youtu.be/Ec7asCy_7CU "")
+
 ## Setup
 1. Install [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases).
 2. Install Microsoft Visual C++ Redistributable 2017 or newer.
