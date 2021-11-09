@@ -11,6 +11,7 @@
 #define XINPUT_GAMEPAD_DPAD_DOWN        0x0002
 #define XINPUT_GAMEPAD_DPAD_LEFT        0x0004
 #define XINPUT_GAMEPAD_DPAD_RIGHT       0x0008
+#define XINPUT_GAMEPAD_GUIDE            0x0400
 #define XINPUT_GAMEPAD_START            0x0010
 #define XINPUT_GAMEPAD_BACK             0x0020
 #define XINPUT_GAMEPAD_LEFT_THUMB       0x0040
@@ -196,7 +197,7 @@ SHORT DeadZoneXboxAxis(SHORT StickAxis, float Percent)
 
 int main(int argc, char **argv)
 {
-	SetConsoleTitle("DS4Emulator 1.7.4");
+	SetConsoleTitle("DS4Emulator 1.7.5");
 
 	CIniReader IniFile("Config.ini"); // Config
 
@@ -235,6 +236,10 @@ int main(int argc, char **argv)
 		}
 	}
 	float MotionSens = IniFile.ReadFloat("Motion", "Sens", 100) * 0.01;
+	int InverseXStatus = IniFile.ReadBoolean("Motion", "InverseX", false) == false ? 1 : -1 ;
+	int InverseYStatus = IniFile.ReadBoolean("Motion", "InverseY", false) == false ? 1 : -1 ;
+	int InverseZStatus = IniFile.ReadBoolean("Motion", "InverseZ", false) == false ? 1 : -1 ;
+
 	SleepTimeOutMotion = IniFile.ReadInteger("Motion", "SleepTimeOut", 1);
 
 	#define OCR_NORMAL 32512
@@ -249,7 +254,7 @@ int main(int argc, char **argv)
 
 	// Config parameters
 	int KEY_ID_EXIT = IniFile.ReadInteger("Main", "ExitBtn", 192); // "~" by default for RU, US and not for UK
-	int KEY_ID_STOP_CENTERING = IniFile.ReadInteger("KeyboardMouse", "StopСenteringKey", 'C');
+	int KEY_ID_STOP_CENTERING = IniFile.ReadInteger("KeyboardMouse", "StopCenteringKey", 'C');
 
 	bool InvertX = IniFile.ReadBoolean("Main", "InvertX", false);
 	bool InvertY = IniFile.ReadBoolean("Main", "InvertY", false);
@@ -265,7 +270,7 @@ int main(int argc, char **argv)
 	float DeadZoneRightStickY = IniFile.ReadFloat("Xbox", "DeadZoneRightStickY", 0);
 
 	int SleepTimeOutKB = IniFile.ReadInteger("KeyboardMouse", "SleepTimeOut", 2);
-	std::string WindowTitle = IniFile.ReadString("KeyboardMouse", "ActivateOnlyInWindow", "PlayStation™Now");
+	std::string WindowTitle = IniFile.ReadString("KeyboardMouse", "ActivateOnlyInWindow", "PlayStationв„ўNow");
 	std::string WindowTitle2 = IniFile.ReadString("KeyboardMouse", "ActivateOnlyInWindow2", "PS4 Remote Play");
 	int FullScreenTopOffset = IniFile.ReadInteger("KeyboardMouse", "FullScreenTopOffset", -50);
 	bool HideTaskBar = IniFile.ReadBoolean("KeyboardMouse", "HideTaskBarInFullScreen", true);
@@ -313,7 +318,6 @@ int main(int argc, char **argv)
 	int KEY_ID_TOUCHPAD_LEFT = IniFile.ReadInteger("Keys", "TOUCHPAD_LEFT", 'H');
 	int KEY_ID_TOUCHPAD_RIGHT = IniFile.ReadInteger("Keys", "TOUCHPAD_RIGHT", 'K');
 	int KEY_ID_TOUCHPAD_CENTER = IniFile.ReadInteger("Keys", "TOUCHPAD_CENTER", 'J');
-	int KEY_ID_TOUCHPAD_SECOND_RIGHT = IniFile.ReadInteger("Keys", "TOUCHPAD_SECOND_RIGHT", 'J');
 
 	const auto client = vigem_alloc();
 	auto ret = vigem_connect(client);
@@ -329,8 +333,9 @@ int main(int argc, char **argv)
 
 	// Load library and scan Xbox gamepads
 	hDll = LoadLibrary("xinput1_3.dll"); // x360ce support
+	if (hDll == NULL) hDll = LoadLibrary("xinput1_4.dll");
 	if (hDll != NULL) {
-		MyXInputGetState = (_XInputGetState)GetProcAddress(hDll, "XInputGetState");
+		MyXInputGetState = (_XInputGetState)GetProcAddress(hDll, (LPCSTR)100); // "XInputGetState"); // Ordinal 100 is the same as XInputGetState but supports the Guide button. Taken here https://github.com/speps/XInputDotNet/blob/master/XInputInterface/GamePad.cpp
 		MyXInputSetState = (_XInputSetState)GetProcAddress(hDll, "XInputSetState");
 		if (MyXInputGetState == NULL || MyXInputSetState == NULL)
 			hDll = NULL;
@@ -449,6 +454,7 @@ int main(int argc, char **argv)
 					myPState.Gamepad.wButtons &= ~XINPUT_GAMEPAD_BACK; myPState.Gamepad.wButtons &= ~XINPUT_GAMEPAD_LEFT_SHOULDER;
 					report.bSpecial |= DS4_SPECIAL_BUTTON_PS;
 				}
+				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_GUIDE) report.bSpecial |= DS4_SPECIAL_BUTTON_PS;
 
 				// Motion shaking
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
@@ -529,8 +535,10 @@ int main(int argc, char **argv)
 
 				// Touchpad swipes
 				if (report.bSpecial & DS4_SPECIAL_BUTTON_TOUCHPAD) {
-					if (!TouchPadPressedWhenSwiping && (report.bThumbRX != 127 || report.bThumbRY != 129) )
+					if (!TouchPadPressedWhenSwiping && (report.bThumbRX != 127 || report.bThumbRY != 129) ) {
 						report.bSpecial &= ~DS4_SPECIAL_BUTTON_TOUCHPAD;
+						if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) { report.wButtons &= ~DS4_BUTTON_THUMB_RIGHT; report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD; }
+					}
 					TouchX = 960; TouchY = 471;
 					if (report.bThumbRX > 127)
 						TouchX = 320 + (report.bThumbRX - 127) * 10;
@@ -577,7 +585,7 @@ int main(int argc, char **argv)
 				if (InvertY)
 					DeltaMouseY = DeltaMouseY * -1;
 
-				// Are there better options? / Есть вариант лучше?
+				// Are there better options? / Р•СЃС‚СЊ РІР°СЂРёР°РЅС‚ Р»СѓС‡С€Рµ?
 				if (DeltaMouseX > 0)
 					report.bThumbRX = 128 + trunc( Clamp(DeltaMouseX * mouseSensetiveX, 0, 127) );
 				if (DeltaMouseX < 0)
@@ -692,13 +700,6 @@ int main(int argc, char **argv)
 			}
 		}
 
-		if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_SECOND_RIGHT) & 0x8000) != 0) { // Bad temporary solution for Infamous: Second Son https://youtu.be/i7w4G1CIdog?t=667
-			report.sCurrentTouch.bIsUpTrackingNum2 = 0;
-			report.sCurrentTouch.bTouchData2[0] = 1600 & 0xFF;
-			report.sCurrentTouch.bTouchData2[1] = ((1600 >> 8) & 0x0F) | ((471 & 0x0F) << 4);
-			report.sCurrentTouch.bTouchData2[2] = (471 >> 4) & 0xFF;
-		}
-
 		if (BuffPreviousTouch[1].bIsUpTrackingNum1 == 0) {
 			//printf("2: prev 2 touched\r\n");
 			report.sPreviousTouch[1] = BuffPreviousTouch[1];
@@ -714,12 +715,12 @@ int main(int argc, char **argv)
 			BuffPreviousTouch[0].bIsUpTrackingNum1 = 0x80;
 		}
 
-		// Probably the wrong way, but it works, temporary workaround / Вероятно неверный путь, но он работает, подойдет как временное решение
+		// Probably the wrong way, but it works, temporary workaround / Р’РµСЂРѕСЏС‚РЅРѕ РЅРµРІРµСЂРЅС‹Р№ РїСѓС‚СЊ, РЅРѕ РѕРЅ СЂР°Р±РѕС‚Р°РµС‚, РїРѕРґРѕР№РґРµС‚ РєР°Рє РІСЂРµРјРµРЅРЅРѕРµ СЂРµС€РµРЅРёРµ
 		if (TouchX != 0 || TouchY != 0) { 
 			report.bTouchPacketsN = 1;
 			
 			if (AllowIncTouchIndex) {
-				if (TouchIndex < 255) // Is this the right way? / Верный ли это путь?
+				if (TouchIndex < 255) // Is this the right way? / Р’РµСЂРЅС‹Р№ Р»Рё СЌС‚Рѕ РїСѓС‚СЊ?
 					TouchIndex++;
 				else
 					TouchIndex = 0;
@@ -741,12 +742,12 @@ int main(int argc, char **argv)
 
 		report.sCurrentTouch.bPacketCounter = TouchIndex;
 
-		report.wAccelX = trunc( Clamp(AccelX * 1638.35, -32767, 32767) ) * 1 * MotionSens; // freepie accel max 19.61, min -20, short -32,768 to 32,767
-		report.wAccelY = trunc( Clamp(AccelY * 1638.35, -32767, 32767) ) * -1 * MotionSens;
-		report.wAccelZ = trunc( Clamp(AccelZ * 1638.35, -32767, 32767) ) * 1 * MotionSens;
-		report.wGyroX = trunc( Clamp(GyroX * 2376.7, -32767, 32767) ) * 1 * MotionSens; // freepie max gyro 10, min -10.09
-		report.wGyroY = trunc( Clamp(GyroY * 2376.7, -32767, 32767) ) * -1 * MotionSens;
-		report.wGyroZ = trunc( Clamp(GyroZ * 2376.7, -32767, 32767) ) * 1 * MotionSens; // if ((GetAsyncKeyState(VK_NUMPAD1) & 0x8000) != 0) printf("%d\t%d\t%d\t%d\t%d\t%d\t\n", report.wAccelX, report.wAccelY, report.wAccelZ, report.wGyroX, report.wGyroY, report.wGyroZ);
+		report.wAccelX = trunc( Clamp(AccelX * 1638.35, -32767, 32767) ) * InverseXStatus * MotionSens; // freepie accel max 19.61, min -20, short -32,768 to 32,767
+		report.wAccelY = trunc( Clamp(AccelY * 1638.35, -32767, 32767) ) * InverseYStatus * MotionSens;
+		report.wAccelZ = trunc( Clamp(AccelZ * 1638.35, -32767, 32767) ) * InverseZStatus * MotionSens;
+		report.wGyroX = trunc( Clamp(GyroX * 2376.7, -32767, 32767) ) * InverseXStatus * MotionSens; // freepie max gyro 10, min -10.09
+		report.wGyroY = trunc( Clamp(GyroY * 2376.7, -32767, 32767) ) * InverseYStatus * MotionSens;
+		report.wGyroZ = trunc( Clamp(GyroZ * 2376.7, -32767, 32767) ) * InverseZStatus * MotionSens; // if ((GetAsyncKeyState(VK_NUMPAD1) & 0x8000) != 0) printf("%d\t%d\t%d\t%d\t%d\t%d\t\n", report.wAccelX, report.wAccelY, report.wAccelZ, report.wGyroX, report.wGyroY, report.wGyroZ);
 
 		// Motion shaking
 		if (MotionShaking) {
@@ -763,17 +764,10 @@ int main(int argc, char **argv)
 		// Multi mode keys
 		if ((GetAsyncKeyState(KEY_ID_PS) & 0x8000) != 0)
 			report.bSpecial |= DS4_SPECIAL_BUTTON_PS;
-		if ((GetAsyncKeyState(KEY_ID_TOUCHPAD_SECOND_RIGHT) & 0x8000) != 0) { // Bad temporary solution for Infamous: Second Son https://youtu.be/i7w4G1CIdog?t=667
-			report.bTouchPacketsN = 2;
-			report.sCurrentTouch.bIsUpTrackingNum2 = 0;
-			report.sCurrentTouch.bTouchData2[0] = 1600 & 0xFF;
-			report.sCurrentTouch.bTouchData2[1] = ((1600 >> 8) & 0x0F) | ((471 & 0x0F) << 4);
-			report.sCurrentTouch.bTouchData2[2] = (471 >> 4) & 0xFF;
-		}
 
 		// if ((GetAsyncKeyState(VK_NUMPAD0) & 0x8000) != 0) system("cls");
-		
-		curTimeStamp++; if (curTimeStamp > 65535) curTimeStamp = 0; // ?
+
+		curTimeStamp++; if (curTimeStamp > 65535) curTimeStamp = 0; // Is it right? / РџСЂР°РІРёР»СЊРЅРѕ Р»Рё СЌС‚Рѕ?
 		report.wTimestamp = curTimeStamp;
 
 		ret = vigem_target_ds4_update_ex(client, ds4, report);

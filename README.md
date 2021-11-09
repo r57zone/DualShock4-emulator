@@ -13,9 +13,9 @@ Simple application to emulate the Sony DualShock 4 gamepad using an Xbox control
 ## Xbox controller
 The "Back" button on the Xbox controller emulating pressing the touchpad on a Sony DualShock 4.
 
-The "Share" button is binded to the simultaneous pressing of the "Back" and "Start" buttons or to the "F12" key.
+The "PS Share" button is binded to the simultaneous pressing of the "Back" and "Start" buttons or to the "F12" key.
 
-The "PS" button is binded to the simultaneous pressing of the "Back" and "LB" buttons (left bumper) or to the "F2" key.
+The "PS" button is binded to the "Xbox" button, but to use it, you need to disable the use of this button in the "Xbox Game Bar" settings. Also, the "PS" button is tied to the simultaneous pressing of the "Back" and "LB" buttons (left bumper) and the "F2" key.
 
 You can shake (gyro) the controller by pressing "Back" and "RB" (right bumper). 
 
@@ -78,7 +78,6 @@ L3 (pressing the stick) | Shift
 R3 (pressing the stick) | Middle mouse button
 Touchpad swipe up, down, left, right | 7, 8, 9, 0
 Touchpad up, center, left, right, down  | U, J, H, K, N
-Touchpad second touch on the right  | I
 Shake the gamepad | T
 PS | F2
 
