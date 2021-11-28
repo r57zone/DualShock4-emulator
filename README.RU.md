@@ -96,9 +96,7 @@ PS | F2
 **[Загрузить](https://github.com/r57zone/DualShock4-emulator/releases)**
 
 ## Форки
-1. Форк, с поддержской чтения данных гироскопа с Nintendo Joy-Con. 
-
-**[Подробнее](https://github.com/Okoken/DualShock4-emulator)**
+Форк, с поддержской чтения данных гироскопа с Nintendo Joy-Con. **[Подробнее](https://github.com/Okoken/DualShock4-emulator)**
 
 ## Обратная связь
 `r57zone[собака]gmail.com`

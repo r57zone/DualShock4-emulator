@@ -97,9 +97,7 @@ You can also enable emulation of analog triggers (L2, R2), change the `EmulateAn
 **[Download](https://github.com/r57zone/DualShock4-emulator/releases)**
 
 ## Forks
-1. Fork with support for reading gyroscope data from Nintendo Joy-Con.
-
-**[More detailed](https://github.com/Okoken/DualShock4-emulator)**
+Fork with support for reading gyroscope data from Nintendo Joy-Con. **[More detailed](https://github.com/Okoken/DualShock4-emulator)**
 
 ## Feedback
 `r57zone[at]gmail.com`
