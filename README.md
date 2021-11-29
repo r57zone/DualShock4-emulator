@@ -11,8 +11,7 @@ Simple application to emulate the Sony DualShock 4 gamepad using an Xbox control
 5. If necessary, you can invert the axis, change the `InvertX` and `InvertY` parameters to `1` in the "Config.ini" configuration file.
 
 ## FAQ
-**The program crashes after launch, what should I do?**
-
+**• The program crashes after launch, what should I do?**<br>
 Close your antivirus completely or use the "Static" version. The "antivirus" is blocking dynamic loading of the XInput library, so the program crashes. 
 
 ## Xbox controller
