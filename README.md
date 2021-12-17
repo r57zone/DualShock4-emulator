@@ -15,7 +15,7 @@ Simple application to emulate the Sony DualShock 4 gamepad using an Xbox control
 Close your antivirus completely or use the "Static" version. The "antivirus" is blocking dynamic loading of the XInput library, so the program crashes. 
 
 ## Xbox controller
-The "Back" button on the Xbox controller emulating pressing the touchpad on a Sony DualShock 4.
+The "Back"/"View"/"Select" button (the first button to the right of the left stick) on the Xbox controller emulating pressing the touchpad on a Sony DualShock 4.
 
 The "PS Share" button is binded to the simultaneous pressing of the "Back" and "Start" buttons or to the "F12" key.
 
