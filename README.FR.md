@@ -1,8 +1,7 @@
 [![EN](https://user-images.githubusercontent.com/9499881/33184537-7be87e86-d096-11e7-89bb-f3286f752bc6.png)](https://github.com/r57zone/DualShock4-emulator/) 
 [![RU](https://user-images.githubusercontent.com/9499881/27683795-5b0fbac6-5cd8-11e7-929c-057833e01fb1.png)](https://github.com/r57zone/DualShock4-emulator/blob/master/README.RU.md)
 # Émulateur DualSock 4
-Simple application to emulate the Sony DualShock 4 gamepad using an Xbox controller or keyboard and mouse. This method is necessary for the fully work of the service [Sony Playstation Now](https://www.playstation.com/en-us/explore/playstation-now/) or [Playstation Remote Play](https://www.playstation.com/remote-play/). Works based on the driver [ViGEm](https://github.com/ViGEm).
-Application qui permet d'émuler la manette DualShock 4 de chez Sony en utilisant une manette XBox ou clavier/souris. Cette méthode est nécessaire pour un fonctionnement complet du service [Sony Playstation Now](https://www.playstation.com/fr-fr/explore/playstation-now/) ou [Playstation Remote Play](https://www.playstation.com/remote-play/). Elle fonctionne grace au pilote [ViGEm](https://github.com/ViGEm).
+Cette application qui permet d'émuler la manette DualShock 4 de chez Sony en utilisant une manette XBox ou clavier/souris. Cette méthode est nécessaire pour un fonctionnement complet du service [Sony Playstation Now](https://www.playstation.com/fr-fr/explore/playstation-now/) ou [Playstation Remote Play](https://www.playstation.com/remote-play/). Elle fonctionne grace au pilote [ViGEm](https://github.com/ViGEm).
 
 ## Installation
 1. Installer [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases).
@@ -13,23 +12,29 @@ Application qui permet d'émuler la manette DualShock 4 de chez Sony en utilisan
 
 ## FAQ
 **• Le programme se ferme après le lancement, que dois-je faire ?**<br>
-Désactivez complétement votre antivirus ou utilisez la version "Static" (voir /releases). Votre "antivirus" doit surement bloquer le chargement dynamique de l'XInput et donc le programme crash'. 
+Désactivez complétement votre antivirus ou utilisez la version "Static" (voir /releases). Votre "antivirus" doit surement bloquer le chargement dynamique de l'XInput et donc le programme crash. 
 
 ## Manette XBox
 Le bouton `Select` émule l'appui sur le `Touchpad` sur une manette Sony DualShock 4.
 
+![image](https://user-images.githubusercontent.com/17864005/146823929-067148d4-49bf-4b7f-83d6-375488eb69c6.png)
+
 
 L'appuie simultané sur le bouton `Select` et le bouton `Start` (ou touche F12) émule l'appui sur le bouton `PS Share`.
 
-
-The "PS" button is binded to the "Xbox" button, but to use it, you need to disable the use of this button in the "Xbox Game Bar" settings. Also, the "PS" button is tied to the simultaneous pressing of the "Back/View/Select" and "LB" buttons (left bumper) and the "F2" key.
-
-You can shake (gyro) the controller by pressing "Back/View/Select" and "RB" (right bumper). 
+![image](https://user-images.githubusercontent.com/17864005/146824019-8e77fd1a-7ef9-476f-83bd-819be570f325.png)
 
 
+Par défaut, le bouton `Xbox` ouvre la XBox Gamebar, si vous souhaitez que celui-ci émule le bouton `PS`, il faut d'abord désactiver la Gamebar dans vos paramètres Windows.
+![image](https://user-images.githubusercontent.com/17864005/146824411-9666d2e0-9a7c-43b5-82e4-393a53d4bc60.png)
 
-If necessary, you can swap bumpers and triggers, as well as the "share" button and pressing the touchpad, to do this change the `SwapTriggersShoulders` or `SwapShareTouchPad` parameter to `1` in the "Config.ini" configuration file.
 
+Vous pouvez émuler une secousse de la manette (gyroscope) en appuyant sur `Back/View/Select` et `RB`.
+
+![image](https://user-images.githubusercontent.com/17864005/146830489-a1c03870-e602-45fc-a6c7-9e283402a1f4.png)
+
+
+Si nécessaire, vous pouvez intervertir entre `RB-RT` et `LB-LT` ainsi que le bouton `Share` et l'appui sur le `Touchpad` en changeant `SwapTriggersShoulders` ou `SwapShareTouchPad` en `1` dans le fichier "Config.ini" (n'oubliez pas de relancer l'application après changement).
 
 
 Changing the dead zone of sticks for drifting sticks is supported. Press "ALT" + "F9" to get the values, paste them into the "Config.ini" configuration file, into the `DeadZone` parameters and restart the program.
