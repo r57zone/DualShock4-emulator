@@ -19,7 +19,7 @@ The "Back/View/Select" button (the first button to the right of the left stick) 
 
 The "PS Share" button is binded to the simultaneous pressing of the "Back/View/Select" and "Start/Menu" buttons or to the "F12" key.
 
-The "PS" button is binded to the "Xbox" button, but to use it, you need to disable the use of this button in the "Xbox Game Bar" settings. Also, the "PS" button is tied to the simultaneous pressing of the "Back/View/Select" and "LB" buttons (left bumper) and the "F2" key.
+The "PS" button is binded to the "Xbox" button, but to use it, you need to disable the use of this button in the "Xbox Game Bar" settings. Also, the "PS" button is tied to the simultaneous pressing of the "Back/View/Select" and "LB" buttons (left bumper) or the "F2" key.
 
 You can shake (gyro) the controller by pressing "Back/View/Select" and "RB" (right bumper). 
 
