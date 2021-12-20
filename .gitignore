@@ -3,3 +3,9 @@
 ################################################################################
 
 /.vs/slnx.sqlite
+/.vs/ProjectSettings.json
+*.opendb
+*.db-wal
+*.db-shm
+*.db
+/.vs/DualShock4-emulator/v16/.suo
