@@ -8,7 +8,7 @@ Cette application qui permet d'émuler la manette DualShock 4 de chez Sony en ut
 2. Installer Microsoft Visual C++ Redistributable 2017 ou plus récent.
 3. Dézipper et lancer "DS4Emulator.exe" (**Attention!** Il est important de lancer l'exe avant Playstation Now si vous utilisez la manette XBox, pour que PSNow donne la priorité à la manette (virtuelle) DS4).
 4. Lancer "PlayStation Now" ou Remote Play.
-5. Si besoin, vous pouvez inverser les axes, changer les paramètres `InvertX` et `InvertY` en `1` dans le fichier de configuration "Config.ini".
+5. Si besoin, vous pouvez inverser les axes : changez les paramètres `InvertX` et `InvertY` en `1` dans le fichier de configuration "Config.ini".
 
 ## FAQ
 **• Le programme se ferme après le lancement, que dois-je faire ?**<br>
