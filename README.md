@@ -33,7 +33,7 @@ The "PS" button is binded to the "Xbox" button, but to use it, you need to disab
 
 ![image](https://user-images.githubusercontent.com/17864005/146824411-9666d2e0-9a7c-43b5-82e4-393a53d4bc60.png)
 
-Also, the "PS" button is tied to the simultaneous pressing of the "Back/View/Select" and "LB" buttons (left bumper) and the "F2" key.
+Also, the "PS" button is tied to the simultaneous pressing of the "Back/View/Select" and "LB" buttons (left bumper) or the "F2" key.
 
 ![image](https://user-images.githubusercontent.com/17864005/146972846-a91800e5-222c-465d-89ec-f9882b1ce17f.png)
 
