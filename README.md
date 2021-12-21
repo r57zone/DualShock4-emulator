@@ -1,6 +1,11 @@
+![logo](https://user-images.githubusercontent.com/17864005/146969693-41ddba99-368b-439a-b003-b03f5dc8f6ef.png)
+_________
+
+Other languages : 
 [![EN](https://user-images.githubusercontent.com/9499881/33184537-7be87e86-d096-11e7-89bb-f3286f752bc6.png)](https://github.com/r57zone/DualShock4-emulator/) 
 [![RU](https://user-images.githubusercontent.com/9499881/27683795-5b0fbac6-5cd8-11e7-929c-057833e01fb1.png)](https://github.com/r57zone/DualShock4-emulator/blob/master/README.RU.md)
 [![FR](https://user-images.githubusercontent.com/17864005/146960578-f7d8769f-3c23-45c9-805e-9d1055086f2d.png)](https://github.com/r57zone/DualShock4-emulator/blob/master/README.FR.md)
+
 # DualShock4 emulator
 Simple application to emulate the Sony DualShock 4 gamepad using an Xbox controller or keyboard and mouse. This method is necessary for the fully work of the service [Sony Playstation Now](https://www.playstation.com/en-us/explore/playstation-now/) or [Playstation Remote Play](https://www.playstation.com/remote-play/). Works based on the driver [ViGEm](https://github.com/ViGEm).
 
@@ -18,17 +23,26 @@ Close your antivirus completely or use the "Static" version. The "antivirus" is 
 ## Xbox controller
 The "Back/View/Select" button (the first button to the right of the left stick) on the Xbox controller emulating pressing the touchpad on a Sony DualShock 4.
 
+![image](https://user-images.githubusercontent.com/17864005/146823929-067148d4-49bf-4b7f-83d6-375488eb69c6.png)
+
 The "PS Share" button is binded to the simultaneous pressing of the "Back/View/Select" and "Start/Menu" buttons or to the "F12" key.
 
-The "PS" button is binded to the "Xbox" button, but to use it, you need to disable the use of this button in the "Xbox Game Bar" settings. Also, the "PS" button is tied to the simultaneous pressing of the "Back/View/Select" and "LB" buttons (left bumper) and the "F2" key.
+![image](https://user-images.githubusercontent.com/17864005/146824019-8e77fd1a-7ef9-476f-83bd-819be570f325.png)
+
+The "PS" button is binded to the "Xbox" button, but to use it, you need to disable the use of this button in the "Xbox Game Bar" settings. 
+
+![image](https://user-images.githubusercontent.com/17864005/146824411-9666d2e0-9a7c-43b5-82e4-393a53d4bc60.png)
+
+Also, the "PS" button is tied to the simultaneous pressing of the "Back/View/Select" and "LB" buttons (left bumper) and the "F2" key.
+
+![image](https://user-images.githubusercontent.com/17864005/146972846-a91800e5-222c-465d-89ec-f9882b1ce17f.png)
+
 
 You can shake (gyro) the controller by pressing "Back/View/Select" and "RB" (right bumper). 
 
-
+![image](https://user-images.githubusercontent.com/17864005/146830489-a1c03870-e602-45fc-a6c7-9e283402a1f4.png)
 
 If necessary, you can swap bumpers and triggers, as well as the "share" button and pressing the touchpad, to do this change the `SwapTriggersShoulders` or `SwapShareTouchPad` parameter to `1` in the "Config.ini" configuration file.
-
-
 
 Changing the dead zone of sticks for drifting sticks is supported. Press "ALT" + "F9" to get the values, paste them into the "Config.ini" configuration file, into the `DeadZone` parameters and restart the program.
 
