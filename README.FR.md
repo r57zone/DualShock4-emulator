@@ -5,6 +5,7 @@ ____________
 
 [![EN](https://user-images.githubusercontent.com/9499881/33184537-7be87e86-d096-11e7-89bb-f3286f752bc6.png)](https://github.com/r57zone/DualShock4-emulator/) 
 [![RU](https://user-images.githubusercontent.com/9499881/27683795-5b0fbac6-5cd8-11e7-929c-057833e01fb1.png)](https://github.com/r57zone/DualShock4-emulator/blob/master/README.RU.md)
+
 # Émulateur DualShock 4
 Cette application qui permet d'émuler la manette DualShock 4 de chez Sony en utilisant une manette XBox ou clavier/souris. Cette méthode est nécessaire pour un fonctionnement complet du service [Sony Playstation Now](https://www.playstation.com/fr-fr/explore/playstation-now/) ou [Playstation Remote Play](https://www.playstation.com/remote-play/). Elle fonctionne grace au pilote [ViGEm](https://github.com/ViGEm).
 
@@ -33,6 +34,10 @@ L'appuie simultané sur le bouton `Retour/Vue/Select` et le bouton `Start` (ou t
 Par défaut, le bouton `Xbox` ouvre la XBox Gamebar, si vous souhaitez que celui-ci émule le bouton `PS`, il faut d'abord désactiver la Gamebar dans vos paramètres Windows.
 
 ![image](https://user-images.githubusercontent.com/17864005/146824411-9666d2e0-9a7c-43b5-82e4-393a53d4bc60.png)
+
+Pour simuler un appui sur le bouton `PS`, appuyez sur `Retour/Vue/Select` + `LB`
+
+![image](https://user-images.githubusercontent.com/17864005/146972846-a91800e5-222c-465d-89ec-f9882b1ce17f.png)
 
 
 Vous pouvez émuler une secousse de la manette (gyroscope) en appuyant sur `Retour/Vue/Select` et `RB`.
