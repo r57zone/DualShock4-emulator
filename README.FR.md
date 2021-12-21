@@ -44,7 +44,7 @@ Changer la zone morte des joysticks pour drifter est supporté. Appuyez sur `ALT
 ## Touchpad
 Jeux | Action
 ------------ | -------------
-Uncharted 3: Drake’s Deception (2011) | Le bouton `Share` (ou F12) duplique l'appui gauche sur le touchpad.
+Uncharted 3: Drake’s Deception (2011) | Le bouton `Share` (ou `F12`) duplique l'appui gauche sur le touchpad.
 The Last Of Us Part II (2020) | Options -> Accessibilité -> "Paramètres de gratte (guitar)" au lieu de vertical et horizontal, mettez boutons.
 
 Sur la manette Xbox, vous devez appuyer sur le bouton `Retour/Vue/Select` (touchpad) et bouger le joystick dans le sens voulu pour simuler un toucher directionnel (ou glissé) sur le touchpad.
