@@ -1,6 +1,11 @@
+![logo](https://user-images.githubusercontent.com/17864005/146969693-41ddba99-368b-439a-b003-b03f5dc8f6ef.png)
+
+____________
+
+
 [![EN](https://user-images.githubusercontent.com/9499881/33184537-7be87e86-d096-11e7-89bb-f3286f752bc6.png)](https://github.com/r57zone/DualShock4-emulator/) 
 [![RU](https://user-images.githubusercontent.com/9499881/27683795-5b0fbac6-5cd8-11e7-929c-057833e01fb1.png)](https://github.com/r57zone/DualShock4-emulator/blob/master/README.RU.md)
-# Émulateur DualSock 4
+# Émulateur DualShock 4
 Cette application qui permet d'émuler la manette DualShock 4 de chez Sony en utilisant une manette XBox ou clavier/souris. Cette méthode est nécessaire pour un fonctionnement complet du service [Sony Playstation Now](https://www.playstation.com/fr-fr/explore/playstation-now/) ou [Playstation Remote Play](https://www.playstation.com/remote-play/). Elle fonctionne grace au pilote [ViGEm](https://github.com/ViGEm).
 
 ## Installation
@@ -14,7 +19,7 @@ Cette application qui permet d'émuler la manette DualShock 4 de chez Sony en ut
 **• Le programme se ferme après le lancement, que dois-je faire ?**<br>
 Désactivez complétement votre antivirus ou utilisez la version "Static" (voir /releases). Votre "antivirus" doit surement bloquer le chargement dynamique de l'XInput et donc le programme crash. 
 
-## Manette XBox
+## Manette Xbox
 Le bouton `Retour/Vue/Select` émule l'appui sur le `Touchpad` sur une manette Sony DualShock 4.
 
 ![image](https://user-images.githubusercontent.com/17864005/146823929-067148d4-49bf-4b7f-83d6-375488eb69c6.png)
@@ -49,7 +54,7 @@ The Last Of Us Part II (2020) | Options -> Accessibilité -> "Paramètres de gra
 
 Sur la manette Xbox, vous devez appuyer sur le bouton `Retour/Vue/Select` (touchpad) et bouger le joystick dans le sens voulu pour simuler un toucher directionnel (ou glissé) sur le touchpad.
 
-![photo]()
+![image](https://user-images.githubusercontent.com/17864005/146971504-0ef7a0c8-a0c9-44df-8f6c-3acb1b922554.png)
 
 Par défaut, l'appui sur le touchpad pendant le glissé est désactivé, vous pouvez l'activer dans le fichier de configuration en mettant `1` au paramètres `TouchPadPressedWhenSwiping`.
 
