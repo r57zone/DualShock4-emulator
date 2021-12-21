@@ -35,7 +35,7 @@ Par défaut, le bouton `Xbox` ouvre la XBox Gamebar, si vous souhaitez que celui
 
 ![image](https://user-images.githubusercontent.com/17864005/146824411-9666d2e0-9a7c-43b5-82e4-393a53d4bc60.png)
 
-Pour simuler un appui sur le bouton `PS`, appuyez sur `Retour/Vue/Select` + `LB`
+Pour simuler un appui sur le bouton `PS`, appuyez sur `Retour/Vue/Select` + `LB` ou `F2`
 
 ![image](https://user-images.githubusercontent.com/17864005/146972846-a91800e5-222c-465d-89ec-f9882b1ce17f.png)
 
