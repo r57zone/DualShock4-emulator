@@ -20,7 +20,7 @@ Le bouton `Retour/Vue/Select` émule l'appui sur le `Touchpad` sur une manette S
 ![image](https://user-images.githubusercontent.com/17864005/146823929-067148d4-49bf-4b7f-83d6-375488eb69c6.png)
 
 
-L'appuie simultané sur le bouton `Retour/Vue/Select` et le bouton `Start` (ou touche F12) émule l'appui sur le bouton `PS Share`.
+L'appuie simultané sur le bouton `Retour/Vue/Select` et le bouton `Start` (ou touche `F12`) émule l'appui sur le bouton `PS Share`.
 
 ![image](https://user-images.githubusercontent.com/17864005/146824019-8e77fd1a-7ef9-476f-83bd-819be570f325.png)
 
