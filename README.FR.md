@@ -61,6 +61,10 @@ Sur la manette Xbox, vous devez appuyer sur le bouton `Retour/Vue/Select` (touch
 
 ![image](https://user-images.githubusercontent.com/17864005/146971504-0ef7a0c8-a0c9-44df-8f6c-3acb1b922554.png)
 
+## Demo 
+[![image](https://user-images.githubusercontent.com/17864005/146974779-cbe41988-ae70-4805-8ecb-a8ed26932732.png)](https://vid.appflix.fr/watch?v=Vv7pzOy35)
+
+
 Par défaut, l'appui sur le touchpad pendant le glissé est désactivé, vous pouvez l'activer dans le fichier de configuration en mettant `1` au paramètres `TouchPadPressedWhenSwiping`.
 
 
