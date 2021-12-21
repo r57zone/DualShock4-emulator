@@ -52,8 +52,14 @@ Game | Action
 Uncharted 3: Drake’s Deception (2011) | The "Share" button (F12) duplicates pressing the left side of the touchpad.
 The Last Of Us Part II (2020) | Options -> Accessibility -> "Strumming Settings" instead of vertical and horizontal, put buttons.
 
-On the Xbox gamepad, you need to press the "Back/View/Select" button (touchpad) and move the stick to the sides for swipes. By default, pressing the touchpad during swipes is disabled, it can be enabled in the configuration file by changing the `TouchPadPressedWhenSwiping` parameter to `1`.
+On the Xbox gamepad, you need to press the "Back/View/Select" button (touchpad) and move the stick to the sides for swipes. 
 
+![image](https://user-images.githubusercontent.com/17864005/146971504-0ef7a0c8-a0c9-44df-8f6c-3acb1b922554.png)
+
+## Demo 
+[![image](https://user-images.githubusercontent.com/17864005/146974779-cbe41988-ae70-4805-8ecb-a8ed26932732.png)](https://vid.appflix.fr/watch?v=Vv7pzOy35)
+
+By default, pressing the touchpad during swipes is disabled, it can be enabled in the configuration file by changing the `TouchPadPressedWhenSwiping` parameter to `1`.
 
 
 You can use swipes for the keyboard, the button codes are described below. 
