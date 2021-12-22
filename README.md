@@ -1,5 +1,8 @@
+Other languages: 
 [![EN](https://user-images.githubusercontent.com/9499881/33184537-7be87e86-d096-11e7-89bb-f3286f752bc6.png)](https://github.com/r57zone/DualShock4-emulator/) 
 [![RU](https://user-images.githubusercontent.com/9499881/27683795-5b0fbac6-5cd8-11e7-929c-057833e01fb1.png)](https://github.com/r57zone/DualShock4-emulator/blob/master/README.RU.md)
+[![FR](https://user-images.githubusercontent.com/9499881/147121779-f90bdadf-8009-4dc4-8682-f15f4bd2008e.png)](https://github.com/r57zone/DualShock4-emulator/blob/master/README.FR.md)
+
 # DualShock4 emulator
 Simple application to emulate the Sony DualShock 4 gamepad using an Xbox controller or keyboard and mouse. This method is necessary for the fully work of the service [Sony Playstation Now](https://www.playstation.com/en-us/explore/playstation-now/) or [Playstation Remote Play](https://www.playstation.com/remote-play/). Works based on the driver [ViGEm](https://github.com/ViGEm).
 
@@ -101,7 +104,7 @@ You can also enable emulation of analog triggers (L2, R2), change the `EmulateAn
 **[Download](https://github.com/r57zone/DualShock4-emulator/releases)**
 
 ## Forks
-Fork with support for reading gyroscope data from Nintendo Joy-Con. **[More detailed](https://github.com/Okoken/DualShock4-emulator)**
+Fork with support for reading gyroscope data from Nintendo Joy-Con - **[More detailed](https://github.com/Okoken/DualShock4-emulator)**.
 
 ## Feedback
 `r57zone[at]gmail.com`

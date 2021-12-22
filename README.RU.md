@@ -1,6 +1,8 @@
 [![EN](https://user-images.githubusercontent.com/9499881/33184537-7be87e86-d096-11e7-89bb-f3286f752bc6.png)](https://github.com/r57zone/DualShock4-emulator/) 
 [![RU](https://user-images.githubusercontent.com/9499881/27683795-5b0fbac6-5cd8-11e7-929c-057833e01fb1.png)](https://github.com/r57zone/DualShock4-emulator/blob/master/README.RU.md)
-# DualShock4 emulator
+[![FR](https://user-images.githubusercontent.com/9499881/147121779-f90bdadf-8009-4dc4-8682-f15f4bd2008e.png)](https://github.com/r57zone/DualShock4-emulator/blob/master/README.FR.md)
+
+# DualShock4 эмулятор
 Простое приложение для эмуляции геймпада Sony DualShock 4, с помощью Xbox контроллера или клавиатуры и мыши. Данный способ необходим для полноценной работы сервиса [Sony Playstation Now](https://www.playstation.com/en-us/explore/playstation-now/) или [Playstation Remote Play](https://www.playstation.com/remote-play/). Работает на базе драйвера [ViGEm](https://github.com/ViGEm).
 
 ## Настройка
@@ -101,7 +103,7 @@ PS | F2
 **[Загрузить](https://github.com/r57zone/DualShock4-emulator/releases)**
 
 ## Форки
-Форк, с поддержской чтения данных гироскопа с Nintendo Joy-Con. **[Подробнее](https://github.com/Okoken/DualShock4-emulator)**
+Форк, с поддержской чтения данных гироскопа с Nintendo Joy-Con - **[Подробнее](https://github.com/Okoken/DualShock4-emulator)**.
 
 ## Обратная связь
 `r57zone[собака]gmail.com`
