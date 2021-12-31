@@ -282,6 +282,7 @@ int main(int argc, char **argv)
 	float StepTriggerValue = IniFile.ReadFloat("KeyboardMouse", "AnalogTriggerStep", 15);
 	mouseSensetiveX = IniFile.ReadFloat("KeyboardMouse", "SensX", 15);
 	mouseSensetiveY = IniFile.ReadFloat("KeyboardMouse", "SensY", 15);
+	int deadzonePs4 = 25 //makes mouse movement smoother when moving slowly (12->25)
 
 	int KEY_ID_LEFT_STICK_UP = IniFile.ReadInteger("Keys", "LS_UP", 'W');
 	int KEY_ID_LEFT_STICK_LEFT = IniFile.ReadInteger("Keys", "LS_LEFT", 'A');
@@ -587,13 +588,13 @@ int main(int argc, char **argv)
 
 				// Are there better options? / Есть вариант лучше?
 				if (DeltaMouseX > 0)
-					report.bThumbRX = 128 + trunc( Clamp(DeltaMouseX * mouseSensetiveX, 0, 127) );
+					report.bThumbRX = 128 + deadzonePs4 + trunc( Clamp(DeltaMouseX * mouseSensetiveX, 0, 127 - deadzonePs4) );
 				if (DeltaMouseX < 0)
-					report.bThumbRX = 128 + trunc( Clamp(DeltaMouseX * mouseSensetiveX, -127, 0) );
+					report.bThumbRX = 128 - deadzonePs4 + trunc( Clamp(DeltaMouseX * mouseSensetiveX, -127 + deadzonePs4, 0) );
 				if (DeltaMouseY < 0)
-					report.bThumbRY = 128 + trunc( Clamp(DeltaMouseY * mouseSensetiveY, -127, 0) );
+					report.bThumbRY = 128 - deadzonePs4 + trunc( Clamp(DeltaMouseY * mouseSensetiveY, -127 + deadzonePs4, 0) );
 				if (DeltaMouseY > 0)
-					report.bThumbRY = 128 + trunc( Clamp(DeltaMouseY * mouseSensetiveY, 0, 127) );
+					report.bThumbRY = 128 + deadzonePs4 + trunc( Clamp(DeltaMouseY * mouseSensetiveY, 0, 127 - deadzonePs4) );
 			
 				if ((GetAsyncKeyState(KEY_ID_LEFT_STICK_UP) & 0x8000) != 0) report.bThumbLY = 0;
 				if ((GetAsyncKeyState(KEY_ID_LEFT_STICK_DOWN) & 0x8000) != 0) report.bThumbLY = 255;
