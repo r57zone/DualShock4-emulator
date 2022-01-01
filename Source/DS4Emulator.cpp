@@ -197,7 +197,7 @@ SHORT DeadZoneXboxAxis(SHORT StickAxis, float Percent)
 
 int main(int argc, char **argv)
 {
-	SetConsoleTitle("DS4Emulator 1.7.5");
+	SetConsoleTitle("DS4Emulator 1.7.6");
 
 	CIniReader IniFile("Config.ini"); // Config
 
@@ -245,11 +245,11 @@ int main(int argc, char **argv)
 	#define OCR_NORMAL 32512
 	HCURSOR CurCursor = CopyCursor(LoadCursor(0, IDC_ARROW));
 	HCURSOR CursorEmpty = LoadCursorFromFile("EmptyCursor.cur");
-	bool CursorHidden = false;
-	if (IniFile.ReadBoolean("KeyboardMouse", "HideCursorAfterStart", false)) { SetSystemCursor(CursorEmpty, OCR_NORMAL);  CursorHidden = true; }
+	bool CursorHidden = IniFile.ReadBoolean("KeyboardMouse", "HideCursorAfterStart", false);
+	if (CursorHidden) { SetSystemCursor(CursorEmpty, OCR_NORMAL); CursorHidden = true; }
 
-	#define XboxMode 1
 	#define KBMode 0
+	#define XboxMode 1
 	int EmulationMode = KBMode;
 
 	// Config parameters
@@ -263,13 +263,14 @@ int main(int argc, char **argv)
 	bool SwapTriggersShoulders = IniFile.ReadBoolean("Xbox", "SwapTriggersShoulders", false);
 	bool SwapShareTouchPad = IniFile.ReadBoolean("Xbox", "SwapShareTouchPad", false);
 	bool TouchPadPressedWhenSwiping = IniFile.ReadBoolean("Xbox", "TouchPadPressedWhenSwiping", true);
+	bool EnableXboxButton = IniFile.ReadBoolean("Xbox", "EnableXboxButton", true);
 
 	float DeadZoneLeftStickX = IniFile.ReadFloat("Xbox", "DeadZoneLeftStickX", 0);
 	float DeadZoneLeftStickY = IniFile.ReadFloat("Xbox", "DeadZoneLeftStickY", 0);
 	float DeadZoneRightStickX = IniFile.ReadFloat("Xbox", "DeadZoneRightStickX", 0);
 	float DeadZoneRightStickY = IniFile.ReadFloat("Xbox", "DeadZoneRightStickY", 0);
 
-	int SleepTimeOutKB = IniFile.ReadInteger("KeyboardMouse", "SleepTimeOut", 2);
+	int SleepTimeOutKB = IniFile.ReadInteger("KeyboardMouse", "SleepTimeOut", 1);
 	std::string WindowTitle = IniFile.ReadString("KeyboardMouse", "ActivateOnlyInWindow", "PlayStation™Now");
 	std::string WindowTitle2 = IniFile.ReadString("KeyboardMouse", "ActivateOnlyInWindow2", "PS4 Remote Play");
 	int FullScreenTopOffset = IniFile.ReadInteger("KeyboardMouse", "FullScreenTopOffset", -50);
@@ -282,7 +283,7 @@ int main(int argc, char **argv)
 	float StepTriggerValue = IniFile.ReadFloat("KeyboardMouse", "AnalogTriggerStep", 15);
 	mouseSensetiveX = IniFile.ReadFloat("KeyboardMouse", "SensX", 15);
 	mouseSensetiveY = IniFile.ReadFloat("KeyboardMouse", "SensY", 15);
-	int deadzonePs4 = 25 //makes mouse movement smoother when moving slowly (12->25)
+	int DeadZoneDS4 = IniFile.ReadInteger("KeyboardMouse", "DeadZone", 0); // 25, makes mouse movement smoother when moving slowly (12->25)
 
 	int KEY_ID_LEFT_STICK_UP = IniFile.ReadInteger("Keys", "LS_UP", 'W');
 	int KEY_ID_LEFT_STICK_LEFT = IniFile.ReadInteger("Keys", "LS_LEFT", 'A');
@@ -361,10 +362,17 @@ int main(int argc, char **argv)
 		printf("\n Emulation with Xbox controller.\n");
 	else {
 		printf("\r\n Emulation with keyboard and mouse.\n");
+		if (ActivateInAnyWindow == false)
+			printf(" Activate in any window is disabled, so the emulated gamepad work only in \"PS Now\" and \"PS4 Remote Play\".\n");
 		printf(" Hold down \"C\" to for cursor movement.\n");
 	}
-	if (EmulationMode == KBMode)
-		printf(" Press \"ALT\" + \"F10\" to switch to full-screen mode or return to normal.\n");
+	if (EmulationMode == KBMode) {
+		printf(" Press \"ALT\" + \"F10\" to switch \"PS Now\" to full-screen mode or return to normal.\n");
+		if (CursorHidden)
+			printf(" The cursor is hidden. To display the cursor, press \"ALT\" + \"Escape\" or \"exit key\".\n");
+		else
+			printf(" The cursor is not hidden. To hide the cursor, press \"ALT\" + \"F2\".\n");
+	}
 	printf(" Press \"ALT\" + \"Escape\" or \"exit key\" to exit.\n");
 
 	DS4_TOUCH BuffPreviousTouch[2] = { 0, 0 };
@@ -455,7 +463,8 @@ int main(int argc, char **argv)
 					myPState.Gamepad.wButtons &= ~XINPUT_GAMEPAD_BACK; myPState.Gamepad.wButtons &= ~XINPUT_GAMEPAD_LEFT_SHOULDER;
 					report.bSpecial |= DS4_SPECIAL_BUTTON_PS;
 				}
-				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_GUIDE) report.bSpecial |= DS4_SPECIAL_BUTTON_PS;
+
+				if (EnableXboxButton && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_GUIDE) report.bSpecial |= DS4_SPECIAL_BUTTON_PS;
 
 				// Motion shaking
 				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
@@ -578,6 +587,12 @@ int main(int argc, char **argv)
 				SkipPollCount = 10;
 			}
 
+			if (CursorHidden == false && (GetAsyncKeyState(VK_LMENU) & 0x8000) && (GetAsyncKeyState(VK_F2) & 0x8000) && SkipPollCount == 0) {
+				SetSystemCursor(CursorEmpty, OCR_NORMAL); CursorHidden = true;
+				printf(" The cursor is hidden. To display the cursor, press \"ALT\" + \"Escape\" or \"exit key\".\n");
+				SkipPollCount = 10;
+			}
+
 			if (ActivateInAnyWindow || PSNowFound || PSRemotePlayFound) {
 				if ((GetAsyncKeyState(KEY_ID_STOP_CENTERING) & 0x8000) == 0) GetMouseState();
 
@@ -588,13 +603,13 @@ int main(int argc, char **argv)
 
 				// Are there better options? / Есть вариант лучше?
 				if (DeltaMouseX > 0)
-					report.bThumbRX = 128 + deadzonePs4 + trunc( Clamp(DeltaMouseX * mouseSensetiveX, 0, 127 - deadzonePs4) );
+					report.bThumbRX = 128 + DeadZoneDS4 + trunc( Clamp(DeltaMouseX * mouseSensetiveX, 0, 127 - DeadZoneDS4) );
 				if (DeltaMouseX < 0)
-					report.bThumbRX = 128 - deadzonePs4 + trunc( Clamp(DeltaMouseX * mouseSensetiveX, -127 + deadzonePs4, 0) );
+					report.bThumbRX = 128 - DeadZoneDS4 + trunc( Clamp(DeltaMouseX * mouseSensetiveX, -127 + DeadZoneDS4, 0) );
 				if (DeltaMouseY < 0)
-					report.bThumbRY = 128 - deadzonePs4 + trunc( Clamp(DeltaMouseY * mouseSensetiveY, -127 + deadzonePs4, 0) );
+					report.bThumbRY = 128 - DeadZoneDS4 + trunc( Clamp(DeltaMouseY * mouseSensetiveY, -127 + DeadZoneDS4, 0) );
 				if (DeltaMouseY > 0)
-					report.bThumbRY = 128 + deadzonePs4 + trunc( Clamp(DeltaMouseY * mouseSensetiveY, 0, 127 - deadzonePs4) );
+					report.bThumbRY = 128 + DeadZoneDS4 + trunc( Clamp(DeltaMouseY * mouseSensetiveY, 0, 127 - DeadZoneDS4) );
 			
 				if ((GetAsyncKeyState(KEY_ID_LEFT_STICK_UP) & 0x8000) != 0) report.bThumbLY = 0;
 				if ((GetAsyncKeyState(KEY_ID_LEFT_STICK_DOWN) & 0x8000) != 0) report.bThumbLY = 255;
@@ -743,12 +758,12 @@ int main(int argc, char **argv)
 
 		report.sCurrentTouch.bPacketCounter = TouchIndex;
 
-		report.wAccelX = trunc( Clamp(AccelX * 1638.35, -32767, 32767) ) * InverseXStatus * MotionSens; // freepie accel max 19.61, min -20, short -32,768 to 32,767
-		report.wAccelY = trunc( Clamp(AccelY * 1638.35, -32767, 32767) ) * InverseYStatus * MotionSens;
-		report.wAccelZ = trunc( Clamp(AccelZ * 1638.35, -32767, 32767) ) * InverseZStatus * MotionSens;
-		report.wGyroX = trunc( Clamp(GyroX * 2376.7, -32767, 32767) ) * InverseXStatus * MotionSens; // freepie max gyro 10, min -10.09
-		report.wGyroY = trunc( Clamp(GyroY * 2376.7, -32767, 32767) ) * InverseYStatus * MotionSens;
-		report.wGyroZ = trunc( Clamp(GyroZ * 2376.7, -32767, 32767) ) * InverseZStatus * MotionSens; // if ((GetAsyncKeyState(VK_NUMPAD1) & 0x8000) != 0) printf("%d\t%d\t%d\t%d\t%d\t%d\t\n", report.wAccelX, report.wAccelY, report.wAccelZ, report.wGyroX, report.wGyroY, report.wGyroZ);
+		report.wAccelX = trunc( Clamp(AccelX * 1638.35 * 1.0479 / 2, -32767, 32767) ) * InverseXStatus * MotionSens; // freepie accel max 19.61, min -20, short -32,768 to 32,767
+		report.wAccelY = trunc( Clamp(AccelY * 1638.35 * 1.0479 / 2, -32767, 32767) ) * InverseYStatus * MotionSens;
+		report.wAccelZ = trunc( Clamp(AccelZ * 1638.35 * 1.0479 / 2, -32767, 32767) ) * InverseZStatus * MotionSens;
+		report.wGyroX = trunc( Clamp(GyroX * 2376.7 * 0.8 / 2, -32767, 32767) ) * InverseXStatus * MotionSens; // freepie max gyro 10, min -10.09
+		report.wGyroY = trunc( Clamp(GyroY * 2376.7 * 0.8 / 2, -32767, 32767) ) * InverseYStatus * MotionSens;
+		report.wGyroZ = trunc( Clamp(GyroZ * 2376.7 * 0.8 / 2, -32767, 32767) ) * InverseZStatus * MotionSens; // if ((GetAsyncKeyState(VK_NUMPAD1) & 0x8000) != 0) printf("%d\t%d\t%d\t%d\t%d\t%d\t\n", report.wAccelX, report.wAccelY, report.wAccelZ, report.wGyroX, report.wGyroY, report.wGyroZ);
 
 		// Motion shaking
 		if (MotionShaking) {

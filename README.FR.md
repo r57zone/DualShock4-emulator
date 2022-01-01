@@ -14,7 +14,7 @@ Cette application qui permet d'émuler la manette DualShock 4 de chez Sony en ut
 
 ## FAQ
 **• Le programme se ferme après le lancement, que dois-je faire ?**<br>
-Désactivez complétement votre antivirus ou utilisez la version "Static" (voir /releases). Votre "antivirus" doit surement bloquer le chargement dynamique de l'XInput et donc le programme crash. 
+"Antivirus" bloque le chargement dynamique de la bibliothèque de gamepads Xbox, de sorte que le programme se bloque. Vous pouvez le fermer pendant la durée d'utilisation.
 
 
 ## Manette Xbox
