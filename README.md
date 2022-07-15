@@ -4,13 +4,13 @@
 &#8211; Other languages
 
 # DualShock4 emulator
-Simple application to emulate the Sony DualShock 4 gamepad using an Xbox controller or keyboard and mouse. This method is necessary for the fully work of the service [Sony Playstation Now](https://www.playstation.com/en-us/explore/playstation-now/) or [Playstation Remote Play](https://www.playstation.com/remote-play/). Works based on the driver [ViGEm](https://github.com/ViGEm).
+Simple application to emulate the Sony DualShock 4 gamepad using an Xbox controller or keyboard and mouse. This method is necessary for the fully work of the service [Sony Playstation Plus](https://www.playstation.com/en-us/ps-plus/) or [Playstation Remote Play](https://www.playstation.com/remote-play/). Works based on the driver [ViGEm](https://github.com/ViGEm).
 
 ## Setup
 1. Install [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases).
 2. Install Microsoft Visual C++ Redistributable 2017 or newer.
-3. Unpack and launch "DualShock4 emulator" (**Attention!** It is important to run DS4 emulator before starting PS Now, if you are using an Xbox controller, so that PSNow gives priority to the DualShock controller).
-4. Launch "PlayStation Now" or other app.
+3. Unpack and launch "DualShock4 emulator" (**Attention!** It is important to run DS4 emulator before starting PS Plus, if you are using an Xbox controller, so that PS Plus gives priority to the DualShock controller).
+4. Launch "PlayStation Plus" or other app.
 5. If necessary, you can invert the axis, change the `InvertX` and `InvertY` parameters to `1` in the "Config.ini" configuration file.
 
 ## FAQ
@@ -56,13 +56,13 @@ You can use swipes for the keyboard, the button codes are described below.
 If you just need to shake (gyro) the gamepad in the game, then there is no need to install Android applications, just press the "shake" button of the gamepad.
 
 ## Keyboard and mouse
-By default, the mouse and keyboard only work in the windows "PlayStation™Now" and "PS4 Remote Play" (change the `ActivateOnlyInWindow2` parameter to your regional application title). To work only in any other applications or emulators, change the parameters `ActivateOnlyInWindow` and `ActivateOnlyInWindow2` to the headers of these applications You can enable the work in all windows (change the `ActivateInAnyWindow` parameter to `1`, in the "Config.ini" configuration file) or change the name of the window (the `ActivateOnlyInWindow` parameter) in which the actions are captured. This is necessary so that the cursor is centered only in one window and no buttons are pressed when the window is minimized.
+By default, the mouse and keyboard only work in the windows "PlayStation Plus" and "PS4 Remote Play" (change the `ActivateOnlyInWindow2` parameter to your regional application title). To work only in any other applications or emulators, change the parameters `ActivateOnlyInWindow` and `ActivateOnlyInWindow2` to the headers of these applications You can enable the work in all windows (change the `ActivateInAnyWindow` parameter to `1`, in the "Config.ini" configuration file) or change the name of the window (the `ActivateOnlyInWindow` parameter) in which the actions are captured. This is necessary so that the cursor is centered only in one window and no buttons are pressed when the window is minimized.
 
 To disable cursor centering, hold down the "C" button (can change it in the config - `StopСenteringKey`).
 
 To hide the cursor after startup, change `HideCursorAfterStart` to `1`, to restore the cursor, close the program by pressing "ALT" + "ESCAPE" or "~".
 
-For full-screen Playstation Now use the keys "ALT" + "F10", the upper black bar, as well as the taskbar will be hidden. To return to the normal window, press these keys again. You can disable hiding the taskbar in the configuration file by changing the `HideTaskBarInFullScreen` parameter to `0`. If the Playstation Now window changes once, you can change the default top offset, the `FullScreenTopOffset` parameter. 
+For full-screen Playstation Plus use the keys "ALT" + "F10", the upper black bar, as well as the taskbar will be hidden. To return to the normal window, press these keys again. You can disable hiding the taskbar in the configuration file by changing the `HideTaskBarInFullScreen` parameter to `0`. If the Playstation Plus window changes once, you can change the default top offset, the `FullScreenTopOffset` parameter. 
 
 DualShock 4 | Keyboard and mouse
 ------------ | -------------

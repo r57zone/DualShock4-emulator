@@ -3,13 +3,13 @@
 [![FR](https://user-images.githubusercontent.com/9499881/147121779-f90bdadf-8009-4dc4-8682-f15f4bd2008e.png)](https://github.com/r57zone/DualShock4-emulator/blob/master/README.FR.md)
 
 # Émulateur DualShock 4
-Cette application qui permet d'émuler la manette DualShock 4 de chez Sony en utilisant une manette XBox ou clavier/souris. Cette méthode est nécessaire pour un fonctionnement complet du service [Sony Playstation Now](https://www.playstation.com/fr-fr/explore/playstation-now/) ou [Playstation Remote Play](https://www.playstation.com/remote-play/). Elle fonctionne grace au pilote [ViGEm](https://github.com/ViGEm).
+Cette application qui permet d'émuler la manette DualShock 4 de chez Sony en utilisant une manette XBox ou clavier/souris. Cette méthode est nécessaire pour un fonctionnement complet du service [Sony Playstation Plus](https://www.playstation.com/fr-fr/explore/playstation-now/) ou [Playstation Remote Play](https://www.playstation.com/remote-play/). Elle fonctionne grace au pilote [ViGEm](https://github.com/ViGEm).
 
 ## Installation
 1. Installer [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases).
 2. Installer Microsoft Visual C++ Redistributable 2017 ou plus récent.
-3. Dézipper et lancer "DS4Emulator.exe" (**Attention!** Il est important de lancer l'exe avant Playstation Now si vous utilisez la manette XBox, pour que PSNow donne la priorité à la manette (virtuelle) DS4).
-4. Lancer "PlayStation Now" ou Remote Play.
+3. Dézipper et lancer "DS4Emulator.exe" (**Attention!** Il est important de lancer l'exe avant Playstation Plus si vous utilisez la manette XBox, pour que PS Plus donne la priorité à la manette (virtuelle) DS4).
+4. Lancer "PlayStation Plus" ou Remote Play.
 5. Si besoin, vous pouvez inverser les axes : changez les paramètres `InvertX` et `InvertY` en `1` dans le fichier de configuration `Config.ini`.
 
 ## FAQ
@@ -57,13 +57,13 @@ Vous pouvez aussi simuler le glissé via le clavier, les codes correspondant aux
 Si vous avez just besoin de simuler une secousse de la manette (gyro) dans le jeu, dans ce cas il n'y a pas besoin d'installer l'application Android, appuyez sur le bouton `Shake` de la manette.
 
 ## Clavier et souris
-Par défaut, le clavier/souris fonctionnent uniquement dans les fenêtres `PlayStation™Now` et `PS4 Remote Play` (changez le paramètre `ActivateOnlyInWindow2` si le nom de votre fenêtre est différent, pour les français, cela ne devrait pas). Pour fonctionner uniquement dans d'autres applications ou émulateurs, changez les paramètres `ActivateOnlyInWindow` et `ActivateOnlyInWindow2` pour qu'ils matchent le nom de vos applications (titre de la fenêtre principale). Vous pouvez aussi activer cette application pour qu'elle fenêtre dans toutes les fenêtres : changez le paramètre `ActivateAnyWindow` en `1` dans le fichier de configuration ou changez le paramètre `ActivateOnlyWindow` pour que la valeur soit le nom de la fenêtre voulue. Cela est nécessaire pour que le curseur soit centré uniquement dans une seule fenêtre et qu'aucun bouton ne soit appuyé si cette fenêtre est minimisée.
+Par défaut, le clavier/souris fonctionnent uniquement dans les fenêtres `PlayStation Plus` et `PS4 Remote Play` (changez le paramètre `ActivateOnlyInWindow2` si le nom de votre fenêtre est différent, pour les français, cela ne devrait pas). Pour fonctionner uniquement dans d'autres applications ou émulateurs, changez les paramètres `ActivateOnlyInWindow` et `ActivateOnlyInWindow2` pour qu'ils matchent le nom de vos applications (titre de la fenêtre principale). Vous pouvez aussi activer cette application pour qu'elle fenêtre dans toutes les fenêtres : changez le paramètre `ActivateAnyWindow` en `1` dans le fichier de configuration ou changez le paramètre `ActivateOnlyWindow` pour que la valeur soit le nom de la fenêtre voulue. Cela est nécessaire pour que le curseur soit centré uniquement dans une seule fenêtre et qu'aucun bouton ne soit appuyé si cette fenêtre est minimisée.
 
 Pour désactiver le centrage du curseur, appuyez sur la touche `C` (possible de le changer dans le fichier de config -> `StopСenteringKey`).
 
 Pour cacher le curseur après le démarrage de l'application, changez `HideCursorAfterStart` en `1`, pour le restaurer, fermez l'application via la croix ou `ALT` + `Echap`.
 
-Pour le plein-écran, Playstation Now utilise la combinaison de touches `ALT` + `F10` : la barre noire du haut et la barre des tâches sera masquée. Pour revenir à la fenêtre normale, appuyez sur ces touches de nouveau. Vous pouvez désactiver le masquage de la barre des tâches dans le fichier de configuratio en modifiant le paramètre `HideTaskBarInFullScreen` en `0`. Si la fenêtre Playstation Now change une fois, vous pouvez modifier le décalage du haut par défaut : paramètre `FullScreenTopOffset`.
+Pour le plein-écran, Playstation Plus utilise la combinaison de touches `ALT` + `F10` : la barre noire du haut et la barre des tâches sera masquée. Pour revenir à la fenêtre normale, appuyez sur ces touches de nouveau. Vous pouvez désactiver le masquage de la barre des tâches dans le fichier de configuratio en modifiant le paramètre `HideTaskBarInFullScreen` en `0`. Si la fenêtre Playstation Plus change une fois, vous pouvez modifier le décalage du haut par défaut : paramètre `FullScreenTopOffset`.
 
 
 DualShock 4 | Souris/clavier
