@@ -1,86 +1,11 @@
 #include <Windows.h>
-#include <ViGEm/Client.h>
 #include <mutex>
+#include "ViGEm\Client.h"
 #include "IniReader\IniReader.h"
+#include "DS4Emulator.h"
 
 //#include <winsock2.h>
 #pragma comment (lib, "WSock32.Lib")
-
-// XInput headers
-#define XINPUT_GAMEPAD_DPAD_UP          0x0001
-#define XINPUT_GAMEPAD_DPAD_DOWN        0x0002
-#define XINPUT_GAMEPAD_DPAD_LEFT        0x0004
-#define XINPUT_GAMEPAD_DPAD_RIGHT       0x0008
-#define XINPUT_GAMEPAD_GUIDE            0x0400
-#define XINPUT_GAMEPAD_START            0x0010
-#define XINPUT_GAMEPAD_BACK             0x0020
-#define XINPUT_GAMEPAD_LEFT_THUMB       0x0040
-#define XINPUT_GAMEPAD_RIGHT_THUMB      0x0080
-#define XINPUT_GAMEPAD_LEFT_SHOULDER    0x0100
-#define XINPUT_GAMEPAD_RIGHT_SHOULDER   0x0200
-#define XINPUT_GAMEPAD_A                0x1000
-#define XINPUT_GAMEPAD_B                0x2000
-#define XINPUT_GAMEPAD_X                0x4000
-#define XINPUT_GAMEPAD_Y				0x8000
-
-#define BATTERY_TYPE_DISCONNECTED		0x00
-
-#define XUSER_MAX_COUNT                 4
-#define XUSER_INDEX_ANY					0x000000FF
-
-#define ERROR_DEVICE_NOT_CONNECTED		1167
-#define ERROR_SUCCESS					0
-
-// XInput structures
-typedef struct _XINPUT_GAMEPAD
-{
-	WORD                                wButtons;
-	BYTE                                bLeftTrigger;
-	BYTE                                bRightTrigger;
-	SHORT                               sThumbLX;
-	SHORT                               sThumbLY;
-	SHORT                               sThumbRX;
-	SHORT                               sThumbRY;
-} XINPUT_GAMEPAD, *PXINPUT_GAMEPAD;
-
-typedef struct _XINPUT_STATE
-{
-	DWORD                               dwPacketNumber;
-	XINPUT_GAMEPAD                      Gamepad;
-} XINPUT_STATE, *PXINPUT_STATE;
-
-typedef struct _XINPUT_VIBRATION
-{
-	WORD                                wLeftMotorSpeed;
-	WORD                                wRightMotorSpeed;
-} XINPUT_VIBRATION, *PXINPUT_VIBRATION;
-
-typedef struct _XINPUT_CAPABILITIES
-{
-	BYTE                                Type;
-	BYTE                                SubType;
-	WORD                                Flags;
-	XINPUT_GAMEPAD                      Gamepad;
-	XINPUT_VIBRATION                    Vibration;
-} XINPUT_CAPABILITIES, *PXINPUT_CAPABILITIES;
-
-typedef struct _XINPUT_BATTERY_INFORMATION
-{
-	BYTE BatteryType;
-	BYTE BatteryLevel;
-} XINPUT_BATTERY_INFORMATION, *PXINPUT_BATTERY_INFORMATION;
-
-typedef struct _XINPUT_KEYSTROKE
-{
-	WORD    VirtualKey;
-	WCHAR   Unicode;
-	WORD    Flags;
-	BYTE    UserIndex;
-	BYTE    HidCode;
-} XINPUT_KEYSTROKE, *PXINPUT_KEYSTROKE;
-
-typedef DWORD(__stdcall *_XInputGetState)(_In_ DWORD dwUserIndex, _Out_ XINPUT_STATE *pState);
-typedef DWORD(__stdcall *_XInputSetState)(_In_ DWORD dwUserIndex, _In_ XINPUT_VIBRATION *pVibration);
 
 _XInputGetState MyXInputGetState;
 _XInputSetState MyXInputSetState;
@@ -96,7 +21,7 @@ float mouseSensetiveY;
 float mouseSensetiveX;
 bool firstCP = true;
 int DeltaMouseX, DeltaMouseY;
-HWND PSNowWindow = 0;
+HWND PSPlusWindow = 0;
 HWND PSRemotePlayWindow = 0;
 
 // WinSock
@@ -147,13 +72,14 @@ VOID CALLBACK notification(
 	DS4_LIGHTBAR_COLOR LightbarColor,
 	LPVOID UserData)
 {
-    m.lock();
+	m.lock();
 
-	XINPUT_VIBRATION myVibration;
-	myVibration.wLeftMotorSpeed = LargeMotor * 257;
-	myVibration.wRightMotorSpeed = SmallMotor * 257;
-
-	MyXInputSetState(XboxUserIndex, &myVibration);
+	if (MyXInputSetState != NULL) {
+		XINPUT_VIBRATION myVibration;
+		myVibration.wLeftMotorSpeed = LargeMotor * 257;
+		myVibration.wRightMotorSpeed = SmallMotor * 257;
+		MyXInputSetState(XboxUserIndex, &myVibration);
+	}
 
     m.unlock();
 }
@@ -186,7 +112,8 @@ SHORT DeadZoneXboxAxis(SHORT StickAxis, float Percent)
 		StickAxis -= trunc(DeadZoneValue);
 		if (StickAxis < 0)
 			StickAxis = 0;
-	} else if (StickAxis < 0) {
+	}
+	else if (StickAxis < 0) {
 		StickAxis += trunc(DeadZoneValue);
 		if (StickAxis > 0)
 			StickAxis = 0;
@@ -197,7 +124,7 @@ SHORT DeadZoneXboxAxis(SHORT StickAxis, float Percent)
 
 int main(int argc, char **argv)
 {
-	SetConsoleTitle("DS4Emulator 1.7.6");
+	SetConsoleTitle("DS4Emulator 1.7.7");
 
 	CIniReader IniFile("Config.ini"); // Config
 
@@ -271,7 +198,7 @@ int main(int argc, char **argv)
 	float DeadZoneRightStickY = IniFile.ReadFloat("Xbox", "DeadZoneRightStickY", 0);
 
 	int SleepTimeOutKB = IniFile.ReadInteger("KeyboardMouse", "SleepTimeOut", 1);
-	std::string WindowTitle = IniFile.ReadString("KeyboardMouse", "ActivateOnlyInWindow", "PlayStation™Now");
+	std::string WindowTitle = IniFile.ReadString("KeyboardMouse", "ActivateOnlyInWindow", "PlayStation Plus");
 	std::string WindowTitle2 = IniFile.ReadString("KeyboardMouse", "ActivateOnlyInWindow2", "PS4 Remote Play");
 	int FullScreenTopOffset = IniFile.ReadInteger("KeyboardMouse", "FullScreenTopOffset", -50);
 	bool HideTaskBar = IniFile.ReadBoolean("KeyboardMouse", "HideTaskBarInFullScreen", true);
@@ -363,11 +290,11 @@ int main(int argc, char **argv)
 	else {
 		printf("\r\n Emulation with keyboard and mouse.\n");
 		if (ActivateInAnyWindow == false)
-			printf(" Activate in any window is disabled, so the emulated gamepad work only in \"PS Now\" and \"PS4 Remote Play\".\n");
+			printf(" Activate in any window is disabled, so the emulated gamepad work only in \"PS Plus\" and \"PS4 Remote Play\".\n");
 		printf(" Hold down \"C\" to for cursor movement.\n");
 	}
 	if (EmulationMode == KBMode) {
-		printf(" Press \"ALT\" + \"F10\" to switch \"PS Now\" to full-screen mode or return to normal.\n");
+		printf(" Press \"ALT\" + \"F10\" to switch \"PS Plus\" to full-screen mode or return to normal.\n");
 		if (CursorHidden)
 			printf(" The cursor is hidden. To display the cursor, press \"ALT\" + \"Escape\" or \"exit key\".\n");
 		else
@@ -413,7 +340,7 @@ int main(int argc, char **argv)
 						printf("\n Emulation with Xbox controller.\n");
 						printf(" Press \"ALT\" + \"Escape\" or \"exit key\" to exit.\n");
 					}
-					SkipPollCount = 10;
+					SkipPollCount = SkipPollTimeOut;
 				}
 
 				if (DeadZoneMode) {
@@ -566,31 +493,31 @@ int main(int argc, char **argv)
 		// Mouse and keyboard mode
 		else if (EmulationMode == KBMode) {
 			
-			PSNowWindow = FindWindow(NULL, WindowTitle.c_str());
-			bool PSNowFound = (PSNowWindow != 0) && (IsWindowVisible(PSNowWindow)) && (PSNowWindow == GetForegroundWindow());
+			PSPlusWindow = FindWindow(NULL, WindowTitle.c_str());
+			bool PSNowFound = (PSPlusWindow != 0) && (IsWindowVisible(PSPlusWindow)) && (PSPlusWindow == GetForegroundWindow());
 
 			PSRemotePlayWindow = FindWindow(NULL, WindowTitle2.c_str());
 			bool PSRemotePlayFound = (PSRemotePlayWindow != 0) && (IsWindowVisible(PSRemotePlayWindow)) && (PSRemotePlayWindow == GetForegroundWindow());
 
 			if ((GetAsyncKeyState(VK_LMENU) & 0x8000) && (GetAsyncKeyState(VK_F10) & 0x8000) && SkipPollCount == 0) {
-				if (PSNowWindow != 0)
+				if (PSPlusWindow != 0)
 					if (FullScreenMode) {
 						if (HideTaskBar) ShowWindow(FindWindow("Shell_TrayWnd", NULL), SW_SHOW);
-						SetWindowPos(PSNowWindow, HWND_TOP, m_HalfWidth - 640, m_HalfHeight - 360, 1280, 720, SWP_FRAMECHANGED);
+						SetWindowPos(PSPlusWindow, HWND_TOP, m_HalfWidth - 640, m_HalfHeight - 360, 1280, 720, SWP_FRAMECHANGED);
 					} else {
-						SetForegroundWindow(PSNowWindow);
-						SetActiveWindow(PSNowWindow);
+						SetForegroundWindow(PSPlusWindow);
+						SetActiveWindow(PSPlusWindow);
 						if (HideTaskBar) ShowWindow(FindWindow("Shell_TrayWnd", NULL), SW_HIDE);
-						SetWindowPos(PSNowWindow, HWND_TOP, 0, FullScreenTopOffset, m_HalfWidth * 2, m_HalfHeight * 2 + (-FullScreenTopOffset), SWP_FRAMECHANGED);
+						SetWindowPos(PSPlusWindow, HWND_TOP, 0, FullScreenTopOffset, m_HalfWidth * 2, m_HalfHeight * 2 + (-FullScreenTopOffset), SWP_FRAMECHANGED);
 					}
 				FullScreenMode = !FullScreenMode;
-				SkipPollCount = 10;
+				SkipPollCount = SkipPollTimeOut;
 			}
 
 			if (CursorHidden == false && (GetAsyncKeyState(VK_LMENU) & 0x8000) && (GetAsyncKeyState(VK_F2) & 0x8000) && SkipPollCount == 0) {
 				SetSystemCursor(CursorEmpty, OCR_NORMAL); CursorHidden = true;
 				printf(" The cursor is hidden. To display the cursor, press \"ALT\" + \"Escape\" or \"exit key\".\n");
-				SkipPollCount = 10;
+				SkipPollCount = SkipPollTimeOut;
 			}
 
 			if (ActivateInAnyWindow || PSNowFound || PSRemotePlayFound) {
