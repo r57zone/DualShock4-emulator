@@ -15,7 +15,7 @@ Simple application to emulate the Sony DualShock 4 gamepad using an Xbox control
 6. You can also check how the DualShock 4 controller emulation works in the [VSCView](https://github.com/Nielk1/VSCView/releases/) program. To emulate from the keyboard and mouse, you also need to change the `ActivateInAnyWindow` parameter to `1` and restart the program.
 
 ## FAQ
-**• The program crashes after launch, what should I do?**<br>
+**• The program crashes after launch**<br>
 "Antivirus" blocks the dynamic loading of the Xbox gamepad library, so the program crashes. You can close it for the duration of use.
 
 

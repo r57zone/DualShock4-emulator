@@ -14,7 +14,7 @@ Cette application qui permet d'émuler la manette DualShock 4 de chez Sony en ut
 6. Vous pouvez également vérifier le fonctionnement de l'émulation du contrôleur DualShock 4 dans le programme [VSCView](https://github.com/Nielk1/VSCView/releases/). Pour émuler à partir du clavier et de la souris, vous devez également modifier le paramètre `ActivateInAnyWindow` sur `1` et redémarrer le programme.
 
 ## FAQ
-**• Le programme se ferme après le lancement, que dois-je faire ?**<br>
+**• Le programme se ferme après le lancement**<br>
 "Antivirus" bloque le chargement dynamique de la bibliothèque de gamepads Xbox, de sorte que le programme se bloque. Vous pouvez le fermer pendant la durée d'utilisation.
 
 
