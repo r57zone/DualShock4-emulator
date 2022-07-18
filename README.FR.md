@@ -11,11 +11,16 @@ Cette application qui permet d'émuler la manette DualShock 4 de chez Sony en ut
 3. Dézipper et lancer "DS4Emulator.exe" (**Attention!** Il est important de lancer l'exe avant Playstation Plus si vous utilisez la manette XBox, pour que PS Plus donne la priorité à la manette (virtuelle) DS4).
 4. Lancer "PlayStation Plus" ou Remote Play.
 5. Si besoin, vous pouvez inverser les axes : changez les paramètres `InvertX` et `InvertY` en `1` dans le fichier de configuration `Config.ini`.
+6. Vous pouvez également vérifier le fonctionnement de l'émulation du contrôleur DualShock 4 dans le programme [VSCView](https://github.com/Nielk1/VSCView/releases/). Pour émuler à partir du clavier et de la souris, vous devez également modifier le paramètre `ActivateInAnyWindow` sur `1` et redémarrer le programme.
 
 ## FAQ
 **• Le programme se ferme après le lancement, que dois-je faire ?**<br>
 "Antivirus" bloque le chargement dynamique de la bibliothèque de gamepads Xbox, de sorte que le programme se bloque. Vous pouvez le fermer pendant la durée d'utilisation.
 
+
+
+**• Les touches du pavé tactile ne fonctionnent pas**<br>
+Il est possible que les applications "PS Plus" ou "PS Remote Play" aient donné la priorité à la manette Xbox, alors redémarrez les applications "PS Plus" ou "PS Remote Play" et le DualShock 4 émulé devrait avoir priorité sur la manette Xbox .
 
 ## Manette Xbox
 Le bouton `Retour/Vue/Select` émule l'appui sur le `Touchpad` sur une manette Sony DualShock 4.

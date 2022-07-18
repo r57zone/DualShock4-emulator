@@ -12,10 +12,16 @@ Simple application to emulate the Sony DualShock 4 gamepad using an Xbox control
 3. Unpack and launch "DualShock4 emulator" (**Attention!** It is important to run DS4 emulator before starting PS Plus, if you are using an Xbox controller, so that PS Plus gives priority to the DualShock controller).
 4. Launch "PlayStation Plus" or other app.
 5. If necessary, you can invert the axis, change the `InvertX` and `InvertY` parameters to `1` in the "Config.ini" configuration file.
+6. You can also check how the DualShock 4 controller emulation works in the [VSCView](https://github.com/Nielk1/VSCView/releases/) program. To emulate from the keyboard and mouse, you also need to change the `ActivateInAnyWindow` parameter to `1` and restart the program.
 
 ## FAQ
 **• The program crashes after launch, what should I do?**<br>
 "Antivirus" blocks the dynamic loading of the Xbox gamepad library, so the program crashes. You can close it for the duration of use.
+
+
+
+**• Touchpad press don't work**<br>
+It is possible that the "PS Plus" or "PS Remote Play" apps have given priority to the Xbox controller, so restart the "PS Plus" or "PS Remote Play" apps and the emulated DualShock 4 should take precedence over the Xbox controller.
 
 ## Xbox controller
 The "Back/View/Select" button (the first button to the right of the left stick) on the Xbox controller emulating pressing the touchpad on a Sony DualShock 4.
