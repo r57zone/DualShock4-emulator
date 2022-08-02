@@ -9,7 +9,7 @@ Cette application qui permet d'émuler la manette DualShock 4 de chez Sony en ut
 1. Installer [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases).
 2. Installer Microsoft Visual C++ Redistributable 2017 ou plus récent.
 3. Dézipper et lancer "DS4Emulator.exe" (**Attention!** Il est important de lancer l'exe avant Playstation Plus si vous utilisez la manette XBox, pour que PS Plus donne la priorité à la manette (virtuelle) DS4).
-4. Lancer "PlayStation Plus" ou Remote Play.
+4. Lancez "PlayStation Plus", "PS Remote Play", "xCloud" ou une autre application. Lisez la FAQ pour configurer xCloud.
 5. Si besoin, vous pouvez inverser les axes : changez les paramètres `InvertX` et `InvertY` en `1` dans le fichier de configuration `Config.ini`.
 6. Vous pouvez également vérifier le fonctionnement de l'émulation du contrôleur DualShock 4 dans le programme [VSCView](https://github.com/Nielk1/VSCView/releases/). Pour émuler à partir du clavier et de la souris, vous devez également modifier le paramètre `ActivateInAnyWindow` sur `1` et redémarrer le programme.
 
@@ -21,6 +21,11 @@ Cette application qui permet d'émuler la manette DualShock 4 de chez Sony en ut
 
 **• Les touches du pavé tactile ne fonctionnent pas**<br>
 Il est possible que les applications "PS Plus" ou "PS Remote Play" aient donné la priorité à la manette Xbox, alors redémarrez les applications "PS Plus" ou "PS Remote Play" et le DualShock 4 émulé devrait avoir priorité sur la manette Xbox .
+
+
+
+**• Lorsque vous jouez dans xCloud, dans le navigateur, le menu contextuel est appelé avec le bouton droit de la souris, comment puis-je le supprimer dans le navigateur ?**<br>
+Changez d'abord le nom de la fenêtre dans le fichier de configuration ou changez le paramètre `ActivateInAnyWindow` en `1`, en redémarrant le programme. Ensuite, allez sur le site Web xCloud, appuyez sur "F12", sélectionnez la console et collez-y [ce code](https://github.com/r57zone/DualShock4-emulator/blob/master/ContextMenuBlock.txt), appuyez sur Exécuter et le menu contextuel ne sera plus affiché.
 
 ## Manette Xbox
 Le bouton `Retour/Vue/Select` émule l'appui sur le `Touchpad` sur une manette Sony DualShock 4.

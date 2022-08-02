@@ -10,7 +10,7 @@ Simple application to emulate the Sony DualShock 4 gamepad using an Xbox control
 1. Install [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases).
 2. Install Microsoft Visual C++ Redistributable 2017 or newer.
 3. Unpack and launch "DualShock4 emulator" (**Attention!** It is important to run DS4 emulator before starting PS Plus, if you are using an Xbox controller, so that PS Plus gives priority to the DualShock controller).
-4. Launch "PlayStation Plus" or other app.
+4. Launch "PlayStation Plus", "PS Remote Play", "xCloud", or another application. Read the FAQ to set up xCloud.
 5. If necessary, you can invert the axis, change the `InvertX` and `InvertY` parameters to `1` in the "Config.ini" configuration file.
 6. You can also check how the DualShock 4 controller emulation works in the [VSCView](https://github.com/Nielk1/VSCView/releases/) program. To emulate from the keyboard and mouse, you also need to change the `ActivateInAnyWindow` parameter to `1` and restart the program.
 
@@ -22,6 +22,11 @@ Simple application to emulate the Sony DualShock 4 gamepad using an Xbox control
 
 **• Touchpad press don't work**<br>
 It is possible that the "PS Plus" or "PS Remote Play" apps have given priority to the Xbox controller, so restart the "PS Plus" or "PS Remote Play" apps and the emulated DualShock 4 should take precedence over the Xbox controller.
+
+
+
+**• When playing in xCloud, in the browser, the context menu is called up on the right mouse button, how can I remove it in the browser?**<br>
+First change the name of the window in the configuration file or change the `ActivateInAnyWindow` parameter to `1`, restarting the program. Next, go to the xCloud website, press "F12", select the console and paste [this code](https://github.com/r57zone/DualShock4-emulator/blob/master/ContextMenuBlock.txt) there, press run and the context menu will no longer be shown.
 
 ## Xbox controller
 The "Back/View/Select" button (the first button to the right of the left stick) on the Xbox controller emulating pressing the touchpad on a Sony DualShock 4.

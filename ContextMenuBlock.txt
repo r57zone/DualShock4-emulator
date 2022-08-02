@@ -1,0 +1,10 @@
+(function () {
+  var blockContextMenu, myElement;
+
+  blockContextMenu = function (evt) {
+    evt.preventDefault();
+  };
+
+  myElement = document.querySelector('body');
+  myElement.addEventListener('contextmenu', blockContextMenu);
+})();
