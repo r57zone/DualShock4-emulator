@@ -62,6 +62,7 @@ Vous pouvez aussi simuler le glissé via le clavier, les codes correspondant aux
 3. Entrez l'IP de votre PC, selectionnez `Send raw data` s'il est déselectionné, selectionnez la data rate en `Fastest` ou `Fast`.
 4. Réduisez la sensibilité si nécessaire (le paramètre `Sens`, dans la section `Motion`, où `100` est égal à 100% de sensibilité) dans le fichier de configuration.
 5. Inversez les axes si nécessaire (le paramètre `InverseX`, `InverseY` et `InverseZ`, dans la section `Motion`, où `1` signifie l'activation de l'inversion, et `0` la désactivation).
+5. Changez l'orientation du téléphone (le paramètre `Orientation`, dans la section `Motion`, où `1` correspond au paysage et `0` au portrait).
 
 
 Si vous avez just besoin de simuler une secousse de la manette (gyro) dans le jeu, dans ce cas il n'y a pas besoin d'installer l'application Android, appuyez sur le bouton `Shake` de la manette.

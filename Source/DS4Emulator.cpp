@@ -53,9 +53,7 @@ void MotionReceiver()
 		memset(&freePieIMU, 0, sizeof(freePieIMU));
 		bytes_read = recvfrom(socketS, (char*)(&freePieIMU), sizeof(freePieIMU), 0, (sockaddr*)&from, &fromlen);
 		if (bytes_read > 0) {
-
-			if (MotionOrientation) {
-				// landscape mapping
+			if (MotionOrientation) { // landscape mapping
 				AccelZ = bytesToFloat(freePieIMU[2], freePieIMU[3], freePieIMU[4], freePieIMU[5]);
 				AccelX = bytesToFloat(freePieIMU[6], freePieIMU[7], freePieIMU[8], freePieIMU[9]);
 				AccelY = bytesToFloat(freePieIMU[10], freePieIMU[11], freePieIMU[12], freePieIMU[13]);
@@ -63,9 +61,7 @@ void MotionReceiver()
 				GyroZ = bytesToFloat(freePieIMU[14], freePieIMU[15], freePieIMU[16], freePieIMU[17]);
 				GyroX = bytesToFloat(freePieIMU[18], freePieIMU[19], freePieIMU[20], freePieIMU[21]);
 				GyroY = bytesToFloat(freePieIMU[22], freePieIMU[23], freePieIMU[24], freePieIMU[25]);
-			}
-			else {
-				// portrait mapping
+			} else { // portrait mapping
 				AccelX = bytesToFloat(freePieIMU[2], freePieIMU[3], freePieIMU[4], freePieIMU[5]);
 				AccelZ = bytesToFloat(freePieIMU[6], freePieIMU[7], freePieIMU[8], freePieIMU[9]);
 				AccelY = bytesToFloat(freePieIMU[10], freePieIMU[11], freePieIMU[12], freePieIMU[13]);
@@ -74,9 +70,7 @@ void MotionReceiver()
 				GyroZ = bytesToFloat(freePieIMU[18], freePieIMU[19], freePieIMU[20], freePieIMU[21]);
 				GyroY = bytesToFloat(freePieIMU[22], freePieIMU[23], freePieIMU[24], freePieIMU[25]);
 			}
-		}
-		else
-			Sleep(SleepTimeOutMotion); // Don't overload the CPU with reading
+		} else Sleep(SleepTimeOutMotion); // Don't overload the CPU with reading
 	}
 }
 
@@ -140,7 +134,7 @@ SHORT DeadZoneXboxAxis(SHORT StickAxis, float Percent)
 
 int main(int argc, char **argv)
 {
-	SetConsoleTitle("DS4Emulator 1.7.7");
+	SetConsoleTitle("DS4Emulator 1.7.8");
 
 	CIniReader IniFile("Config.ini"); // Config
 
@@ -339,6 +333,9 @@ int main(int argc, char **argv)
 		report.sPreviousTouch[1] = { 0 };
 		report.sCurrentTouch.bIsUpTrackingNum1 = 0x80;
 		report.sCurrentTouch.bIsUpTrackingNum2 = 0x80;
+		
+		//report.bBatteryLvl = 8;
+		//report.bBatteryLvlSpecial = 32; ??? not working
 
 		// Xbox mode
 		if (EmulationMode == XboxMode) {
