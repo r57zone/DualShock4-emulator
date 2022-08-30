@@ -33,7 +33,7 @@ bool SocketActivated = false;
 std::thread *pSocketThread = NULL;
 unsigned char freePieIMU[50];
 float AccelX = 0, AccelY = 0, AccelZ = 0, GyroX = 0, GyroY = 0, GyroZ = 0;
-int curTimeStamp;
+USHORT curTimeStamp = 0;
 
 float bytesToFloat(unsigned char b3, unsigned char b2, unsigned char b1, unsigned char b0)
 {
@@ -172,7 +172,11 @@ int main(int argc, char **argv)
 			SocketActivated = false;
 		}
 	}
-	float MotionSens = IniFile.ReadFloat("Motion", "Sens", 100) * 0.01;
+	int MotionSens = IniFile.ReadInteger("Motion", "Sens", 100); // sampling(timestamp) speed of motion sensor
+	// min & max programmable ds4 gyro +/-125 degrees/s = 2 rad/s to 2000 degrees/s = 35 rad/s
+	float GyroSens = 35 - IniFile.ReadInteger("Motion", "GyroSens", 100)/100 * 33; // 33 = max - min
+	// min & max programmable ds4 accel +/-2g = 20 m/s^2  to 16g = 160 m/s^2
+	float AccelSens = 160 - IniFile.ReadInteger("Motion", "AccelSens", 100)/100 * 140; // 140 = max - min
 	int InverseXStatus = IniFile.ReadBoolean("Motion", "InverseX", false) == false ? 1 : -1 ;
 	int InverseYStatus = IniFile.ReadBoolean("Motion", "InverseY", false) == false ? 1 : -1 ;
 	int InverseZStatus = IniFile.ReadBoolean("Motion", "InverseZ", false) == false ? 1 : -1 ;
@@ -699,12 +703,14 @@ int main(int argc, char **argv)
 
 		report.sCurrentTouch.bPacketCounter = TouchIndex;
 
-		report.wAccelX = trunc( Clamp(AccelX * 1638.35 * 1.0479 / 2, -32767, 32767) ) * InverseXStatus * MotionSens; // freepie accel max 19.61, min -20, short -32,768 to 32,767
-		report.wAccelY = trunc( Clamp(AccelY * 1638.35 * 1.0479 / 2, -32767, 32767) ) * InverseYStatus * MotionSens;
-		report.wAccelZ = trunc( Clamp(AccelZ * 1638.35 * 1.0479 / 2, -32767, 32767) ) * InverseZStatus * MotionSens;
-		report.wGyroX = trunc( Clamp(GyroX * 2376.7 * 0.8 / 2, -32767, 32767) ) * InverseXStatus * MotionSens; // freepie max gyro 10, min -10.09
-		report.wGyroY = trunc( Clamp(GyroY * 2376.7 * 0.8 / 2, -32767, 32767) ) * InverseYStatus * MotionSens;
-		report.wGyroZ = trunc( Clamp(GyroZ * 2376.7 * 0.8 / 2, -32767, 32767) ) * InverseZStatus * MotionSens; // if ((GetAsyncKeyState(VK_NUMPAD1) & 0x8000) != 0) printf("%d\t%d\t%d\t%d\t%d\t%d\t\n", report.wAccelX, report.wAccelY, report.wAccelZ, report.wGyroX, report.wGyroY, report.wGyroZ);
+		// freePIE gyro and accel in rad/s and m/s^2, need to scale with accel and gyro configs
+		report.wAccelX = trunc(Clamp(AccelX / AccelSens * 32767, -32767, 32767)) * InverseXStatus;
+		report.wAccelY = trunc(Clamp(AccelY / AccelSens * 32767, -32767, 32767)) * InverseYStatus;
+		report.wAccelZ = trunc(Clamp(AccelZ / AccelSens * 32767, -32767, 32767)) * InverseZStatus;
+		report.wGyroX = trunc(Clamp(GyroX / GyroSens * 32767, -32767, 32767)) * InverseXStatus;
+		report.wGyroY = trunc(Clamp(GyroY / GyroSens * 32767, -32767, 32767)) * InverseYStatus;
+		report.wGyroZ = trunc(Clamp(GyroZ / GyroSens * 32767, -32767, 32767)) * InverseZStatus;
+		// if ((GetAsyncKeyState(VK_NUMPAD1) & 0x8000) != 0) printf("%d\t%d\t%d\t%d\t%d\t%d\t\n", report.wAccelX, report.wAccelY, report.wAccelZ, report.wGyroX, report.wGyroY, report.wGyroZ);
 
 		// Motion shaking
 		if (MotionShaking) {
@@ -724,7 +730,7 @@ int main(int argc, char **argv)
 
 		// if ((GetAsyncKeyState(VK_NUMPAD0) & 0x8000) != 0) system("cls");
 
-		curTimeStamp++; if (curTimeStamp > 65535) curTimeStamp = 0; // Is it right? / Правильно ли это?
+		curTimeStamp = curTimeStamp + MotionSens * 100;
 		report.wTimestamp = curTimeStamp;
 
 		ret = vigem_target_ds4_update_ex(client, ds4, report);
