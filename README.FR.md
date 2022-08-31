@@ -59,11 +59,10 @@ Vous pouvez aussi simuler le glissé via le clavier, les codes correspondant aux
 ## Gyroscope
 1. Vérifiez le pare-feu Windows afin d'autoriser les connexions entrantes sur votre type de réseau (privé).
 2. Installer FreePieIMU sur votre téléphone Android en prenant la dernière version ici [OpenTrack archive](https://github.com/opentrack/opentrack) ou ici [releases](https://github.com/r57zone/DualShock4-emulator/releases). 
-3. Entrez l'IP de votre PC, selectionnez `Send raw data` s'il est déselectionné, selectionnez la data rate en `Fastest` ou `Fast`.
-4. Réduisez la sensibilité si nécessaire (le paramètre `Sens`, dans la section `Motion`, où `100` est égal à 100% de sensibilité) dans le fichier de configuration.
-5. Inversez les axes si nécessaire (le paramètre `InverseX`, `InverseY` et `InverseZ`, dans la section `Motion`, où `1` signifie l'activation de l'inversion, et `0` la désactivation).
-5. Changez l'orientation du téléphone (le paramètre `Orientation`, dans la section `Motion`, où `1` correspond au paysage et `0` au portrait).
-
+3. Réduisez la sensibilité générale si nécessaire (le paramètre `Sens`, dans la section `Motion`, où `100` est une sensibilité de 100%) dans le fichier de configuration.
+4. Réduisez la sensibilité du capteur individuel si nécessaire (les `AccelSens` et `GyroSense`, dans la section `Motion`, où `100` correspond à une sensibilité de 100 %) dans le fichier de configuration.
+5. Inversez les axes si nécessaire (les paramètres `InverseX`, `InverseY` et `InverseZ`, dans la section `Motion`, où `1` active l'inversion et `0` désactive).
+6. Modifiez l'orientation du téléphone (le paramètre `Orientation`, dans la section `Motion`, où `1` correspond au paysage et `0` au portrait).
 
 Si vous avez just besoin de simuler une secousse de la manette (gyro) dans le jeu, dans ce cas il n'y a pas besoin d'installer l'application Android, appuyez sur le bouton `Shake` de la manette.
 

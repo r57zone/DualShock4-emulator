@@ -134,7 +134,7 @@ SHORT DeadZoneXboxAxis(SHORT StickAxis, float Percent)
 
 int main(int argc, char **argv)
 {
-	SetConsoleTitle("DS4Emulator 1.7.8");
+	SetConsoleTitle("DS4Emulator 1.7.9");
 
 	CIniReader IniFile("Config.ini"); // Config
 
