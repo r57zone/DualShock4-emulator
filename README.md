@@ -28,6 +28,11 @@ It is possible that the "PS Plus" or "PS Remote Play" apps have given priority t
 **• When playing in xCloud, in the browser, the context menu is called up on the right mouse button, how can I remove it in the browser?**<br>
 First change the name of the window in the configuration file or change the `ActivateInAnyWindow` parameter to `1`, restarting the program. Next, go to the xCloud website, press "F12", select the console and paste [this code](https://github.com/r57zone/DualShock4-emulator/blob/master/ContextMenuBlock.txt) there, press run and the context menu will no longer be shown.
 
+
+
+• **The game sees 2 controllers at the same time (DualSense / DualShock 4 / Nintendo Pro controller or JoyCons and Xbox)**<br>
+If the game supports a modern gamepad well, you can turn off the Xbox gamepad emulation on the `ALT` + `Q` keys, if there are problems with the game, then you can hide this gamepad using the [HidHide](https://github.com/ViGEm/HidHide) program .
+
 ## Xbox controller
 The "Back/View/Select" button (the first button to the right of the left stick) on the Xbox controller emulating pressing the touchpad on a Sony DualShock 4.
 

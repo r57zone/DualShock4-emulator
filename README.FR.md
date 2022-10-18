@@ -27,6 +27,11 @@ Il est possible que les applications "PS Plus" ou "PS Remote Play" aient donné 
 **• Lorsque vous jouez dans xCloud, dans le navigateur, le menu contextuel est appelé avec le bouton droit de la souris, comment puis-je le supprimer dans le navigateur ?**<br>
 Changez d'abord le nom de la fenêtre dans le fichier de configuration ou changez le paramètre `ActivateInAnyWindow` en `1`, en redémarrant le programme. Ensuite, allez sur le site Web xCloud, appuyez sur "F12", sélectionnez la console et collez-y [ce code](https://github.com/r57zone/DualShock4-emulator/blob/master/ContextMenuBlock.txt), appuyez sur Exécuter et le menu contextuel ne sera plus affiché.
 
+
+
+• **Le jeu voit 2 manettes en même temps (manette DualSense / DualShock 4 / Nintendo Pro ou JoyCons et Xbox)**<br>
+Si le jeu prend bien en charge une manette de jeu moderne, vous pouvez désactiver l'émulation de la manette de jeu Xbox sur les touches `ALT` + `Q`, s'il y a des problèmes avec le jeu, vous pouvez masquer cette manette à l'aide du programme [HidHide](https://github.com/ViGEm/HidHide).
+
 ## Manette Xbox
 Le bouton `Retour/Vue/Select` émule l'appui sur le `Touchpad` sur une manette Sony DualShock 4.
 
