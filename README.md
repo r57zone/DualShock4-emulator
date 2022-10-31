@@ -8,7 +8,7 @@ Simple application to emulate the Sony DualShock 4 gamepad using an Xbox control
 
 ## Setup
 1. Install [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases).
-2. Install Microsoft Visual C++ Redistributable 2017 or newer.
+2. Install [Microsoft Visual C++ Redistributable 2017](https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist) or newer.
 3. Unpack and launch "DualShock4 emulator" (**Attention!** It is important to run DS4 emulator before starting PS Plus, if you are using an Xbox controller, so that PS Plus gives priority to the DualShock controller).
 4. Launch "PlayStation Plus", "PS Remote Play", "xCloud", or another application. Read the FAQ to set up xCloud.
 5. If necessary, you can invert the axis, change the `InvertX` and `InvertY` parameters to `1` in the "Config.ini" configuration file.
@@ -105,7 +105,7 @@ Touchpad up, center, left, right, down  | U, J, H, K, N
 Shake the gamepad | T
 PS | F2
 
-Сan replace button bindings in the "Config.ini" configuration file. Button codes can be found [here](https://github.com/r57zone/Half-Life-Alyx-novr/blob/master/BINDINGS.md).
+Сan replace button bindings in the "Config.ini" configuration file. Button names can be found [here](https://github.com/r57zone/DualShock4-emulator/blob/master/BINDINGS.md).
 
 
 
@@ -119,9 +119,6 @@ You can also enable emulation of analog triggers (L2, R2), change the `EmulateAn
 >Version for Windows 10.
 
 **[Download](https://github.com/r57zone/DualShock4-emulator/releases)**
-
-## Forks
-Fork with support for reading gyroscope data from Nintendo Joy-Con - **[More detailed](https://github.com/Okoken/DualShock4-emulator)**.
 
 ## Feedback
 `r57zone[at]gmail.com`

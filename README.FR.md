@@ -7,7 +7,7 @@ Cette application qui permet d'émuler la manette DualShock 4 de chez Sony en ut
 
 ## Installation
 1. Installer [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases).
-2. Installer Microsoft Visual C++ Redistributable 2017 ou plus récent.
+2. Installer [Microsoft Visual C++ Redistributable 2017](https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist) ou plus récent.
 3. Dézipper et lancer "DS4Emulator.exe" (**Attention!** Il est important de lancer l'exe avant Playstation Plus si vous utilisez la manette XBox, pour que PS Plus donne la priorité à la manette (virtuelle) DS4).
 4. Lancez "PlayStation Plus", "PS Remote Play", "xCloud" ou une autre application. Lisez la FAQ pour configurer xCloud.
 5. Si besoin, vous pouvez inverser les axes : changez les paramètres `InvertX` et `InvertY` en `1` dans le fichier de configuration `Config.ini`.
@@ -105,7 +105,7 @@ Touchpad (clic) haut, centre, gauche, droite, bas  | U, J, H, K, N
 Secouer la manette | T
 PS | F2
 
-Vous pouvez changer cette configuration dans le fichier `Config.ini`. Les codes correspondants peuvent être trouvés [ici](https://github.com/r57zone/Half-Life-Alyx-novr/blob/master/BINDINGS.md).
+Vous pouvez changer cette configuration dans le fichier `Config.ini`. Les titres correspondants peuvent être trouvés [ici](https://github.com/r57zone/DualShock4-emulator/blob/master/BINDINGS.md).
 
 
 
@@ -119,11 +119,6 @@ Vous pouvez aussi activer l'émulation des boutons analogiques (L2, R2) : change
 >Version pour Windows 10.
 
 **[Télécharger](https://github.com/r57zone/DualShock4-emulator/releases)**
-
-## Forks
-Un fork avec la prise en charge de la lecture des données gyroscope depuis la Nintendo Joy-Con est disponible ici - 
-**[Plus de détails](https://github.com/Okoken/DualShock4-emulator)**.
-
 
 ## Feedback
 `r57zone[at]gmail.com`

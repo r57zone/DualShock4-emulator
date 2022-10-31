@@ -7,7 +7,7 @@
 
 ## Настройка
 1. Установить [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases).
-2. Установите Microsoft Visual C++ Redistributable 2017 или новее.
+2. Установите [Microsoft Visual C++ Redistributable 2017](https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist) или новее.
 3. Распаковать и запустить DualShock4 emulator (**Внимание!** Важно запускать DS4 emulator до запуска PS Plus, если вы используете Xbox контроллер, чтобы PS Plus отдала приоритет DualShock контроллеру).
 4. Запустите "PlayStation Plus", "PS Remote Play", "xCloud" или другое приложение. Для настройки xCloud прочтите FAQ.
 5. При необходимости можно инвертировать оси, измените параметры `InvertX` и `InvertY` на `1`, в конфигурационном файле "Config.ini".
@@ -103,7 +103,7 @@ Touchpad вверх, вниз, влево, вправо, вниз  | U, J, H, K,
 Потрясти геймпад | T
 PS | F2
 
-В конфигурационном файле "Config.ini" можно заменить привязки кнопок. Коды кнопок можно найти [здесь](https://github.com/r57zone/Half-Life-Alyx-novr/blob/master/BINDINGS.RU.md). 
+В конфигурационном файле "Config.ini" можно заменить привязки кнопок. Название кнопок можно найти [здесь](https://github.com/r57zone/DualShock4-emulator/blob/master/BINDINGS.RU.md). 
 
 
 
@@ -117,9 +117,6 @@ PS | F2
 >Версия для Windows 10.
 
 **[Загрузить](https://github.com/r57zone/DualShock4-emulator/releases)**
-
-## Форки
-Форк, с поддержской чтения данных гироскопа с Nintendo Joy-Con - **[Подробнее](https://github.com/Okoken/DualShock4-emulator)**.
 
 ## Обратная связь
 `r57zone[собака]gmail.com`

@@ -134,7 +134,7 @@ SHORT DeadZoneXboxAxis(SHORT StickAxis, float Percent)
 
 int main(int argc, char **argv)
 {
-	SetConsoleTitle("DS4Emulator 1.7.9");
+	SetConsoleTitle("DS4Emulator 1.8");
 
 	CIniReader IniFile("Config.ini"); // Config
 
@@ -195,8 +195,8 @@ int main(int argc, char **argv)
 	int EmulationMode = KBMode;
 
 	// Config parameters
-	int KEY_ID_EXIT = IniFile.ReadInteger("Main", "ExitBtn", 192); // "~" by default for RU, US and not for UK
-	int KEY_ID_STOP_CENTERING = IniFile.ReadInteger("KeyboardMouse", "StopCenteringKey", 'C');
+	int KEY_ID_EXIT = KeyNameToKeyCode(IniFile.ReadString("Main", "ExitBtn", "~")); // "~" by default for RU, US and not for UK
+	int KEY_ID_STOP_CENTERING = KeyNameToKeyCode(IniFile.ReadString("KeyboardMouse", "StopCenteringKey", "C"));
 
 	bool InvertX = IniFile.ReadBoolean("Main", "InvertX", false);
 	bool InvertY = IniFile.ReadBoolean("Main", "InvertY", false);
@@ -227,41 +227,41 @@ int main(int argc, char **argv)
 	mouseSensetiveY = IniFile.ReadFloat("KeyboardMouse", "SensY", 15);
 	int DeadZoneDS4 = IniFile.ReadInteger("KeyboardMouse", "DeadZone", 0); // 25, makes mouse movement smoother when moving slowly (12->25)
 
-	int KEY_ID_LEFT_STICK_UP = IniFile.ReadInteger("Keys", "LS_UP", 'W');
-	int KEY_ID_LEFT_STICK_LEFT = IniFile.ReadInteger("Keys", "LS_LEFT", 'A');
-	int KEY_ID_LEFT_STICK_RIGHT = IniFile.ReadInteger("Keys", "LS_RIGHT", 'D');
-	int KEY_ID_LEFT_STICK_DOWN = IniFile.ReadInteger("Keys", "LS_DOWN", 'S');
-	int KEY_ID_LEFT_TRIGGER = IniFile.ReadInteger("Keys", "L2", VK_RBUTTON);
-	int KEY_ID_RIGHT_TRIGGER = IniFile.ReadInteger("Keys", "R2", VK_LBUTTON);
-	int KEY_ID_LEFT_SHOULDER = IniFile.ReadInteger("Keys", "L1", VK_CONTROL);
-	int KEY_ID_RIGHT_SHOULDER = IniFile.ReadInteger("Keys", "R1", VK_MENU);
-	int KEY_ID_DPAD_UP = IniFile.ReadInteger("Keys", "DPAD_UP", '1');
-	int KEY_ID_DPAD_LEFT = IniFile.ReadInteger("Keys", "DPAD_LEFT", '2');
-	int KEY_ID_DPAD_RIGHT = IniFile.ReadInteger("Keys", "DPAD_RIGHT", '3');
-	int KEY_ID_DPAD_DOWN = IniFile.ReadInteger("Keys", "DPAD_DOWN", '4');
-	int KEY_ID_LEFT_THUMB = IniFile.ReadInteger("Keys", "L3", VK_LSHIFT);
-	int KEY_ID_RIGHT_THUMB = IniFile.ReadInteger("Keys", "R3", VK_MBUTTON);
-	int KEY_ID_TRIANGLE = IniFile.ReadInteger("Keys", "TRIANGLE", 'Q');
-	int KEY_ID_SQUARE = IniFile.ReadInteger("Keys", "SQUARE", 'E');
-	int KEY_ID_CIRCLE = IniFile.ReadInteger("Keys", "CIRCLE", 'R');
-	int KEY_ID_CROSS = IniFile.ReadInteger("Keys", "CROSS", VK_SPACE);
-	int KEY_ID_SHARE = IniFile.ReadInteger("Keys", "SHARE", VK_F12);
-	int KEY_ID_TOUCHPAD = IniFile.ReadInteger("Keys", "TOUCHPAD", VK_RETURN);
-	int KEY_ID_OPTIONS = IniFile.ReadInteger("Keys", "OPTIONS", VK_TAB);
-	int KEY_ID_PS = IniFile.ReadInteger("Keys", "PS", VK_F2);
+	int KEY_ID_LEFT_STICK_UP = KeyNameToKeyCode(IniFile.ReadString("Keys", "LS_UP", "W"));
+	int KEY_ID_LEFT_STICK_LEFT = KeyNameToKeyCode(IniFile.ReadString("Keys", "LS_LEFT", "A"));
+	int KEY_ID_LEFT_STICK_RIGHT = KeyNameToKeyCode(IniFile.ReadString("Keys", "LS_RIGHT", "D"));
+	int KEY_ID_LEFT_STICK_DOWN = KeyNameToKeyCode(IniFile.ReadString("Keys", "LS_DOWN", "S"));
+	int KEY_ID_LEFT_TRIGGER = KeyNameToKeyCode(IniFile.ReadString("Keys", "L2", "MOUSE-RIGHT-BTN"));
+	int KEY_ID_RIGHT_TRIGGER = KeyNameToKeyCode(IniFile.ReadString("Keys", "R2", "MOUSE-LEFT-BTN"));
+	int KEY_ID_LEFT_SHOULDER = KeyNameToKeyCode(IniFile.ReadString("Keys", "L1", "CTRL"));
+	int KEY_ID_RIGHT_SHOULDER = KeyNameToKeyCode(IniFile.ReadString("Keys", "R1", "ALT"));
+	int KEY_ID_DPAD_UP = KeyNameToKeyCode(IniFile.ReadString("Keys", "DPAD_UP", "1"));
+	int KEY_ID_DPAD_LEFT = KeyNameToKeyCode(IniFile.ReadString("Keys", "DPAD_LEFT", "2"));
+	int KEY_ID_DPAD_RIGHT = KeyNameToKeyCode(IniFile.ReadString("Keys", "DPAD_RIGHT", "3"));
+	int KEY_ID_DPAD_DOWN = KeyNameToKeyCode(IniFile.ReadString("Keys", "DPAD_DOWN", "4"));
+	int KEY_ID_LEFT_THUMB = KeyNameToKeyCode(IniFile.ReadString("Keys", "L3", "SHIFT"));
+	int KEY_ID_RIGHT_THUMB = KeyNameToKeyCode(IniFile.ReadString("Keys", "R3", "MOUSE-MIDDLE-BTN"));
+	int KEY_ID_TRIANGLE = KeyNameToKeyCode(IniFile.ReadString("Keys", "TRIANGLE", "Q"));
+	int KEY_ID_SQUARE = KeyNameToKeyCode(IniFile.ReadString("Keys", "SQUARE", "E"));
+	int KEY_ID_CIRCLE = KeyNameToKeyCode(IniFile.ReadString("Keys", "CIRCLE", "R"));
+	int KEY_ID_CROSS = KeyNameToKeyCode(IniFile.ReadString("Keys", "CROSS", "SPACE"));
+	int KEY_ID_SHARE = KeyNameToKeyCode(IniFile.ReadString("Keys", "SHARE", "F12"));
+	int KEY_ID_TOUCHPAD = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD", "ENTER"));
+	int KEY_ID_OPTIONS = KeyNameToKeyCode(IniFile.ReadString("Keys", "OPTIONS", "TAB"));
+	int KEY_ID_PS = KeyNameToKeyCode(IniFile.ReadString("Keys", "PS", "F2"));
 
-	int KEY_ID_SHAKING = IniFile.ReadInteger("Keys", "SHAKING", 'T');
+	int KEY_ID_SHAKING = KeyNameToKeyCode(IniFile.ReadString("Keys", "SHAKING", "T"));
 
-	int KEY_ID_TOUCHPAD_SWIPE_UP = IniFile.ReadInteger("Keys", "TOUCHPAD_SWIPE_UP", '7');
-	int KEY_ID_TOUCHPAD_SWIPE_DOWN = IniFile.ReadInteger("Keys", "TOUCHPAD_SWIPE_DOWN", '8');
-	int KEY_ID_TOUCHPAD_SWIPE_LEFT = IniFile.ReadInteger("Keys", "TOUCHPAD_SWIPE_LEFT", '9');
-	int KEY_ID_TOUCHPAD_SWIPE_RIGHT = IniFile.ReadInteger("Keys", "TOUCHPAD_SWIPE_RIGHT", '0');
+	int KEY_ID_TOUCHPAD_SWIPE_UP = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD_SWIPE_UP", "7"));
+	int KEY_ID_TOUCHPAD_SWIPE_DOWN = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD_SWIPE_DOWN", "8"));
+	int KEY_ID_TOUCHPAD_SWIPE_LEFT = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD_SWIPE_LEFT", "9"));
+	int KEY_ID_TOUCHPAD_SWIPE_RIGHT = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD_SWIPE_RIGHT", "0"));
 
-	int KEY_ID_TOUCHPAD_UP = IniFile.ReadInteger("Keys", "TOUCHPAD_UP", 'U');
-	int KEY_ID_TOUCHPAD_DOWN = IniFile.ReadInteger("Keys", "TOUCHPAD_DOWN", 'N');
-	int KEY_ID_TOUCHPAD_LEFT = IniFile.ReadInteger("Keys", "TOUCHPAD_LEFT", 'H');
-	int KEY_ID_TOUCHPAD_RIGHT = IniFile.ReadInteger("Keys", "TOUCHPAD_RIGHT", 'K');
-	int KEY_ID_TOUCHPAD_CENTER = IniFile.ReadInteger("Keys", "TOUCHPAD_CENTER", 'J');
+	int KEY_ID_TOUCHPAD_UP = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD_UP", "U"));
+	int KEY_ID_TOUCHPAD_DOWN = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD_DOWN", "N"));
+	int KEY_ID_TOUCHPAD_LEFT = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD_LEFT", "H"));
+	int KEY_ID_TOUCHPAD_RIGHT = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD_RIGHT", "K"));
+	int KEY_ID_TOUCHPAD_CENTER = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD_CENTER", "J"));
 
 	const auto client = vigem_alloc();
 	auto ret = vigem_connect(client);
