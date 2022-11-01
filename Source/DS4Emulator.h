@@ -135,8 +135,8 @@ int KeyNameToKeyCode(std::string KeyName) {
 	else if (KeyName == "I") return 'I';
 	else if (KeyName == "O") return 'O';
 	else if (KeyName == "P") return 'P';
-	else if (KeyName == "[") return '[';
-	else if (KeyName == "]") return ']';
+	else if (KeyName == "[") return 219;
+	else if (KeyName == "]") return 221;
 	else if (KeyName == "A") return 'A';
 	else if (KeyName == "S") return 'S';
 	else if (KeyName == "D") return 'D';
@@ -146,8 +146,8 @@ int KeyNameToKeyCode(std::string KeyName) {
 	else if (KeyName == "J") return 'J';
 	else if (KeyName == "K") return 'K';
 	else if (KeyName == "L") return 'L';
-	else if (KeyName == ";") return 186;
-	else if (KeyName == "'") return 222;
+	else if (KeyName == ":") return 186;
+	else if (KeyName == "APOSTROPHE") return 222;
 	else if (KeyName == "\\") return 220;
 	else if (KeyName == "Z") return 'Z';
 	else if (KeyName == "X") return 'X';
