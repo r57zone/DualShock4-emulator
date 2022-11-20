@@ -30,7 +30,7 @@ Changez d'abord le nom de la fenêtre dans le fichier de configuration ou change
 
 
 • **Le jeu voit 2 manettes en même temps (manette DualSense / DualShock 4 / Nintendo Pro ou JoyCons et Xbox)**<br>
-Si le jeu prend bien en charge une manette de jeu moderne, vous pouvez désactiver l'émulation de la manette de jeu Xbox sur les touches `ALT` + `Q`, s'il y a des problèmes avec le jeu, vous pouvez masquer cette manette à l'aide du programme [HidHide](https://github.com/ViGEm/HidHide).
+Vous pouvez masquer votre manette de jeu à l'aide du programme [HidHide](https://github.com/ViGEm/HidHide).
 
 ## Manette Xbox
 Le bouton `Retour/Vue/Select` émule l'appui sur le `Touchpad` sur une manette Sony DualShock 4.
