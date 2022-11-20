@@ -83,8 +83,8 @@ Pour le plein-écran, Playstation Plus utilise la combinaison de touches `ALT` +
 
 DualShock 4 | Souris/clavier
 ------------ | -------------
-L1 | CTRL
-R1 | Alt
+L1 | Alt
+R1 | Control
 L2 | Clic droit
 R2 | Clic gauche
 SHARE | F12
@@ -94,9 +94,9 @@ HAUT | 1
 GAUCHE | 2
 DROITE | 3
 BAS | 4
-TRIANGLE | Q
-CARRÉ  | E
-ROND | R
+TRIANGLE | E
+CARRÉ  | R
+ROND | Q
 CROIX | Espace
 L3 (appui sur le joystick) | Shift
 R3 (appui sur le joystick) | Bouton du milieu souris

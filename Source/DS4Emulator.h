@@ -13,7 +13,7 @@
 #define XINPUT_GAMEPAD_A                0x1000
 #define XINPUT_GAMEPAD_B                0x2000
 #define XINPUT_GAMEPAD_X                0x4000
-#define XINPUT_GAMEPAD_Y				0x8000
+#define XINPUT_GAMEPAD_Y                0x8000
 
 #define BATTERY_TYPE_DISCONNECTED		0x00
 
@@ -101,7 +101,7 @@ int KeyNameToKeyCode(std::string KeyName) {
 	else if (KeyName == "F11") return VK_F11;
 	else if (KeyName == "F12") return VK_F12;
 
-	else if (KeyName == "~") return 192;
+	else if (KeyName == "~") return 192; // "~" by default for RU, US and not for UK
 	else if (KeyName == "1") return '1';
 	else if (KeyName == "2") return '2';
 	else if (KeyName == "3") return '3';
@@ -192,6 +192,31 @@ int KeyNameToKeyCode(std::string KeyName) {
 	else if (KeyName == "NUMPAD-MINUS") return VK_SUBTRACT;
 	else if (KeyName == "NUMPAD-PLUS") return VK_ADD;
 	else if (KeyName == "NUMPAD-DEL") return VK_DECIMAL;
+
+	else return 0;
+}
+
+int XboxKeyNameToXboxKeyCode(std::string KeyName) {
+	std::transform(KeyName.begin(), KeyName.end(), KeyName.begin(), ::toupper);
+
+	if (KeyName == "NONE") return 0;
+
+	else if (KeyName == "DPAD-UP") return XINPUT_GAMEPAD_DPAD_UP;
+	else if (KeyName == "DPAD-DOWN") return XINPUT_GAMEPAD_DPAD_DOWN;
+	else if (KeyName == "DPAD-LEFT") return XINPUT_GAMEPAD_DPAD_LEFT;
+	else if (KeyName == "DPAD-RIGHT") return XINPUT_GAMEPAD_DPAD_RIGHT;
+
+	else if (KeyName == "XBOX") return XINPUT_GAMEPAD_GUIDE;
+	else if (KeyName == "BACK") return XINPUT_GAMEPAD_BACK;
+	else if (KeyName == "START") return XINPUT_GAMEPAD_START;
+	else if (KeyName == "LEFT-STICK") return XINPUT_GAMEPAD_LEFT_THUMB;
+	else if (KeyName == "RIGHT-STICK") return XINPUT_GAMEPAD_RIGHT_THUMB;
+	else if (KeyName == "LEFT-SHOULDER") return XINPUT_GAMEPAD_LEFT_SHOULDER;
+	else if (KeyName == "RIGHT-SHOULDER") return XINPUT_GAMEPAD_RIGHT_SHOULDER;
+	else if (KeyName == "A") return XINPUT_GAMEPAD_A;
+	else if (KeyName == "B") return XINPUT_GAMEPAD_B;
+	else if (KeyName == "X") return XINPUT_GAMEPAD_X;
+	else if (KeyName == "Y") return XINPUT_GAMEPAD_Y;
 
 	else return 0;
 }

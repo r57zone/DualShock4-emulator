@@ -134,7 +134,7 @@ SHORT DeadZoneXboxAxis(SHORT StickAxis, float Percent)
 
 int main(int argc, char **argv)
 {
-	SetConsoleTitle("DS4Emulator 1.8");
+	SetConsoleTitle("DS4Emulator 1.8.1");
 
 	CIniReader IniFile("Config.ini"); // Config
 
@@ -195,8 +195,9 @@ int main(int argc, char **argv)
 	int EmulationMode = KBMode;
 
 	// Config parameters
-	int KEY_ID_EXIT = KeyNameToKeyCode(IniFile.ReadString("Main", "ExitBtn", "~")); // "~" by default for RU, US and not for UK
-	int KEY_ID_STOP_CENTERING = KeyNameToKeyCode(IniFile.ReadString("KeyboardMouse", "StopCenteringKey", "C"));
+	std::string KEY_ID_STOP_CENTERING_NAME = IniFile.ReadString("KeyboardMouse", "StopCenteringKey", "C");
+	int KEY_ID_STOP_CENTERING = KeyNameToKeyCode(KEY_ID_STOP_CENTERING_NAME);
+	bool CenteingEnable = true;
 
 	bool InvertX = IniFile.ReadBoolean("Main", "InvertX", false);
 	bool InvertY = IniFile.ReadBoolean("Main", "InvertY", false);
@@ -206,6 +207,11 @@ int main(int argc, char **argv)
 	bool SwapShareTouchPad = IniFile.ReadBoolean("Xbox", "SwapShareTouchPad", false);
 	bool TouchPadPressedWhenSwiping = IniFile.ReadBoolean("Xbox", "TouchPadPressedWhenSwiping", true);
 	bool EnableXboxButton = IniFile.ReadBoolean("Xbox", "EnableXboxButton", true);
+
+	std::string KEY_ID_XBOX_SHAKING_1_NAME = IniFile.ReadString("Xbox", "MotionShakingKey1", "BACK");
+	int KEY_ID_XBOX_SHAKING_1 = XboxKeyNameToXboxKeyCode(KEY_ID_XBOX_SHAKING_1_NAME);
+	std::string KEY_ID_XBOX_SHAKING_2_NAME = IniFile.ReadString("Xbox", "MotionShakingKey2", "RIGHT-SHOULDER");
+	int KEY_ID_XBOX_SHAKING_2 = XboxKeyNameToXboxKeyCode(KEY_ID_XBOX_SHAKING_2_NAME);
 
 	float DeadZoneLeftStickX = IniFile.ReadFloat("Xbox", "DeadZoneLeftStickX", 0);
 	float DeadZoneLeftStickY = IniFile.ReadFloat("Xbox", "DeadZoneLeftStickY", 0);
@@ -227,23 +233,23 @@ int main(int argc, char **argv)
 	mouseSensetiveY = IniFile.ReadFloat("KeyboardMouse", "SensY", 15);
 	int DeadZoneDS4 = IniFile.ReadInteger("KeyboardMouse", "DeadZone", 0); // 25, makes mouse movement smoother when moving slowly (12->25)
 
-	int KEY_ID_LEFT_STICK_UP = KeyNameToKeyCode(IniFile.ReadString("Keys", "LS_UP", "W"));
-	int KEY_ID_LEFT_STICK_LEFT = KeyNameToKeyCode(IniFile.ReadString("Keys", "LS_LEFT", "A"));
-	int KEY_ID_LEFT_STICK_RIGHT = KeyNameToKeyCode(IniFile.ReadString("Keys", "LS_RIGHT", "D"));
-	int KEY_ID_LEFT_STICK_DOWN = KeyNameToKeyCode(IniFile.ReadString("Keys", "LS_DOWN", "S"));
+	int KEY_ID_LEFT_STICK_UP = KeyNameToKeyCode(IniFile.ReadString("Keys", "LEFT-STICK-UP", "W"));
+	int KEY_ID_LEFT_STICK_LEFT = KeyNameToKeyCode(IniFile.ReadString("Keys", "LEFT-STICK-LEFT", "A"));
+	int KEY_ID_LEFT_STICK_RIGHT = KeyNameToKeyCode(IniFile.ReadString("Keys", "LEFT-STICK-RIGHT", "D"));
+	int KEY_ID_LEFT_STICK_DOWN = KeyNameToKeyCode(IniFile.ReadString("Keys", "LEFT-STICK-DOWN", "S"));
 	int KEY_ID_LEFT_TRIGGER = KeyNameToKeyCode(IniFile.ReadString("Keys", "L2", "MOUSE-RIGHT-BTN"));
 	int KEY_ID_RIGHT_TRIGGER = KeyNameToKeyCode(IniFile.ReadString("Keys", "R2", "MOUSE-LEFT-BTN"));
-	int KEY_ID_LEFT_SHOULDER = KeyNameToKeyCode(IniFile.ReadString("Keys", "L1", "CTRL"));
-	int KEY_ID_RIGHT_SHOULDER = KeyNameToKeyCode(IniFile.ReadString("Keys", "R1", "ALT"));
-	int KEY_ID_DPAD_UP = KeyNameToKeyCode(IniFile.ReadString("Keys", "DPAD_UP", "1"));
-	int KEY_ID_DPAD_LEFT = KeyNameToKeyCode(IniFile.ReadString("Keys", "DPAD_LEFT", "2"));
-	int KEY_ID_DPAD_RIGHT = KeyNameToKeyCode(IniFile.ReadString("Keys", "DPAD_RIGHT", "3"));
-	int KEY_ID_DPAD_DOWN = KeyNameToKeyCode(IniFile.ReadString("Keys", "DPAD_DOWN", "4"));
+	int KEY_ID_LEFT_SHOULDER = KeyNameToKeyCode(IniFile.ReadString("Keys", "L1", "ALT"));
+	int KEY_ID_RIGHT_SHOULDER = KeyNameToKeyCode(IniFile.ReadString("Keys", "R1", "CTRL"));
+	int KEY_ID_DPAD_UP = KeyNameToKeyCode(IniFile.ReadString("Keys", "DPAD-UP", "1"));
+	int KEY_ID_DPAD_LEFT = KeyNameToKeyCode(IniFile.ReadString("Keys", "DPAD-LEFT", "2"));
+	int KEY_ID_DPAD_RIGHT = KeyNameToKeyCode(IniFile.ReadString("Keys", "DPAD-RIGHT", "3"));
+	int KEY_ID_DPAD_DOWN = KeyNameToKeyCode(IniFile.ReadString("Keys", "DPAD-DOWN", "4"));
 	int KEY_ID_LEFT_THUMB = KeyNameToKeyCode(IniFile.ReadString("Keys", "L3", "SHIFT"));
 	int KEY_ID_RIGHT_THUMB = KeyNameToKeyCode(IniFile.ReadString("Keys", "R3", "MOUSE-MIDDLE-BTN"));
-	int KEY_ID_TRIANGLE = KeyNameToKeyCode(IniFile.ReadString("Keys", "TRIANGLE", "Q"));
-	int KEY_ID_SQUARE = KeyNameToKeyCode(IniFile.ReadString("Keys", "SQUARE", "E"));
-	int KEY_ID_CIRCLE = KeyNameToKeyCode(IniFile.ReadString("Keys", "CIRCLE", "R"));
+	int KEY_ID_TRIANGLE = KeyNameToKeyCode(IniFile.ReadString("Keys", "TRIANGLE", "E"));
+	int KEY_ID_SQUARE = KeyNameToKeyCode(IniFile.ReadString("Keys", "SQUARE", "R"));
+	int KEY_ID_CIRCLE = KeyNameToKeyCode(IniFile.ReadString("Keys", "CIRCLE", "Q"));
 	int KEY_ID_CROSS = KeyNameToKeyCode(IniFile.ReadString("Keys", "CROSS", "SPACE"));
 	int KEY_ID_SHARE = KeyNameToKeyCode(IniFile.ReadString("Keys", "SHARE", "F12"));
 	int KEY_ID_TOUCHPAD = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD", "ENTER"));
@@ -252,16 +258,16 @@ int main(int argc, char **argv)
 
 	int KEY_ID_SHAKING = KeyNameToKeyCode(IniFile.ReadString("Keys", "SHAKING", "T"));
 
-	int KEY_ID_TOUCHPAD_SWIPE_UP = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD_SWIPE_UP", "7"));
-	int KEY_ID_TOUCHPAD_SWIPE_DOWN = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD_SWIPE_DOWN", "8"));
-	int KEY_ID_TOUCHPAD_SWIPE_LEFT = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD_SWIPE_LEFT", "9"));
-	int KEY_ID_TOUCHPAD_SWIPE_RIGHT = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD_SWIPE_RIGHT", "0"));
+	int KEY_ID_TOUCHPAD_SWIPE_UP = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD-SWIPE-UP", "7"));
+	int KEY_ID_TOUCHPAD_SWIPE_DOWN = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD-SWIPE-DOWN", "8"));
+	int KEY_ID_TOUCHPAD_SWIPE_LEFT = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD-SWIPE-LEFT", "9"));
+	int KEY_ID_TOUCHPAD_SWIPE_RIGHT = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD-SWIPE-RIGHT", "0"));
 
-	int KEY_ID_TOUCHPAD_UP = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD_UP", "U"));
-	int KEY_ID_TOUCHPAD_DOWN = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD_DOWN", "N"));
-	int KEY_ID_TOUCHPAD_LEFT = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD_LEFT", "H"));
-	int KEY_ID_TOUCHPAD_RIGHT = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD_RIGHT", "K"));
-	int KEY_ID_TOUCHPAD_CENTER = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD_CENTER", "J"));
+	int KEY_ID_TOUCHPAD_UP = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD-UP", "U"));
+	int KEY_ID_TOUCHPAD_DOWN = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD-DOWN", "N"));
+	int KEY_ID_TOUCHPAD_LEFT = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD-LEFT", "H"));
+	int KEY_ID_TOUCHPAD_RIGHT = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD-RIGHT", "K"));
+	int KEY_ID_TOUCHPAD_CENTER = KeyNameToKeyCode(IniFile.ReadString("Keys", "TOUCHPAD-CENTER", "J"));
 
 	const auto client = vigem_alloc();
 	auto ret = vigem_connect(client);
@@ -300,22 +306,24 @@ int main(int argc, char **argv)
 	}
 
 	// Write current mode
-	if (EmulationMode == XboxMode)
+	if (EmulationMode == XboxMode) {
 		printf("\n Emulation with Xbox controller.\n");
-	else {
+		printf_s(" Touchpad press: \"BACK\".\n Touchpad movement: \"BACK\" + \"RIGHT-STICK\".\n Motion shaking: \"%s\" + \"%s\".\n", KEY_ID_XBOX_SHAKING_1_NAME.c_str(), KEY_ID_XBOX_SHAKING_2_NAME.c_str());
+
+	} else {
 		printf("\r\n Emulation with keyboard and mouse.\n");
 		if (ActivateInAnyWindow == false)
 			printf(" Activate in any window is disabled, so the emulated gamepad work only in \"PS Plus\" and \"PS4 Remote Play\".\n");
-		printf(" Hold down \"C\" to for cursor movement.\n");
+		printf_s(" Enable or disable cursor movement on the \"%s\" button (right stick emulation).\n", KEY_ID_STOP_CENTERING_NAME.c_str());
 	}
 	if (EmulationMode == KBMode) {
 		printf(" Press \"ALT\" + \"F10\" to switch \"PS Plus\" to full-screen mode or return to normal.\n");
 		if (CursorHidden)
-			printf(" The cursor is hidden. To display the cursor, press \"ALT\" + \"Escape\" or \"exit key\".\n");
+			printf(" The cursor is hidden. To display the cursor, press \"ALT\" + \"Escape\".\n");
 		else
 			printf(" The cursor is not hidden. To hide the cursor, press \"ALT\" + \"F2\".\n");
 	}
-	printf(" Press \"ALT\" + \"Escape\" or \"exit key\" to exit.\n");
+	printf(" Press \"ALT\" + \"Escape\" to exit.\n");
 
 	DS4_TOUCH BuffPreviousTouch[2] = { 0, 0 };
 	BuffPreviousTouch[0].bIsUpTrackingNum1 = 0x80;
@@ -324,7 +332,7 @@ int main(int argc, char **argv)
 	bool AllowIncTouchIndex;
 	bool DeadZoneMode = false;
 
-	while (!((GetAsyncKeyState(KEY_ID_EXIT) & 0x8000) || ((GetAsyncKeyState(VK_LMENU) & 0x8000) && (GetAsyncKeyState(VK_ESCAPE) & 0x8000)) )) // "~" by default
+	while ( !( (GetAsyncKeyState(VK_LMENU) & 0x8000 && GetAsyncKeyState(VK_ESCAPE) & 0x8000) ) )
 	{
 		DS4_REPORT_INIT_EX(&report);
 
@@ -356,7 +364,7 @@ int main(int argc, char **argv)
 					if (DeadZoneMode == false) {
 						system("cls");
 						printf("\n Emulation with Xbox controller.\n");
-						printf(" Press \"ALT\" + \"Escape\" or \"exit key\" to exit.\n");
+						printf(" Press \"ALT\" + \"Escape\" to exit.\n");
 					}
 					SkipPollCount = SkipPollTimeOut;
 				}
@@ -412,10 +420,11 @@ int main(int argc, char **argv)
 				if (EnableXboxButton && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_GUIDE) report.bSpecial |= DS4_SPECIAL_BUTTON_PS;
 
 				// Motion shaking
-				if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
-					myPState.Gamepad.wButtons &= ~XINPUT_GAMEPAD_BACK; myPState.Gamepad.wButtons &= ~XINPUT_GAMEPAD_RIGHT_SHOULDER;
+				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_SHAKING_1 && myPState.Gamepad.wButtons &  KEY_ID_XBOX_SHAKING_2) {
+					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_SHAKING_1; myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_SHAKING_2;
 					MotionShaking = true;
-				} else MotionShaking = false;
+				} else
+					MotionShaking = false;
 
 				// Swap share and touchpad
 				if (SwapShareTouchPad == false) {
@@ -490,7 +499,7 @@ int main(int argc, char **argv)
 
 				// Touchpad swipes
 				if (report.bSpecial & DS4_SPECIAL_BUTTON_TOUCHPAD) {
-					if (!TouchPadPressedWhenSwiping && (report.bThumbRX != 127 || report.bThumbRY != 129) ) {
+					if (!TouchPadPressedWhenSwiping && (report.bThumbRX != 127 || report.bThumbRY != 129)) {
 						report.bSpecial &= ~DS4_SPECIAL_BUTTON_TOUCHPAD;
 						if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) { report.wButtons &= ~DS4_BUTTON_THUMB_RIGHT; report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD; }
 					}
@@ -534,12 +543,13 @@ int main(int argc, char **argv)
 
 			if (CursorHidden == false && (GetAsyncKeyState(VK_LMENU) & 0x8000) && (GetAsyncKeyState(VK_F2) & 0x8000) && SkipPollCount == 0) {
 				SetSystemCursor(CursorEmpty, OCR_NORMAL); CursorHidden = true;
-				printf(" The cursor is hidden. To display the cursor, press \"ALT\" + \"Escape\" or \"exit key\".\n");
+				printf(" The cursor is hidden. To display the cursor, press \"ALT\" + \"Escape\".\n");
 				SkipPollCount = SkipPollTimeOut;
 			}
 
 			if (ActivateInAnyWindow || PSNowFound || PSRemotePlayFound) {
-				if ((GetAsyncKeyState(KEY_ID_STOP_CENTERING) & 0x8000) == 0) GetMouseState();
+				if (GetAsyncKeyState(KEY_ID_STOP_CENTERING) & 0x8000 && SkipPollCount == 0) { CenteingEnable = !CenteingEnable;  SkipPollCount = SkipPollTimeOut;}
+				if (CenteingEnable) GetMouseState();
 
 				if (InvertX)
 					DeltaMouseX = DeltaMouseX * -1;

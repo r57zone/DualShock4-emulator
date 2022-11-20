@@ -83,8 +83,8 @@ For full-screen Playstation Plus use the keys "ALT" + "F10", the upper black bar
 
 DualShock 4 | Keyboard and mouse
 ------------ | -------------
-L1 | Control
-R1 | Alt
+L1 | Alt
+R1 | Control
 L2 | Right mouse button
 R2 | Left mouse button
 SHARE | F12
@@ -94,9 +94,9 @@ DPAD UP | 1
 DPAD LEFT | 2
 DPAD RIGHT | 3
 DPAD DOWN | 4
-TRIANGLE | Q
-SQUARE | E
-CIRCLE | R
+TRIANGLE | E
+SQUARE | R
+CIRCLE | Q
 CROSS | Space
 L3 (pressing the stick) | Shift
 R3 (pressing the stick) | Middle mouse button
