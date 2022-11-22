@@ -31,7 +31,7 @@ First change the name of the window in the configuration file or change the `Act
 
 
 • **The game sees 2 controllers at the same time (DualSense / DualShock 4 / Nintendo Pro controller or JoyCons and Xbox)**<br>
-You can hide your gamepad using the [HidHide](https://github.com/ViGEm/HidHide) program .
+You can hide your gamepad using the [HidHide](https://github.com/ViGEm/HidHide) program.
 
 ## Xbox controller
 The "Back/View/Select" button (the first button to the right of the left stick) on the Xbox controller emulating pressing the touchpad on a Sony DualShock 4.
