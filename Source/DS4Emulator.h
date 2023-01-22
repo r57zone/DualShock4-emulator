@@ -76,6 +76,22 @@ typedef DWORD(__stdcall *_XInputSetState)(_In_ DWORD dwUserIndex, _In_ XINPUT_VI
 
 #define SkipPollTimeOut 15
 
+#define KBMode 0
+#define XboxMode 1
+int EmulationMode = KBMode;
+
+bool SwapShareTouchPad = false;
+bool ActivateInAnyWindow = false;
+bool CursorHidden = false;
+
+std::string KEY_ID_STOP_CENTERING_NAME = "";
+std::string KEY_ID_XBOX_ACTIVATE_MOTION_NAME = "";
+std::string KEY_ID_XBOX_SHAKING_NAME = "";
+std::string KEY_ID_XBOX_MOTION_UP_NAME = "";
+std::string KEY_ID_XBOX_MOTION_DOWN_NAME = "";
+std::string KEY_ID_XBOX_MOTION_LEFT_NAME = "";
+std::string KEY_ID_XBOX_MOTION_RIGHT_NAME = "";
+
 int KeyNameToKeyCode(std::string KeyName) {
 	std::transform(KeyName.begin(), KeyName.end(), KeyName.begin(), ::toupper);
 
@@ -220,3 +236,46 @@ int XboxKeyNameToXboxKeyCode(std::string KeyName) {
 
 	else return 0;
 }
+
+std::vector <std::string> KMProfiles;
+int ProfileIndex = 0;
+
+int KEY_ID_LEFT_STICK_UP;
+int KEY_ID_LEFT_STICK_LEFT;
+int KEY_ID_LEFT_STICK_RIGHT;
+int KEY_ID_LEFT_STICK_DOWN;
+int KEY_ID_LEFT_TRIGGER;
+int KEY_ID_RIGHT_TRIGGER;
+int KEY_ID_LEFT_SHOULDER;
+int KEY_ID_RIGHT_SHOULDER;
+int KEY_ID_DPAD_UP;
+int KEY_ID_DPAD_LEFT;
+int KEY_ID_DPAD_RIGHT;
+int KEY_ID_DPAD_DOWN;
+int KEY_ID_LEFT_THUMB;
+int KEY_ID_RIGHT_THUMB;
+int KEY_ID_TRIANGLE;
+int KEY_ID_SQUARE;
+int KEY_ID_CIRCLE;
+int KEY_ID_CROSS;
+int KEY_ID_SHARE;
+int KEY_ID_TOUCHPAD;
+int KEY_ID_OPTIONS;
+int KEY_ID_PS;
+
+int KEY_ID_SHAKING;
+int KEY_ID_MOTION_UP;
+int KEY_ID_MOTION_DOWN;
+int KEY_ID_MOTION_LEFT;
+int KEY_ID_MOTION_RIGHT;
+
+int KEY_ID_TOUCHPAD_SWIPE_UP;
+int KEY_ID_TOUCHPAD_SWIPE_DOWN;
+int KEY_ID_TOUCHPAD_SWIPE_LEFT;
+int KEY_ID_TOUCHPAD_SWIPE_RIGHT;
+
+int KEY_ID_TOUCHPAD_UP;
+int KEY_ID_TOUCHPAD_DOWN;
+int KEY_ID_TOUCHPAD_LEFT;
+int KEY_ID_TOUCHPAD_RIGHT;
+int KEY_ID_TOUCHPAD_CENTER;

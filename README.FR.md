@@ -35,12 +35,14 @@ Vous pouvez masquer votre manette de jeu à l'aide du programme [HidHide](https:
 ## Manette Xbox
 Le bouton `Retour/Vue/Select` émule l'appui sur le `Touchpad` sur une manette Sony DualShock 4.
 
-L'appuie simultané sur le bouton `Retour/Vue/Select` et le bouton `Start` (ou touche `F12`) émule l'appui sur le bouton `PS Share`.
+L'appuie simultané sur le bouton `Retour/Vue/Select` et le bouton `Start` (ou touche `F12`) émule l'appui sur le bouton `Share`.
 
 Par défaut, le bouton `Xbox` ouvre la XBox Gamebar, si vous souhaitez que celui-ci émule le bouton `PS`, il faut d'abord désactiver la Gamebar dans vos paramètres Windows. Pour simuler un appui sur le bouton `PS`, appuyez sur `Retour/Vue/Select` + `LB` ou `F2`
 
 Vous pouvez émuler une secousse de la manette (gyroscope) en appuyant sur `Retour/Vue/Select` et `RB`.
 
+
+Vous pouvez faire pivoter la manette (gyroscope) en appuyant sur `Back` et `DPAD ←↑↓→` (vous pouvez modifier les combinaisons dans le fichier de configuration).
 
 
 Si nécessaire, vous pouvez intervertir entre `RB-RT` et `LB-LT` ainsi que le bouton `Share` et l'appui sur le `Touchpad` en changeant `SwapTriggersShoulders` ou `SwapShareTouchPad` en `1` dans le fichier `Config.ini` (n'oubliez pas de relancer l'application après changement).
@@ -103,9 +105,10 @@ R3 (appui sur le joystick) | Bouton du milieu souris
 Touchpad (glissé) ver le haut, bas, gauche, droite | 7, 8, 9, 0
 Touchpad (clic) haut, centre, gauche, droite, bas  | U, J, H, K, N
 Secouer la manette | T
+Faites pivoter la manette de jeu vers l'avant, l'arrière, la droite, la gauche (gyroscope) | Pavé numérique 8, 2, 4, 6
 PS | F2
 
-Vous pouvez changer cette configuration dans le fichier `Config.ini`. Les titres correspondants peuvent être trouvés [ici](https://github.com/r57zone/DualShock4-emulator/blob/master/BINDINGS.md).
+Dans le fichier de configuration du profil, dans le dossier "Profiles", vous pouvez modifier les liaisons des boutons ou en créer un nouveau basé sur `Default.ini`. Les titres correspondants peuvent être trouvés [ici](https://github.com/r57zone/DualShock4-emulator/blob/master/BINDINGS.md). Vous pouvez choisir parmi des profils standards. Envoyez des fixations plus pratiques pour une variété de jeux.
 
 
 

@@ -36,27 +36,29 @@ You can hide your gamepad using the [HidHide](https://github.com/ViGEm/HidHide) 
 ## Xbox controller
 The "Back/View/Select" button (the first button to the right of the left stick) on the Xbox controller emulating pressing the touchpad on a Sony DualShock 4.
 
-The "PS Share" button is binded to the simultaneous pressing of the "Back/View/Select" and "Start/Menu" buttons or to the "F12" key.
+The "Share" button is binded to the simultaneous pressing of the "Back/View/Select" and "Start/Menu" buttons or to the "F12" key.
 
 The "PS" button is binded to the "Xbox" button, but to use it, you need to disable the use of this button in the "Xbox Game Bar" settings. Also, the "PS" button is tied to the simultaneous pressing of the "Back/View/Select" and "LB" buttons (left bumper) or the "F2" key.
 
-You can shake (gyro) the controller by pressing "Back/View/Select" and "RB" (right bumper). 
+You can shake (gyro) the controller by pressing `Back/View/Select` and `RB` (right bumper). 
+
+
+You can rotate the gamepad (gyroscope) by pressing `Back` and the `DPAD ←↑↓→` (you can change the combinations in the configuration file).
+
+
+If necessary, you can swap bumpers and triggers, as well as the `Share` button and pressing the touchpad, to do this change the `SwapTriggersShoulders` or `SwapShareTouchPad` parameter to `1` in the "Config.ini" configuration file.
 
 
 
-If necessary, you can swap bumpers and triggers, as well as the "share" button and pressing the touchpad, to do this change the `SwapTriggersShoulders` or `SwapShareTouchPad` parameter to `1` in the "Config.ini" configuration file.
-
-
-
-Changing the dead zone of sticks for drifting sticks is supported. Press "ALT" + "F9" to get the values, paste them into the "Config.ini" configuration file, into the `DeadZone` parameters and restart the program.
+Changing the dead zone of sticks for drifting sticks is supported. Press `ALT + F9` to get the values, paste them into the "Config.ini" configuration file, into the `DeadZone` parameters and restart the program.
 
 ## Touchpad
 Game | Action
 ------------ | -------------
-Uncharted 3: Drake’s Deception (2011) | The "Share" button (F12) duplicates pressing the left side of the touchpad.
+Uncharted 3: Drake’s Deception (2011) | The `Share` button (F12) duplicates pressing the left side of the touchpad.
 The Last Of Us Part II (2020) | Options -> Accessibility -> "Strumming Settings" instead of vertical and horizontal, put buttons.
 
-On the Xbox gamepad, you need to press the "Back/View/Select" button (touchpad) and move the stick to the sides for swipes. By default, pressing the touchpad during swipes is disabled, it can be enabled in the configuration file by changing the `TouchPadPressedWhenSwiping` parameter to `1`.
+On the Xbox gamepad, you need to press the `Back/View/Select` button (touchpad) and move the stick to the sides for swipes. By default, pressing the touchpad during swipes is disabled, it can be enabled in the configuration file by changing the `TouchPadPressedWhenSwiping` parameter to `1`.
 
 
 
@@ -103,9 +105,10 @@ R3 (pressing the stick) | Middle mouse button
 Touchpad swipe up, down, left, right | 7, 8, 9, 0
 Touchpad up, center, left, right, down  | U, J, H, K, N
 Shake the gamepad | T
+Rotate gamepad forward, backward, right, left (gyroscope) | Numpad 8, 2, 4, 6
 PS | F2
 
-Сan replace button bindings in the "Config.ini" configuration file. Button names can be found [here](https://github.com/r57zone/DualShock4-emulator/blob/master/BINDINGS.md).
+In the profile configuration file, in the "Profiles" folder, you can change the button bindings or create a new one based on `Default.ini`. Button names can be found [here](https://github.com/r57zone/DualShock4-emulator/blob/master/BINDINGS.md). You can choose from standard profiles. Send more convenient bindings for a variety of games.
 
 
 

@@ -1,11 +1,11 @@
 ﻿## Клавиатура и мышь
 Название клавиши | Значение
 ------------ | -------------
-MOUSE LEFT BUTTON | `MOUSE-LEFT-BTN`
-MOUSE RIGHT BUTTON | `MOUSE-RIGHT-BTN`
-MOUSE MIDDLE BUTTON | `MOUSE-MIDDLE-BTN`
-MOUSE SIDE 1 BUTTON | `MOUSE-SIDE1-BTN`
-MOUSE SIDE 2 BUTTON | `MOUSE-SIDE1-BTN`
+Левая кнопка мыши | `MOUSE-LEFT-BTN`
+Правая кнопка мыши | `MOUSE-RIGHT-BTN`
+Средняя кнопка мыши | `MOUSE-MIDDLE-BTN`
+Боковая кнопка мыши 1 | `MOUSE-SIDE1-BTN`
+Боковая кнопка мыши 2 | `MOUSE-SIDE1-BTN`
 ESCAPE | `ESCAPE`
 F1 | `F1`
 F2 | `F2`
