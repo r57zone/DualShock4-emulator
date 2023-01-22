@@ -191,8 +191,10 @@ void MainTextUpdate() {
 	else {
 		printf("\r\n Emulation with keyboard and mouse.\n");
 		if (ActivateInAnyWindow == false)
-			printf(" Activate in any window is disabled, so the emulated gamepad work only in \"PS Plus\" and \"PS4 Remote Play\".\n");
-		printf_s(" Enable or disable cursor movement on the \"%s\" button (right stick emulation).\n", KEY_ID_STOP_CENTERING_NAME.c_str());
+			printf(" Activate in any window is disabled, so the emulated gamepad work only in \"PS Plus\" and \"PS4 Remote Play\".\n Switch mode with \"ALT + F3\"\n");
+		else
+			printf(" Activate in any window is enabled. Switch mode with \"ALT + F3\"\n");
+		printf_s(" Enable or disable cursor movement on the \"ALT + %s\" button (right stick emulation).\n", KEY_ID_STOP_CENTERING_NAME.c_str());
 		printf_s(" Keyboard and mouse profile: \"%s\". Change profiles with \"ALT\" + \"Up | Down\".\n", KMProfiles[ProfileIndex].c_str());
 	}
 	if (EmulationMode == KBMode) {
@@ -656,8 +658,14 @@ int main(int argc, char **argv)
 				SkipPollCount = SkipPollTimeOut;
 			}
 
+			if ((GetAsyncKeyState(VK_LMENU) & 0x8000) && (GetAsyncKeyState(VK_F3) & 0x8000) && SkipPollCount == 0) {
+				ActivateInAnyWindow = !ActivateInAnyWindow;
+				MainTextUpdate();
+				SkipPollCount = SkipPollTimeOut;
+			}
+
 			if (ActivateInAnyWindow || PSNowFound || PSRemotePlayFound) {
-				if (GetAsyncKeyState(KEY_ID_STOP_CENTERING) & 0x8000 && SkipPollCount == 0) { CenteringEnable = !CenteringEnable;  SkipPollCount = SkipPollTimeOut;}
+				if ((GetAsyncKeyState(VK_LMENU) & 0x8000) && GetAsyncKeyState(KEY_ID_STOP_CENTERING) & 0x8000 &&  SkipPollCount == 0) { CenteringEnable = !CenteringEnable;  SkipPollCount = SkipPollTimeOut;}
 				if (CenteringEnable) GetMouseState();
 
 				if (InvertX)
