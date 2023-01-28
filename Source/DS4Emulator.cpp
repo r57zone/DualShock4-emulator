@@ -184,7 +184,7 @@ void MainTextUpdate() {
 			printf(" Touchpad press: \"BACK\", Share press = \"BACK\" + \"START\".\n");
 		else
 			printf(" Touchpad press: \"BACK\" + \"START\", Share press = \"BACK\".\n");
-		printf_s(" Touchpad movement: \"BACK\" + \"RIGHT-STICK\".\n Motion shaking: \"%s\" + \"%s\".\n", KEY_ID_XBOX_ACTIVATE_MOTION_NAME.c_str(), KEY_ID_XBOX_SHAKING_NAME.c_str());
+		printf_s(" Touchpad movement: \"BACK\" + \"RIGHT-STICK\".\n Motion shaking: \"%s\" + \"%s\".\n", KEY_ID_XBOX_ACTIVATE_MULTI_NAME.c_str(), KEY_ID_XBOX_SHAKING_NAME.c_str());
 		printf_s(" Motion up, down, left, right: \"%s\", \"%s\", \"%s\", \"%s\".\n", KEY_ID_XBOX_MOTION_UP_NAME.c_str(), KEY_ID_XBOX_MOTION_DOWN_NAME.c_str(), KEY_ID_XBOX_MOTION_LEFT_NAME.c_str(), KEY_ID_XBOX_MOTION_RIGHT_NAME.c_str());
 
 	}
@@ -209,7 +209,7 @@ void MainTextUpdate() {
 
 int main(int argc, char **argv)
 {
-	SetConsoleTitle("DS4Emulator 2.0");
+	SetConsoleTitle("DS4Emulator 2.0.1");
 
 	CIniReader IniFile("Config.ini"); // Config
 
@@ -276,11 +276,10 @@ int main(int argc, char **argv)
 	int SleepTimeOutXbox = IniFile.ReadInteger("Xbox", "SleepTimeOut", 1);
 	bool SwapTriggersShoulders = IniFile.ReadBoolean("Xbox", "SwapTriggersShoulders", false);
 	SwapShareTouchPad = IniFile.ReadBoolean("Xbox", "SwapShareTouchPad", false);
-	bool TouchPadPressedWhenSwiping = IniFile.ReadBoolean("Xbox", "TouchPadPressedWhenSwiping", true);
 	bool EnableXboxButton = IniFile.ReadBoolean("Xbox", "EnableXboxButton", true);
 
-	KEY_ID_XBOX_ACTIVATE_MOTION_NAME = IniFile.ReadString("Xbox", "MotionActivateKey", "BACK");
-	int KEY_ID_XBOX_ACTIVATE_MOTION = XboxKeyNameToXboxKeyCode(KEY_ID_XBOX_ACTIVATE_MOTION_NAME);
+	KEY_ID_XBOX_ACTIVATE_MULTI_NAME = IniFile.ReadString("Xbox", "MultiActivateKey", "BACK");
+	int KEY_ID_XBOX_ACTIVATE_MULTI = XboxKeyNameToXboxKeyCode(KEY_ID_XBOX_ACTIVATE_MULTI_NAME);
 	KEY_ID_XBOX_SHAKING_NAME = IniFile.ReadString("Xbox", "MotionShakingKey", "RIGHT-SHOULDER");
 	int KEY_ID_XBOX_SHAKING = XboxKeyNameToXboxKeyCode(KEY_ID_XBOX_SHAKING_NAME);
 	
@@ -404,7 +403,6 @@ int main(int argc, char **argv)
 				myStatus = MyXInputGetState(XboxUserIndex, &myPState);
 			
 			if (myStatus == ERROR_SUCCESS) {
-
 				// Dead zones
 				if ((GetAsyncKeyState(VK_F9) & 0x8000) != 0 && ((GetAsyncKeyState(VK_MENU) & 0x8000) != 0) && SkipPollCount == 0)
 				{
@@ -465,63 +463,63 @@ int main(int argc, char **argv)
 				if (EnableXboxButton && myPState.Gamepad.wButtons & XINPUT_GAMEPAD_GUIDE) report.bSpecial |= DS4_SPECIAL_BUTTON_PS;
 
 				// Motion shaking
-				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MOTION && myPState.Gamepad.wButtons & KEY_ID_XBOX_SHAKING) {
-					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MOTION; myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_SHAKING;
+				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MULTI && myPState.Gamepad.wButtons & KEY_ID_XBOX_SHAKING) {
+					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MULTI; myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_SHAKING;
 					MotionShaking = true;
-				} else
-					MotionShaking = false;
+				} else MotionShaking = false;
 
 				// Motion up
-				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MOTION && myPState.Gamepad.wButtons & KEY_ID_XBOX_MOTION_UP) {
-					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MOTION; myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_MOTION_UP;
+				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MULTI && (myPState.Gamepad.wButtons & KEY_ID_XBOX_MOTION_UP || report.bThumbLY < 119)) {
+					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MULTI; myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_MOTION_UP;
 					MotionUp = true;
-				}
-				else
-					MotionUp = false;
+					//printf("up\n");
+				} else MotionUp = false;
 
 				// Motion down
-				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MOTION && myPState.Gamepad.wButtons & KEY_ID_XBOX_MOTION_DOWN) {
-					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MOTION; myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_MOTION_DOWN;
+				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MULTI && (myPState.Gamepad.wButtons & KEY_ID_XBOX_MOTION_DOWN || report.bThumbLY > 139)) {
+					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MULTI; myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_MOTION_DOWN;
 					MotionDown = true;
-				}
-				else
-					MotionDown = false;
+					//printf("down\n");
+				} else MotionDown = false;
 
 				// Motion left
-				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MOTION && myPState.Gamepad.wButtons & KEY_ID_XBOX_MOTION_LEFT) {
-					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MOTION; myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_MOTION_LEFT;
+				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MULTI && (myPState.Gamepad.wButtons & KEY_ID_XBOX_MOTION_LEFT || report.bThumbLX < 119)) {
+					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MULTI; myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_MOTION_LEFT;
 					MotionLeft = true;
-
-				}
-				else
-					MotionLeft = false;
+					//printf("left\n");
+				} else MotionLeft = false;
 
 				// Motion right
-				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MOTION && myPState.Gamepad.wButtons & KEY_ID_XBOX_MOTION_RIGHT) {
-					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MOTION; myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_MOTION_RIGHT;
+				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MULTI && (myPState.Gamepad.wButtons & KEY_ID_XBOX_MOTION_RIGHT || report.bThumbLX > 139)) {
+					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MULTI; myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_MOTION_RIGHT;
 					MotionRight = true;
-				}
-				else
-					MotionRight = false;
+					//printf("right\n");
+				} else MotionRight = false;
 
 				// Motion key exclude
-				if (myPState.Gamepad.wButtons == KEY_ID_XBOX_ACTIVATE_MOTION && MotionKeyOnlyCheckCount == 0) { MotionKeyOnlyCheckCount = 20; MotionKeyOnlyPressed = true; }
+				bool XboxActivateMotionPressed = myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MULTI ? true : false;
+				if (myPState.Gamepad.wButtons == KEY_ID_XBOX_ACTIVATE_MULTI && MotionKeyOnlyCheckCount == 0) { MotionKeyOnlyCheckCount = 20; MotionKeyOnlyPressed = true; }
 				if (MotionKeyOnlyCheckCount > 0) {
-					if (MotionKeyOnlyCheckCount == 1 && MotionKeyOnlyPressed)
-						MotionKeyReleasedCount = 30; // Timeout to release the motion key button and don't execute other buttons
 					MotionKeyOnlyCheckCount--;
-					if (myPState.Gamepad.wButtons != KEY_ID_XBOX_ACTIVATE_MOTION && myPState.Gamepad.wButtons != 0) { MotionKeyOnlyPressed = false; MotionKeyOnlyCheckCount = 0; }
+					if (myPState.Gamepad.wButtons != KEY_ID_XBOX_ACTIVATE_MULTI && (myPState.Gamepad.wButtons != 0 || (report.bThumbLX != 127 || report.bThumbLY != 129) || (report.bThumbRX != 127 || report.bThumbRY != 129) )) {
+						//printf("pressed another button\n"); 
+						MotionKeyOnlyPressed = false; MotionKeyOnlyCheckCount = 0; 
+					}
 				}
-				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MOTION && myPState.Gamepad.wButtons != KEY_ID_XBOX_ACTIVATE_MOTION) MotionKeyReleasedCount = 30;
+				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MULTI && (myPState.Gamepad.wButtons != KEY_ID_XBOX_ACTIVATE_MULTI || (report.bThumbLX != 127 || report.bThumbLY != 129) || (report.bThumbRX != 127 || report.bThumbRY != 129))) MotionKeyReleasedCount = 30;
 				if (MotionKeyReleasedCount > 0) MotionKeyReleasedCount--;
 				 
 				//printf("%d %d %d\n", MotionKeyOnlyCheckCount, MotionKeyReleasedCount, MotionKeyOnlyPressed);
+				//printf("%d\n", MotionKeyOnlyCheckCount);
 
-				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MOTION) {
-					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MOTION;
+				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MULTI) {
+					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MULTI;
 				}
-				if (MotionKeyOnlyCheckCount == 1 && MotionKeyOnlyPressed)
-					myPState.Gamepad.wButtons = KEY_ID_XBOX_ACTIVATE_MOTION; //|=
+				if (MotionKeyOnlyCheckCount == 1 && MotionKeyOnlyPressed && MotionKeyReleasedCount == 0) {
+					myPState.Gamepad.wButtons |= KEY_ID_XBOX_ACTIVATE_MULTI; //|=
+					MotionKeyReleasedCount = 30; // Timeout to release the motion key button and don't execute other buttons
+					//printf("Motion Key pressed\n");
+				}
 
 				// Swap share and touchpad
 				if (SwapShareTouchPad == false) {
@@ -537,7 +535,7 @@ int main(int argc, char **argv)
 				}
 
 				// Exclude multi keys
-				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MOTION == false) {
+				if (XboxActivateMotionPressed == false) {
 					if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_Y)
 						report.wButtons |= DS4_BUTTON_TRIANGLE;
 					if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_X)
@@ -598,11 +596,8 @@ int main(int argc, char **argv)
 				}
 
 				// Touchpad swipes
-				if (report.bSpecial & DS4_SPECIAL_BUTTON_TOUCHPAD) {
-					if (!TouchPadPressedWhenSwiping && (report.bThumbRX != 127 || report.bThumbRY != 129)) {
-						report.bSpecial &= ~DS4_SPECIAL_BUTTON_TOUCHPAD;
-						if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) { report.wButtons &= ~DS4_BUTTON_THUMB_RIGHT; report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD; }
-					}
+				if (XboxActivateMotionPressed) { 
+					if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) { report.wButtons &= ~DS4_BUTTON_THUMB_RIGHT; report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD; } 
 					TouchX = 960; TouchY = 471;
 					if (report.bThumbRX > 127)
 						TouchX = 320 + (report.bThumbRX - 127) * 10;
@@ -612,9 +607,13 @@ int main(int argc, char **argv)
 						TouchY = trunc(100 + (report.bThumbRY - 129) * 5.8);
 					if (report.bThumbRY < 129)
 						TouchY = trunc(743 - (-report.bThumbRY + 129) * 5.8);
-					report.bThumbRX = 127;
-					report.bThumbRY = 129;
 				}
+
+				if (XboxActivateMotionPressed) {
+					report.bThumbLX = 127; report.bThumbLY = 129;
+					report.bThumbRX = 127; report.bThumbRY = 129;
+				}
+				
 			}
 		}
 		// Mouse and keyboard mode

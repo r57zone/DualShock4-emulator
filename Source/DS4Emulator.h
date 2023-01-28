@@ -85,7 +85,7 @@ bool ActivateInAnyWindow = false;
 bool CursorHidden = false;
 
 std::string KEY_ID_STOP_CENTERING_NAME = "";
-std::string KEY_ID_XBOX_ACTIVATE_MOTION_NAME = "";
+std::string KEY_ID_XBOX_ACTIVATE_MULTI_NAME = "";
 std::string KEY_ID_XBOX_SHAKING_NAME = "";
 std::string KEY_ID_XBOX_MOTION_UP_NAME = "";
 std::string KEY_ID_XBOX_MOTION_DOWN_NAME = "";
