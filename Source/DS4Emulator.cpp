@@ -270,7 +270,7 @@ int main(int argc, char **argv)
 
 	KEY_ID_STOP_CENTERING_NAME = IniFile.ReadString("KeyboardMouse", "StopCenteringKey", "C");
 	int KEY_ID_STOP_CENTERING = KeyNameToKeyCode(KEY_ID_STOP_CENTERING_NAME);
-	bool CenteringEnable = true;
+	bool CenteringEnable = IniFile.ReadBoolean("KeyboardMouse", "EnableCentering", true);
 
 	bool InvertX = IniFile.ReadBoolean("Main", "InvertX", false);
 	bool InvertY = IniFile.ReadBoolean("Main", "InvertY", false);
