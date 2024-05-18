@@ -266,6 +266,8 @@ int main(int argc, char **argv)
 	if (CursorHidden) { SetSystemCursor(CursorEmpty, OCR_NORMAL); CursorHidden = true; }
 
 	// Config parameters
+	std::string defaultProfile = IniFile.ReadString("Main", "DefaultProfile", "Default");
+
 	KEY_ID_STOP_CENTERING_NAME = IniFile.ReadString("KeyboardMouse", "StopCenteringKey", "C");
 	int KEY_ID_STOP_CENTERING = KeyNameToKeyCode(KEY_ID_STOP_CENTERING_NAME);
 	bool CenteringEnable = true;
@@ -317,10 +319,10 @@ int main(int argc, char **argv)
 	WIN32_FIND_DATA ffd;
 	HANDLE hFind = INVALID_HANDLE_VALUE;
 	hFind = FindFirstFile("Profiles\\*.ini", &ffd);
-	KMProfiles.push_back("Default.ini");
+	KMProfiles.push_back(defaultProfile + ".ini");
 	if (hFind != INVALID_HANDLE_VALUE) {
 		do {
-			if (strcmp(ffd.cFileName, "Default.ini")) // Already added to the top of the list
+			if (strcmp(ffd.cFileName, (defaultProfile + ".ini").c_str())) // Already added to the top of the list
 				KMProfiles.push_back(ffd.cFileName);
 		} while (FindNextFile(hFind, &ffd) != 0);
 		FindClose(hFind);
