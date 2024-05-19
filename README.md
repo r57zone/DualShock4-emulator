@@ -12,7 +12,8 @@ Simple application to emulate the Sony DualShock 4 gamepad using an Xbox control
 3. Unpack and launch "DualShock4 emulator" (**Attention!** It is important to run DS4 emulator before starting PS Plus, if you are using an Xbox controller, so that PS Plus gives priority to the DualShock controller).
 4. Launch "PlayStation Plus", "PS Remote Play", "xCloud", or another application. Read the FAQ to set up xCloud.
 5. If necessary, you can invert the axis, change the `InvertX` and `InvertY` parameters to `1` in the "Config.ini" configuration file.
-6. You can also check how the DualShock 4 controller emulation works in the [VSCView](https://github.com/Nielk1/VSCView/releases/) program. To emulate from the keyboard and mouse, you also need to change the `ActivateInAnyWindow` parameter to `1` and restart the program.
+6. You can also check how the DualShock 4 controller emulation works in the [VSCView](https://github.com/Nielk1/VSCView/releases/) program. 
+7. Study the configuration `Config.ini` and the description below, perhaps something can be configured more conveniently.
 
 ## FAQ
 **• The program crashes after launch**<br>
@@ -64,13 +65,14 @@ On the Xbox gamepad, you need to press the `Back/View/Select` button (touchpad) 
 
 You can use swipes for the keyboard, the button codes are described below. 
 
-## Gyroscope
-1. Check Windows Firewall to see if incoming connections are allowed on your network type (private) and allow if disabled.
-2. Install FreePieIMU on your Android phone by taking the latest version in the [OpenTrack archive](https://github.com/opentrack/opentrack) or in the [releases](https://github.com/r57zone/DualShock4-emulator/releases), enter the IP address of your computer, select "Send raw data", if not selected, select the data rate "Fastest" or "Fast".
-3. Reduce the general sensitivity if necessary (the `Sens` parameter, in the `Motion` section, where `100` is 100% sensitivity) in configuration file.
-4. Reduce individual sensor sensitivity if necessary (the `AccelSens` and `GyroSense`, in the `Motion` section,  where `100` is 100% sensitivity) in configuration file.
-5. Invert the axes if necessary (the parameters `InverseX`, `InverseY` and `InverseZ`, in the `Motion` section, where `1` is turning on the inversion, and `0` is turning off).
-6. Change phone orientation (the parameter `Orientation`, in the `Motion` section. where `1` is landscape and `0` is portrait).
+## Motion with Android phone (Gyroscope)
+1. Enable the `Activate` parameter in the `Config.ini` configuration file, changing `0` to `1`, in the `Motion` section.
+2. Check Windows Firewall to see if incoming connections are allowed on your network type (private) and allow if disabled.
+3. Install FreePieIMU on your Android phone by taking the latest version in the [OpenTrack archive](https://github.com/opentrack/opentrack) or in the [releases](https://github.com/r57zone/DualShock4-emulator/releases), enter the IP address of your computer, select "Send raw data", if not selected, select the data rate "Fastest" or "Fast".
+4. Reduce the general sensitivity if necessary (the `Sens` parameter, in the `Motion` section, where `100` is 100% sensitivity) in configuration file.
+5. Reduce individual sensor sensitivity if necessary (the `AccelSens` and `GyroSense`, in the `Motion` section,  where `100` is 100% sensitivity) in configuration file.
+6. Invert the axes if necessary (the parameters `InverseX`, `InverseY` and `InverseZ`, in the `Motion` section, where `1` is turning on the inversion, and `0` is turning off).
+7. Change phone orientation (the parameter `Orientation`, in the `Motion` section. where `1` is landscape and `0` is portrait).
 
 If you just need to shake (gyro) the gamepad in the game, then there is no need to install Android applications, just press the "shake" button of the gamepad.
 
@@ -119,7 +121,7 @@ The sensitivity parameters `SensX`, `SensY` for the mouse can also be found in t
 You can also enable emulation of analog triggers (L2, R2), change the `EmulateAnalogTriggers` parameter to `1`, and increase step `AnalogTriggerStep` (from 0.1 to 255).
 
 ## Download
->Version for Windows 10.
+>Version for Windows 10, 11.
 
 **[Download](https://github.com/r57zone/DualShock4-emulator/releases)**
 

@@ -11,7 +11,8 @@ Cette application qui permet d'émuler la manette DualShock 4 de chez Sony en ut
 3. Dézipper et lancer "DS4Emulator.exe" (**Attention!** Il est important de lancer l'exe avant Playstation Plus si vous utilisez la manette XBox, pour que PS Plus donne la priorité à la manette (virtuelle) DS4).
 4. Lancez "PlayStation Plus", "PS Remote Play", "xCloud" ou une autre application. Lisez la FAQ pour configurer xCloud.
 5. Si besoin, vous pouvez inverser les axes : changez les paramètres `InvertX` et `InvertY` en `1` dans le fichier de configuration `Config.ini`.
-6. Vous pouvez également vérifier le fonctionnement de l'émulation du contrôleur DualShock 4 dans le programme [VSCView](https://github.com/Nielk1/VSCView/releases/). Pour émuler à partir du clavier et de la souris, vous devez également modifier le paramètre `ActivateInAnyWindow` sur `1` et redémarrer le programme.
+6. Vous pouvez également vérifier le fonctionnement de l'émulation du contrôleur DualShock 4 dans le programme [VSCView](https://github.com/Nielk1/VSCView/releases/).
+7. Étudiez la configuration `Config.ini` et la description ci-dessous, peut-être que quelque chose peut être configuré plus facilement.
 
 ## FAQ
 **• Le programme se ferme après le lancement**<br>
@@ -63,13 +64,14 @@ Sur la manette Xbox, vous devez appuyer sur le bouton `Retour/Vue/Select` (touch
 
 Vous pouvez aussi simuler le glissé via le clavier, les codes correspondant aux boutons sont décrits en dessous. 
 
-## Gyroscope
-1. Vérifiez le pare-feu Windows afin d'autoriser les connexions entrantes sur votre type de réseau (privé).
-2. Installer FreePieIMU sur votre téléphone Android en prenant la dernière version ici [OpenTrack archive](https://github.com/opentrack/opentrack) ou ici [releases](https://github.com/r57zone/DualShock4-emulator/releases). 
-3. Réduisez la sensibilité générale si nécessaire (le paramètre `Sens`, dans la section `Motion`, où `100` est une sensibilité de 100%) dans le fichier de configuration.
-4. Réduisez la sensibilité du capteur individuel si nécessaire (les `AccelSens` et `GyroSense`, dans la section `Motion`, où `100` correspond à une sensibilité de 100 %) dans le fichier de configuration.
-5. Inversez les axes si nécessaire (les paramètres `InverseX`, `InverseY` et `InverseZ`, dans la section `Motion`, où `1` active l'inversion et `0` désactive).
-6. Modifiez l'orientation du téléphone (le paramètre `Orientation`, dans la section `Motion`, où `1` correspond au paysage et `0` au portrait).
+## Mouvement avec un téléphone Android (Gyroscope)
+1. Activez le paramètre `Activate` dans le fichier de configuration `Config.ini`, en changeant `0` en `1`, dans la section `Motion`.
+2. Vérifiez le pare-feu Windows afin d'autoriser les connexions entrantes sur votre type de réseau (privé).
+3. Installer FreePieIMU sur votre téléphone Android en prenant la dernière version ici [OpenTrack archive](https://github.com/opentrack/opentrack) ou ici [releases](https://github.com/r57zone/DualShock4-emulator/releases). 
+4. Réduisez la sensibilité générale si nécessaire (le paramètre `Sens`, dans la section `Motion`, où `100` est une sensibilité de 100%) dans le fichier de configuration.
+5. Réduisez la sensibilité du capteur individuel si nécessaire (les `AccelSens` et `GyroSense`, dans la section `Motion`, où `100` correspond à une sensibilité de 100 %) dans le fichier de configuration.
+6. Inversez les axes si nécessaire (les paramètres `InverseX`, `InverseY` et `InverseZ`, dans la section `Motion`, où `1` active l'inversion et `0` désactive).
+7. Modifiez l'orientation du téléphone (le paramètre `Orientation`, dans la section `Motion`, où `1` correspond au paysage et `0` au portrait).
 
 Si vous avez just besoin de simuler une secousse de la manette (gyro) dans le jeu, dans ce cas il n'y a pas besoin d'installer l'application Android, appuyez sur le bouton `Shake` de la manette.
 
@@ -119,7 +121,7 @@ Vous pouvez aussi activer l'émulation des boutons analogiques (L2, R2) : change
 
 
 ## Téléchargement
->Version pour Windows 10.
+>Version pour Windows 10, 11.
 
 **[Télécharger](https://github.com/r57zone/DualShock4-emulator/releases)**
 

@@ -209,7 +209,7 @@ void MainTextUpdate() {
 
 int main(int argc, char **argv)
 {
-	SetConsoleTitle("DS4Emulator 2.0.1");
+	SetConsoleTitle("DS4Emulator 2.1");
 
 	CIniReader IniFile("Config.ini"); // Config
 
@@ -266,12 +266,6 @@ int main(int argc, char **argv)
 	if (CursorHidden) { SetSystemCursor(CursorEmpty, OCR_NORMAL); CursorHidden = true; }
 
 	// Config parameters
-	std::string defaultProfile = IniFile.ReadString("Main", "DefaultProfile", "Default");
-
-	KEY_ID_STOP_CENTERING_NAME = IniFile.ReadString("KeyboardMouse", "StopCenteringKey", "C");
-	int KEY_ID_STOP_CENTERING = KeyNameToKeyCode(KEY_ID_STOP_CENTERING_NAME);
-	bool CenteringEnable = IniFile.ReadBoolean("KeyboardMouse", "EnableCentering", true);
-
 	bool InvertX = IniFile.ReadBoolean("Main", "InvertX", false);
 	bool InvertY = IniFile.ReadBoolean("Main", "InvertY", false);
 
@@ -286,6 +280,7 @@ int main(int argc, char **argv)
 	KEY_ID_XBOX_SHAKING_NAME = IniFile.ReadString("Xbox", "MotionShakingKey", "RIGHT-SHOULDER");
 	int KEY_ID_XBOX_SHAKING = XboxKeyNameToXboxKeyCode(KEY_ID_XBOX_SHAKING_NAME);
 	
+	bool DisableButtonOnMotion = IniFile.ReadBoolean("Xbox", "DisableButtonOnMotion", false);
 	KEY_ID_XBOX_MOTION_UP_NAME = IniFile.ReadString("Xbox", "MotionUp", "DPAD-UP");
 	KEY_ID_XBOX_MOTION_DOWN_NAME = IniFile.ReadString("Xbox", "MotionDown", "DPAD-DOWN");
 	KEY_ID_XBOX_MOTION_LEFT_NAME = IniFile.ReadString("Xbox", "MotionLeft", "DPAD-LEFT");
@@ -299,6 +294,12 @@ int main(int argc, char **argv)
 	float DeadZoneLeftStickY = IniFile.ReadFloat("Xbox", "DeadZoneLeftStickY", 0);
 	float DeadZoneRightStickX = IniFile.ReadFloat("Xbox", "DeadZoneRightStickX", 0);
 	float DeadZoneRightStickY = IniFile.ReadFloat("Xbox", "DeadZoneRightStickY", 0);
+
+	bool KMActivateAlways = IniFile.ReadBoolean("KeyboardMouse", "ActivateAlways", false);
+	KEY_ID_STOP_CENTERING_NAME = IniFile.ReadString("KeyboardMouse", "StopCenteringKey", "C");
+	int KEY_ID_STOP_CENTERING = KeyNameToKeyCode(KEY_ID_STOP_CENTERING_NAME);
+	bool CenteringEnable = IniFile.ReadBoolean("KeyboardMouse", "EnableCentering", true);
+	std::string DefaultProfile = IniFile.ReadString("KeyboardMouse", "DefaultProfile", "Default.ini");
 
 	int SleepTimeOutKB = IniFile.ReadInteger("KeyboardMouse", "SleepTimeOut", 1);
 	std::string WindowTitle = IniFile.ReadString("KeyboardMouse", "ActivateOnlyInWindow", "PlayStation Plus");
@@ -319,11 +320,16 @@ int main(int argc, char **argv)
 	WIN32_FIND_DATA ffd;
 	HANDLE hFind = INVALID_HANDLE_VALUE;
 	hFind = FindFirstFile("Profiles\\*.ini", &ffd);
-	KMProfiles.push_back(defaultProfile + ".ini");
+	KMProfiles.push_back("Default.ini");
+	int ProfileCount = 0;
 	if (hFind != INVALID_HANDLE_VALUE) {
 		do {
-			if (strcmp(ffd.cFileName, (defaultProfile + ".ini").c_str())) // Already added to the top of the list
+			if (strcmp(ffd.cFileName, "Default.ini")) {
 				KMProfiles.push_back(ffd.cFileName);
+				ProfileCount++;
+				if(strcmp(ffd.cFileName, DefaultProfile.c_str()) == 0)
+					ProfileIndex = ProfileCount;
+			}
 		} while (FindNextFile(hFind, &ffd) != 0);
 		FindClose(hFind);
 	}
@@ -358,7 +364,7 @@ int main(int argc, char **argv)
 			hDll = NULL;
 	}
 
-	if (hDll != NULL)
+	if (KMActivateAlways == false && hDll != NULL)
 		for (int i = 0; i < XUSER_MAX_COUNT; ++i)
 			if (MyXInputGetState(i, &myPState) == ERROR_SUCCESS)
 			{
@@ -467,34 +473,34 @@ int main(int argc, char **argv)
 
 				// Motion shaking
 				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MULTI && myPState.Gamepad.wButtons & KEY_ID_XBOX_SHAKING) {
-					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MULTI; myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_SHAKING;
+					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MULTI; if (DisableButtonOnMotion) myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_SHAKING;
 					MotionShaking = true;
 				} else MotionShaking = false;
 
 				// Motion up
 				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MULTI && (myPState.Gamepad.wButtons & KEY_ID_XBOX_MOTION_UP || report.bThumbLY < 119)) {
-					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MULTI; myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_MOTION_UP;
+					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MULTI; if (DisableButtonOnMotion) myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_MOTION_UP;
 					MotionUp = true;
 					//printf("up\n");
 				} else MotionUp = false;
 
 				// Motion down
 				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MULTI && (myPState.Gamepad.wButtons & KEY_ID_XBOX_MOTION_DOWN || report.bThumbLY > 139)) {
-					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MULTI; myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_MOTION_DOWN;
+					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MULTI; if (DisableButtonOnMotion) myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_MOTION_DOWN;
 					MotionDown = true;
 					//printf("down\n");
 				} else MotionDown = false;
 
 				// Motion left
 				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MULTI && (myPState.Gamepad.wButtons & KEY_ID_XBOX_MOTION_LEFT || report.bThumbLX < 119)) {
-					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MULTI; myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_MOTION_LEFT;
+					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MULTI; if (DisableButtonOnMotion) myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_MOTION_LEFT;
 					MotionLeft = true;
 					//printf("left\n");
 				} else MotionLeft = false;
 
 				// Motion right
 				if (myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MULTI && (myPState.Gamepad.wButtons & KEY_ID_XBOX_MOTION_RIGHT || report.bThumbLX > 139)) {
-					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MULTI; myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_MOTION_RIGHT;
+					myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_ACTIVATE_MULTI; if (DisableButtonOnMotion) myPState.Gamepad.wButtons &= ~KEY_ID_XBOX_MOTION_RIGHT;
 					MotionRight = true;
 					//printf("right\n");
 				} else MotionRight = false;
@@ -616,8 +622,8 @@ int main(int argc, char **argv)
 				}
 
 				if (XboxActivateMotionPressed) {
-					report.bThumbLX = 127; report.bThumbLY = 129;
-					report.bThumbRX = 127; report.bThumbRY = 129;
+					report.bThumbLX = 128; report.bThumbLY = 128;
+					report.bThumbRX = 128; report.bThumbRY = 128;
 				}
 				
 			}
