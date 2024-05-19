@@ -46,6 +46,9 @@ Vous pouvez émuler une secousse de la manette (gyroscope) en appuyant sur `Reto
 Vous pouvez faire pivoter la manette (gyroscope) en appuyant sur `Retour` et `DPAD ←↑↓→` (vous pouvez modifier les combinaisons dans le fichier de configuration).
 
 
+Par défaut, les boutons `RB` et `DPAD ←↑↓→` fonctionnent également dans le jeu, s'ils interfèrent avec l'activation du mouvement, vous pouvez essayer de les désactiver en utilisant le paramètre `DisableButtonOnMotion`.
+
+
 Si nécessaire, vous pouvez intervertir entre `RB-RT` et `LB-LT` ainsi que le bouton `Share` et l'appui sur le `Touchpad` en changeant `SwapTriggersShoulders` ou `SwapShareTouchPad` en `1` dans le fichier `Config.ini` (n'oubliez pas de relancer l'application après changement).
 
 

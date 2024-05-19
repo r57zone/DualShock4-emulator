@@ -47,6 +47,9 @@ You can shake (gyro) the controller by pressing `Back/View/Select` and `RB` (rig
 You can rotate the gamepad (gyroscope) by pressing `Back` and the `DPAD ←↑↓→` (you can change the combinations in the configuration file).
 
 
+By default, the `RB` and `DPAD ←↑↓→` buttons also work in the game, if they interfere with movement activation, you can try disabling them using the `DisableButtonOnMotion` parameter.
+
+
 If necessary, you can swap bumpers and triggers, as well as the `Share` button and pressing the touchpad, to do this change the `SwapTriggersShoulders` or `SwapShareTouchPad` parameter to `1` in the "Config.ini" configuration file.
 
 
