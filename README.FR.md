@@ -40,14 +40,16 @@ L'appuie simultané sur le bouton `Retour/Vue/Select` et le bouton `Start` (ou t
 
 Par défaut, le bouton `Xbox` ouvre la XBox Gamebar, si vous souhaitez que celui-ci émule le bouton `PS`, il faut d'abord désactiver la Gamebar dans vos paramètres Windows. Pour simuler un appui sur le bouton `PS`, appuyez sur `Retour/Vue/Select` + `LB` ou `F2`
 
-Vous pouvez émuler une secousse de la manette (gyroscope) en appuyant sur `Retour/Vue/Select` et `RB`.
+Vous pouvez émuler une secousse de la manette (gyroscope) en appuyant sur `Retour/Vue/Select` et `RB`. Vous pouvez modifier les combinaisons dans le fichier de configuration.
 
 
-Vous pouvez faire pivoter la manette (gyroscope) en appuyant sur `Back` et `DPAD ←↑↓→` (vous pouvez modifier les combinaisons dans le fichier de configuration).
+Vous pouvez faire pivoter la manette (gyroscope) en appuyant sur `Retour` et `DPAD ←↑↓→` (vous pouvez modifier les combinaisons dans le fichier de configuration).
 
 
 Si nécessaire, vous pouvez intervertir entre `RB-RT` et `LB-LT` ainsi que le bouton `Share` et l'appui sur le `Touchpad` en changeant `SwapTriggersShoulders` ou `SwapShareTouchPad` en `1` dans le fichier `Config.ini` (n'oubliez pas de relancer l'application après changement).
 
+
+Le bouton d'activation du mouvement, par défaut `Retour`, peut être réaffecté à d'autres boutons, par exemple au bouton `Xbox`. Dans ce cas, vous devrez désactiver « EnableXboxButton » et activer la "Xbox Game Bar" dans Windows.
 
 
 Changer la zone morte des joysticks pour drifter est supporté. Appuyez sur `ALT` + `F9` lorque l'application est au premier-plan, puis copiez/collez les valeurs dans le fichier `Config.ini` dans les paramètres `DeadZone` et redémarrez l'application.

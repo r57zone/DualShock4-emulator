@@ -37,11 +37,11 @@ You can hide your gamepad using the [HidHide](https://github.com/ViGEm/HidHide) 
 ## Xbox controller
 The "Back/View/Select" button (the first button to the right of the left stick) on the Xbox controller emulating pressing the touchpad on a Sony DualShock 4.
 
-The "Share" button is binded to the simultaneous pressing of the "Back/View/Select" and "Start/Menu" buttons or to the "F12" key.
+The `Share` button is binded to the simultaneous pressing of the `Back/View/Select` and `Start/Menu` buttons or to the `F12` key.
 
-The "PS" button is binded to the "Xbox" button, but to use it, you need to disable the use of this button in the "Xbox Game Bar" settings. Also, the "PS" button is tied to the simultaneous pressing of the "Back/View/Select" and "LB" buttons (left bumper) or the "F2" key.
+The `PS` button is binded to the `Xbox` button, but to use it, you need to disable the use of this button in the "Xbox Game Bar" settings. Also, the `PS` button is tied to the simultaneous pressing of the `Back/View/Select` and `LB` buttons (left bumper) or the `F2` key.
 
-You can shake (gyro) the controller by pressing `Back/View/Select` and `RB` (right bumper). 
+You can shake (gyro) the controller by pressing `Back/View/Select` and `RB` (right bumper). You can change the combinations in the configuration file.
 
 
 You can rotate the gamepad (gyroscope) by pressing `Back` and the `DPAD ←↑↓→` (you can change the combinations in the configuration file).
@@ -49,6 +49,8 @@ You can rotate the gamepad (gyroscope) by pressing `Back` and the `DPAD ←↑�
 
 If necessary, you can swap bumpers and triggers, as well as the `Share` button and pressing the touchpad, to do this change the `SwapTriggersShoulders` or `SwapShareTouchPad` parameter to `1` in the "Config.ini" configuration file.
 
+
+The movement activation button, by default `Back`, can be reassigned to other buttons, for example, to the `Xbox` button. In this case, you will need to turn off `EnableXboxButton` and activation of the "Xbox Game Bar" in Windows.
 
 
 Changing the dead zone of sticks for drifting sticks is supported. Press `ALT + F9` to get the values, paste them into the "Config.ini" configuration file, into the `DeadZone` parameters and restart the program.
