@@ -171,11 +171,6 @@
     <ClCompile Include="DS4Emulator.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ViGEmClient.vcxproj">
-      <Project>{7db06674-1f4f-464b-8e1c-172e9587f9dc}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
