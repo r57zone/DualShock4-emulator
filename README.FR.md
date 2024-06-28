@@ -14,6 +14,11 @@ Cette application qui permet d'émuler la manette DualShock 4 de chez Sony en ut
 6. Vous pouvez également vérifier le fonctionnement de l'émulation du contrôleur DualShock 4 dans le programme [VSCView](https://github.com/Nielk1/VSCView/releases/).
 7. Étudiez la configuration `Config.ini` et la description ci-dessous, peut-être que quelque chose peut être configuré plus facilement.
 
+## Téléchargement
+>Version pour Windows 10, 11.
+
+**[Télécharger](https://github.com/r57zone/DualShock4-emulator/releases)**
+
 ## FAQ
 **• Le programme se ferme après le lancement**<br>
 "Antivirus" bloque le chargement dynamique de la bibliothèque de gamepads Xbox, de sorte que le programme se bloque. Vous pouvez le fermer pendant la durée d'utilisation.
@@ -123,12 +128,6 @@ Le paramètre de sensibilité `SensX`, `SensY` pour la souris mouse peut aussi �
 S'il n'y a pas de mouvement de joystick apparent, vous pouvez augmenter le paramètre `SleepTimeOut` en 2, 4, 8, 10.
 
 Vous pouvez aussi activer l'émulation des boutons analogiques (L2, R2) : changez le paramètre `EmulateAnalogTriggers` en `1` and augmentez le `AnalogTriggerStep` (de 0.1 à 255).
-
-
-## Téléchargement
->Version pour Windows 10, 11.
-
-**[Télécharger](https://github.com/r57zone/DualShock4-emulator/releases)**
 
 ## Feedback
 `r57zone[at]gmail.com`

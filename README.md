@@ -15,6 +15,11 @@ Simple application to emulate the Sony DualShock 4 gamepad using an Xbox control
 6. You can also check how the DualShock 4 controller emulation works in the [VSCView](https://github.com/Nielk1/VSCView/releases/) program. 
 7. Study the configuration `Config.ini` and the description below, perhaps something can be configured more conveniently.
 
+## Download
+>Version for Windows 10, 11.
+
+**[Download](https://github.com/r57zone/DualShock4-emulator/releases)**
+
 ## FAQ
 **• The program crashes after launch**<br>
 "Antivirus" blocks the dynamic loading of the Xbox gamepad library, so the program crashes. You can close it for the duration of use.
@@ -124,11 +129,6 @@ The sensitivity parameters `SensX`, `SensY` for the mouse can also be found in t
 
 
 You can also enable emulation of analog triggers (L2, R2), change the `EmulateAnalogTriggers` parameter to `1`, and increase step `AnalogTriggerStep` (from 0.1 to 255).
-
-## Download
->Version for Windows 10, 11.
-
-**[Download](https://github.com/r57zone/DualShock4-emulator/releases)**
 
 ## Feedback
 `r57zone[at]gmail.com`
