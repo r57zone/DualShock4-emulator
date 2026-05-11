@@ -14,6 +14,7 @@ Simple application to emulate the Sony DualShock 4 gamepad using an Xbox control
 5. If necessary, you can invert the axis, change the `InvertX` and `InvertY` parameters to `1` in the `Config.ini` configuration file.
 6. You can also check how the DualShock 4 controller emulation works in the [VSCView](https://github.com/Nielk1/VSCView/releases/) program. 
 7. Study the configuration `Config.ini` and the description below, perhaps something can be configured more conveniently.
+8. When using Steam games, in the controller settings, disable `PlayStation Controller Support`.
 
 ## Download
 >Version for Windows 10, 11.

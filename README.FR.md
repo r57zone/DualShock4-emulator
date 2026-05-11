@@ -13,6 +13,7 @@ Cette application qui permet d'émuler la manette DualShock 4 de chez Sony en ut
 5. Si besoin, vous pouvez inverser les axes : changez les paramètres `InvertX` et `InvertY` en `1` dans le fichier de configuration `Config.ini`.
 6. Vous pouvez également vérifier le fonctionnement de l'émulation du contrôleur DualShock 4 dans le programme [VSCView](https://github.com/Nielk1/VSCView/releases/).
 7. Étudiez la configuration `Config.ini` et la description ci-dessous, peut-être que quelque chose peut être configuré plus facilement.
+8. Lors de l'utilisation de jeux Steam, dans les paramètres de la manette, désactivez la «prise en charge de la manette PlayStation».
 
 ## Téléchargement
 >Version pour Windows 10, 11.
