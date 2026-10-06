@@ -1,5 +1,9 @@
 ﻿#include <Windows.h>
 #include <mutex>
+#include <chrono>
+#include "XboxTouchpad.h"
+#include "XboxMotion.h"
+#include "XboxMotionConsole.h"
 #include "ViGEm\Client.h"
 #include "IniReader\IniReader.h"
 #include "DS4Emulator.h"
@@ -442,6 +446,28 @@ int main(int argc, char **argv)
 	SwapShareTouchPad = IniFile.ReadBoolean("Xbox", "SwapShareTouchPad", false);
 	TouchPadPressedWhenSwiping = IniFile.ReadBoolean("Xbox", "TouchPadPressedWhenSwiping", false);
 	bool EnableXboxButton = IniFile.ReadBoolean("Xbox", "EnableXboxButton", true);
+	XboxTouchpad::Settings TouchpadStickSettings;
+	TouchpadStickSettings.mode = XboxTouchpad::ParseMode(IniFile.ReadString("Xbox", "TouchpadStickMode", "legacy"));
+	TouchpadStickSettings.sensitivity = IniFile.ReadFloat("Xbox", "TouchpadStickSensitivity", 0.60f);
+	TouchpadStickSettings.deadzone = IniFile.ReadFloat("Xbox", "TouchpadStickDeadzone", 0.12f);
+	TouchpadStickSettings.smoothing = IniFile.ReadFloat("Xbox", "TouchpadStickSmoothing", 0.0f);
+	if (XboxTouchpad::Lower(IniFile.ReadString("Xbox", "TouchpadStickCurve", "linear")) == "quadratic")
+		TouchpadStickSettings.curve = XboxTouchpad::Curve::Quadratic;
+	TouchpadStickSettings.Validate();
+	const double TouchpadClickDeadzone = XboxTouchpad::ValidateClickDeadzone(IniFile.ReadFloat("Xbox", "TouchpadClickDeadzone", 0.12f));
+
+	const bool MotionStickEnabled = IniFile.ReadBoolean("Xbox", "MotionStickEnabled", false);
+	const std::string MotionStickKeyName = IniFile.ReadString("Xbox", "MotionStickKey", "RIGHT-SHOULDER");
+	const int MotionStickKey = XboxKeyNameToXboxKeyCode(MotionStickKeyName);
+	XboxMotion::Settings MotionStickSettings;
+	MotionStickSettings.speed = IniFile.ReadFloat("Xbox", "MotionStickSpeed", 60.0f);
+	MotionStickSettings.deadzone = IniFile.ReadFloat("Xbox", "MotionStickDeadzone", 0.12f);
+	MotionStickSettings.quadratic = XboxTouchpad::Lower(IniFile.ReadString("Xbox", "MotionStickCurve", "quadratic")) == "quadratic";
+	MotionStickSettings.horizontal = XboxMotion::ParseAxis(IniFile.ReadString("Xbox", "MotionStickHorizontalAxis", "Y"), XboxMotion::Axis::Y);
+	MotionStickSettings.vertical = XboxMotion::ParseAxis(IniFile.ReadString("Xbox", "MotionStickVerticalAxis", "X"), XboxMotion::Axis::X);
+	MotionStickSettings.invertHorizontal = IniFile.ReadBoolean("Xbox", "MotionStickInvertHorizontal", true);
+	MotionStickSettings.invertVertical = IniFile.ReadBoolean("Xbox", "MotionStickInvertVertical", false);
+	MotionStickSettings.Validate();
 
 	KEY_ID_XBOX_ACTIVATE_MULTI_NAME = IniFile.ReadString("Xbox", "MultiActivateKey", "BACK");
 	int KEY_ID_XBOX_ACTIVATE_MULTI = XboxKeyNameToXboxKeyCode(KEY_ID_XBOX_ACTIVATE_MULTI_NAME);
@@ -555,8 +581,16 @@ int main(int argc, char **argv)
 		m_HalfHeight = GetSystemMetrics(SM_CYSCREEN) / 2;
 	}
 
+	XboxMotion::ConsoleTuner MotionSpeedConsole(MotionStickEnabled);
+
 	// Write current mode
 	MainTextUpdate();
+	if (MotionStickEnabled)
+		printf_s(" Analog motion: %s + RIGHT-STICK, max %.1f deg/s. Button alone works normally; movement reserves it until release. Back combinations take priority.\n", MotionStickKeyName.c_str(), MotionStickSettings.speed);
+	if (MotionStickEnabled && MotionStickKey == XINPUT_GAMEPAD_START)
+		printf(" Start alone sends Options on release; a motion gesture never opens the menu.\n");
+	if (MotionSpeedConsole.available)
+		printf(" Focus this console and press M to edit motion speed. No global shortcut is registered.\n");
 
 	DS4_TOUCH BuffPreviousTouch[2] = { 0, 0 };
 	BuffPreviousTouch[0].bIsUpTrackingNum1 = 0x80;
@@ -567,10 +601,22 @@ int main(int argc, char **argv)
 
 	Touch2.LeftMode = 2;
 	static uint8_t TouchPacket = 0;
+	XboxTouchpad::State TouchpadStickState;
+	XboxMotion::Gesture MotionStickGesture;
+	XboxMotion::MenuButton MotionMenuButton;
+	auto TouchpadStickLastFrame = std::chrono::steady_clock::now();
 
 	while ( !(IsKeyPressed(VK_LMENU) && IsKeyPressed(VK_ESCAPE) ) )
 	{
 		DS4_REPORT_INIT_EX(&report);
+		MotionSpeedConsole.Poll(MotionStickSettings, IniFile.GetIniPath().c_str());
+
+		const auto TouchpadStickNow = std::chrono::steady_clock::now();
+		const double TouchpadStickDelta = std::chrono::duration<double>(TouchpadStickNow - TouchpadStickLastFrame).count();
+		TouchpadStickLastFrame = TouchpadStickNow;
+		bool XboxStickTouchActive = false;
+		bool XboxStickMotionActive = false;
+		XboxMotion::Rate XboxStickMotionRate;
 
 		ResetTouchData(Touch1);
 		ResetTouchData(Touch2); 
@@ -592,11 +638,28 @@ int main(int argc, char **argv)
 
 		bool MotionShaking = false, MotionXAdd = false, MotionXSub = false, MotionYAdd = false, MotionYSub = false, MotionZAdd = false, MotionZSub = false;
 
+		// While editing in the console, release all game inputs so editor keys cannot become touches.
+		if (MotionSpeedConsole.active) {
+			MotionStickGesture.active = false;
+			MotionMenuButton = {};
+			XboxMotion::Rate{}.Apply(report);
+			report.bTouchPacketsN = 1;
+			report.sCurrentTouch.bPacketCounter = ++TouchPacket;
+			Touch1.PrevTouched = Touch2.PrevTouched = false;
+			LastTouchValid = false; TouchpadStickState.Release();
+			report.wTimestamp = (USHORT)(std::chrono::duration_cast<std::chrono::milliseconds>(TouchpadStickNow - start).count() & 0xFFFF);
+			ret = vigem_target_ds4_update_ex(client, ds4, report);
+			Sleep(10);
+			continue;
+		}
+
 		// Xbox mode
+		if (EmulationMode != XboxMode) { MotionStickGesture.active = false; MotionMenuButton = {}; }
 		if (EmulationMode == XboxMode) {
 			DWORD myStatus = ERROR_DEVICE_NOT_CONNECTED;
 			if (hDll != NULL)
 				myStatus = MyXInputGetState(XboxUserIndex, &myPState);
+			if (myStatus != ERROR_SUCCESS) { MotionStickGesture.active = false; MotionMenuButton = {}; }
 			
 			if (myStatus == ERROR_SUCCESS) {
 
@@ -645,6 +708,26 @@ int main(int argc, char **argv)
 				myPState.Gamepad.sThumbRY = DeadZoneXboxAxis(myPState.Gamepad.sThumbRY, DeadZoneRightStickY);
 
 				// Convert axis from - https://github.com/sam0x17/XJoy/blob/236b5539cc15ea1c83e1e5f0260937f69a78866d/Include/ViGEmUtil.h
+				// Reserve the key only after stick movement starts; a plain press stays a normal button.
+				const bool MotionStickHeld = MotionStickEnabled && MotionStickKey != 0
+					&& (myPState.Gamepad.wButtons & MotionStickKey)
+					&& !(myPState.Gamepad.wButtons & KEY_ID_XBOX_ACTIVATE_MULTI)
+					&& !(myPState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
+					&& !(SwapTriggersShoulders && (MotionStickKey & (XINPUT_GAMEPAD_LEFT_SHOULDER | XINPUT_GAMEPAD_RIGHT_SHOULDER)));
+				XboxStickMotionActive = MotionStickGesture.Update(MotionStickHeld,
+					myPState.Gamepad.sThumbRX, myPState.Gamepad.sThumbRY, MotionStickSettings);
+				const bool MotionMenuAllowed = MotionStickEnabled && MotionStickKey == XINPUT_GAMEPAD_START
+					&& !(myPState.Gamepad.wButtons & (KEY_ID_XBOX_ACTIVATE_MULTI | XINPUT_GAMEPAD_BACK));
+				const bool MotionMenuPulse = MotionMenuButton.Update(MotionMenuAllowed,
+					(myPState.Gamepad.wButtons & XINPUT_GAMEPAD_START) != 0, XboxStickMotionActive, TouchpadStickDelta);
+				if (MotionMenuAllowed) {
+					myPState.Gamepad.wButtons &= ~XINPUT_GAMEPAD_START;
+					if (MotionMenuPulse) report.wButtons |= DS4_BUTTON_OPTIONS;
+				}
+				if (XboxStickMotionActive) {
+					XboxStickMotionRate = XboxMotion::Calculate(myPState.Gamepad.sThumbRX, myPState.Gamepad.sThumbRY, MotionStickSettings);
+					myPState.Gamepad.wButtons &= ~MotionStickKey;
+				}
 				report.bThumbLX = ((myPState.Gamepad.sThumbLX + ((USHRT_MAX / 2) + 1)) / 257);
 				report.bThumbLY = (-(myPState.Gamepad.sThumbLY + ((USHRT_MAX / 2) - 1)) / 257);
 				report.bThumbLY = (report.bThumbLY == 0) ? 0xFF : report.bThumbLY;
@@ -790,25 +873,13 @@ int main(int argc, char **argv)
 							report.wButtons |= DS4_BUTTON_SHOULDER_LEFT;
 						if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER)
 							report.wButtons |= DS4_BUTTON_SHOULDER_RIGHT;
-						
-						report.bTriggerL = myPState.Gamepad.bLeftTrigger;
-						report.bTriggerR = myPState.Gamepad.bRightTrigger;
 					}
 					else {
 						if (myPState.Gamepad.bLeftTrigger > 0)
 							report.wButtons |= DS4_BUTTON_SHOULDER_LEFT;
 						if (myPState.Gamepad.bRightTrigger > 0)
 							report.wButtons |= DS4_BUTTON_SHOULDER_RIGHT;
-						if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER)
-							report.bTriggerL = 255;
-						if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER)
-							report.bTriggerR = 255;
 					}
-
-					if (report.bTriggerL > 0) // Specific of DualShock
-						report.wButtons |= DS4_BUTTON_TRIGGER_LEFT; 
-					if (report.bTriggerR > 0) // Specific of DualShock
-						report.wButtons |= DS4_BUTTON_TRIGGER_RIGHT;
 
 					if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)
 						DS4_SET_DPAD_EX(&report, DS4_BUTTON_DPAD_NORTH);
@@ -829,9 +900,26 @@ int main(int argc, char **argv)
 						DS4_SET_DPAD_EX(&report, DS4_BUTTON_DPAD_SOUTHEAST);
 				}
 
+				// Allow triggers while the touchpad/motion modifier is held.
+				if (SwapTriggersShoulders == false) {
+					report.bTriggerL = myPState.Gamepad.bLeftTrigger;
+					report.bTriggerR = myPState.Gamepad.bRightTrigger;
+				}
+				else {
+					if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER)
+						report.bTriggerL = 255;
+					if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER)
+						report.bTriggerR = 255;
+				}
+
+				if (report.bTriggerL > 0) // Specific of DualShock
+					report.wButtons |= DS4_BUTTON_TRIGGER_LEFT;
+				if (report.bTriggerR > 0) // Specific of DualShock
+					report.wButtons |= DS4_BUTTON_TRIGGER_RIGHT;
+
 				// Touchpad swipes
 				if (report.bSpecial & DS4_SPECIAL_BUTTON_TOUCHPAD) {
-						if (!TouchPadPressedWhenSwiping && (report.bThumbRX != 127 || report.bThumbRY != 129)) {
+						if (!TouchPadPressedWhenSwiping && XboxTouchpad::SuppressClick(myPState.Gamepad.sThumbRX, myPState.Gamepad.sThumbRY, report.bThumbRX, report.bThumbRY, TouchpadClickDeadzone)) {
 							report.bSpecial &= ~DS4_SPECIAL_BUTTON_TOUCHPAD;
 							if (myPState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) { report.wButtons &= ~DS4_BUTTON_THUMB_RIGHT; report.bSpecial |= DS4_SPECIAL_BUTTON_TOUCHPAD; }
 						}
@@ -859,6 +947,7 @@ int main(int argc, char **argv)
 
 					//printf(" %.2f %.2f %d %d \n", LeftStickValue, RightStickValue, report.bThumbRX, report.bThumbRY);
 
+					if (TouchpadStickSettings.mode == XboxTouchpad::Mode::Legacy) {
 					if (report.bThumbRX > 127)
 						Touch1.X = 200 + trunc(1519 * RightStickValue);
 					if (report.bThumbRX < 127)
@@ -868,6 +957,13 @@ int main(int argc, char **argv)
 						Touch1.Y = 100 + trunc(741 * RightStickValue);
 					if (report.bThumbRY < 129)
 						Touch1.Y = 743 - trunc(741 * RightStickValue);
+					} else {
+						const double stickX = XboxTouchpad::Normalize(myPState.Gamepad.sThumbRX) * (InvertX ? -1.0 : 1.0);
+						const double stickY = XboxTouchpad::Normalize(myPState.Gamepad.sThumbRY) * (InvertY ? 1.0 : -1.0);
+						TouchpadStickState.Update(stickX, stickY, TouchpadStickDelta, TouchpadStickSettings);
+						Touch1.X = TouchpadStickState.X(); Touch1.Y = TouchpadStickState.Y();
+						XboxStickTouchActive = true;
+					}
 
 					if (report.bThumbLX > 127)
 						Touch2.X = 200 + trunc(1519 * LeftStickValue);
@@ -879,6 +975,10 @@ int main(int argc, char **argv)
 					if (report.bThumbLY < 129)
 						Touch2.Y = 743 - trunc(741 * LeftStickValue);
 
+				}
+
+				if (XboxStickMotionActive) {
+					report.bThumbRX = 128; report.bThumbRY = 128;
 				}
 
 				if (XboxActivateMotionPressed) {
@@ -1169,7 +1269,8 @@ int main(int argc, char **argv)
 		if (IsKeyPressed(KEY_ID_MOTION_Z_SUB)) MotionZSub = true;
 
 		// состояние пальцев сейчас
-		Touch1.IsChanged = (Touch1.X | Touch1.Y) != 0;
+		if (!XboxStickTouchActive) TouchpadStickState.Release();
+		Touch1.IsChanged = XboxStickTouchActive || (Touch1.X | Touch1.Y) != 0;
 		Touch2.IsChanged = (Touch2.X | Touch2.Y) != 0;
 
 		// фронт касания -> новый track-id (0..127)
@@ -1254,6 +1355,18 @@ int main(int argc, char **argv)
 		else if (MotionZSub) {      // поворот влево по Z (yaw -)
 			report.wAccelX = 0;      report.wAccelY = 0;      report.wAccelZ = -32767;
 			report.wGyroX = 0;      report.wGyroY = 0;      report.wGyroZ = -32767;
+		}
+
+		// Explicit shake/keyboard/D-pad motion retains priority over analog motion.
+		if (!(MotionShaking || MotionXAdd || MotionXSub || MotionYAdd || MotionYSub || MotionZAdd || MotionZSub)) {
+			if (XboxStickMotionActive)
+				XboxStickMotionRate.Apply(report);
+			else if (MotionStickEnabled && EmulationMode == XboxMode && !SocketActivated) {
+				// Keep calibrated gyro neutral after releasing the analog modifier.
+				// Leave external IMU, legacy/digital motion and acceleration behavior intact.
+				report.wGyroX = XboxMotion::GyroPitchZero;
+				report.wGyroY = 0; report.wGyroZ = 0;
+			}
 		}
 
 		// Special keys
